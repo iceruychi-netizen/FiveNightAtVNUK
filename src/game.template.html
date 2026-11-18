@@ -19,8 +19,8 @@
 <style>
 :root{--f:'VT323','Courier New',monospace}
 html,body{margin:0;height:100%;background:#000;color:#ddd;font-family:var(--f);overflow:hidden;user-select:none;-webkit-user-select:none}
-#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000}
-#stage{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);overflow:hidden}
+#wrap{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;background:#000}
+#stage{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);width:min(100vw,177.78dvh);height:min(56.25vw,100dvh);overflow:hidden}
 #c{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none;cursor:crosshair}
 .ov{position:absolute;inset:0;display:none;font-size:1em}
 .ov.on{display:flex}
@@ -69,7 +69,8 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 #tctl.on{display:block}
 .tside{position:absolute;bottom:23%;display:flex;flex-direction:column;gap:.6em;z-index:12}
 .tside.L{left:1.2%}.tside.R{right:1.2%}
-.tb{width:5.4em;height:3.4em;font-size:1.05em;line-height:1.05;color:#fff;background:rgba(70,8,10,.55);border:2px solid rgba(255,80,80,.75);border-radius:.4em;touch-action:manipulation}
+.tside{transition:opacity .15s}.tside.off{opacity:0;pointer-events:none}
+.tb{width:4.4em;height:2.9em;font-size:.95em;line-height:1.05;color:rgba(255,255,255,.85);background:rgba(70,8,10,.35);border:2px solid rgba(255,80,80,.5);border-radius:.4em;touch-action:manipulation}
 .tb.lt{background:rgba(60,55,20,.5);border-color:rgba(255,236,150,.75)}
 .tb.on{background:rgba(220,30,30,.85);box-shadow:0 0 .6em #f33}
 .tb.lt.on{background:rgba(255,236,150,.85);color:#000;box-shadow:0 0 .6em #ffe58a}
@@ -1448,7 +1449,7 @@ function renderHUD() {
   ctx.fillStyle = hov ? 'rgba(80,160,90,.75)' : 'rgba(60,120,70,.45)'; ctx.fillRect(300, 498, 360, 34);
   ctx.strokeStyle = '#aea'; ctx.lineWidth = 2; ctx.strokeRect(300, 498, 360, 34);
   txt(ctx, G.cam ? (TOUCH ? '▼  ĐÓNG CAMERA' : '▼  ĐÓNG CAMERA  [SPACE]') : (TOUCH ? '▲  MỞ CAMERA' : '▲  MỞ CAMERA  [SPACE]'), 480, 503, 24, '#fff', 'center', false);
-  if (G.playT < 14 && !G.cam && !G.call) txt(ctx, TOUCH ? 'Vuốt ngang để nhìn · nút CỬA / ĐÈN ở hai bên · chạm thanh CAMERA' : 'Rê chuột để nhìn qua lại · Q/E: cửa · A/D: đèn · SPACE: camera', 480, 70, 20, `rgba(230,230,230,${Math.min(1, (14 - G.playT) / 3)})`, 'center');
+  if (G.playT < 14 && !G.cam && !G.call) txt(ctx, TOUCH ? 'Vuốt trái / phải để quay về phía cửa' : 'Rê chuột để nhìn qua lại · Q/E: cửa · A/D: đèn · SPACE: camera', 480, 70, 20, `rgba(230,230,230,${Math.min(1, (14 - G.playT) / 3)})`, 'center');
   if (G.info) {
     const f = G.foxy, s = n => { const l = loc(n); return (l === 'L' || l === 'R') ? `CỬA ${l === 'L' ? 'TRÁI' : 'PHẢI'} (${G.c[n].doorT.toFixed(1)}s)` : 'CAM ' + l; };
     const lines = [`Phát[${G.ai.freddy}]: ${s('freddy')}`, `Long[${G.ai.bonny}]: ${s('bonny')}`, `Sỹ[${G.ai.foxy}]: ${['IDLE', 'PEEKING', 'READY', 'RUSHING ' + f.runT.toFixed(1) + 's'][f.stage]}`, `Phúc[${G.ai.chica}]: ${s('chica')}`, `Pin: ${G.power.toFixed(2)}%  t=${G.time.toFixed(0)}s  x${G.speed}`];
@@ -2043,7 +2044,7 @@ $('stBtn').onclick = () => { A.init(); if (G.state === 'STORY' && !G.story.start
 $('start').onclick = e => { if (e.target.id === 'start' && G.state === 'STORY' && !G.story.started) { A.init(); storyAdvance(); } };
 // Điều khiển cảm ứng
 document.querySelectorAll('.tb').forEach(b => b.addEventListener('pointerdown', e => {
-  e.preventDefault(); e.stopPropagation(); A.init(); if (G.paused || G.state !== 'PLAYING' || G.cam) return;
+  e.preventDefault(); e.stopPropagation(); A.init(); if (G.paused || G.state !== 'PLAYING' || G.cam || b.parentNode.classList.contains('off')) return;
   const a = b.dataset.a; (a[0] === 'd' ? toggleDoor : toggleLight)(a[1]); if (navigator.vibrate) navigator.vibrate(12);
 }));
 $('skipBtn').onclick = () => { A.init(); if (G.state === 'STORY') storySkip(); else if (G.state === 'ENDING') toMenu(); };
@@ -2107,13 +2108,28 @@ $('dInfo').onclick = e => { G.info = !G.info; e.target.textContent = 'Hiện tr�
 $('dReset').onclick = () => { ApiService.reset(); if (G.state === 'MENU') refreshMenu(); };
 
 /* ============================ RESIZE + LOOP ============================ */
-function fit() { const st = $('stage'); st.style.fontSize = (st.clientWidth / 960 * 16) + 'px'; }
-window.addEventListener('resize', fit); fit();
+// Khít đúng vùng nhìn thấy thật (trên điện thoại 100vh tính cả phần thanh trình duyệt che mất)
+function fit() {
+  const vv = window.visualViewport, vw = Math.round(vv ? vv.width : innerWidth), vh = Math.round(vv ? vv.height : innerHeight);
+  const wrap = $('wrap'), st = $('stage'), w = Math.min(vw, vh * 16 / 9), h = w * 9 / 16;
+  wrap.style.width = vw + 'px'; wrap.style.height = vh + 'px';
+  st.style.width = Math.floor(w) + 'px'; st.style.height = Math.floor(h) + 'px';
+  st.style.fontSize = (w / 960 * 16) + 'px';
+  window.scrollTo(0, 0);
+}
+window.addEventListener('resize', fit);
+window.addEventListener('orientationchange', () => { fit(); setTimeout(fit, 250); setTimeout(fit, 700); });
+if (window.visualViewport) visualViewport.addEventListener('resize', fit);
+fit();
 let last = performance.now();
 let gearShown = null, tctlShown = null, skipShown = null;
 function syncTouchUI() {
   const t = TOUCH && G.state === 'PLAYING' && !G.cam && !G.paused;
   if (t !== tctlShown) { tctlShown = t; $('tctl').classList.toggle('on', t); }
+  if (t) { // chỉ hiện công tắc của phía đang nhìn: muốn đóng cửa bên nào phải vuốt quay về bên đó
+    const f = G.panX / PMAX_X, L = document.querySelector('.tside.L'), Rr = document.querySelector('.tside.R');
+    L.classList.toggle('off', f > .3); Rr.classList.toggle('off', f < .7);
+  }
   if (t) document.querySelectorAll('.tb').forEach(b => { const a = b.dataset.a, on = a === 'dL' ? G.doorL : a === 'dR' ? G.doorR : a === 'lL' ? G.lightL : G.lightR; if (b.classList.contains('on') !== on) b.classList.toggle('on', on); });
   const sk = TOUCH && ((G.state === 'STORY' && G.story && G.story.started && G.story.end < 0) || G.state === 'ENDING');
   if (sk !== skipShown) { skipShown = sk; $('skipBtn').classList.toggle('on', sk); }
