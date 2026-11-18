@@ -70,9 +70,9 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 .tside{position:absolute;bottom:23%;display:flex;flex-direction:column;gap:.6em;z-index:12}
 .tside.L{left:1.2%}.tside.R{right:1.2%}
 .tside{transition:opacity .15s}.tside.off{opacity:0;pointer-events:none}
-.tb{width:4.4em;height:2.9em;font-size:.95em;line-height:1.05;color:rgba(255,255,255,.85);background:rgba(70,8,10,.35);border:2px solid rgba(255,80,80,.5);border-radius:.4em;touch-action:manipulation}
-.tb.lt{background:rgba(60,55,20,.5);border-color:rgba(255,236,150,.75)}
-.tb.on{background:rgba(220,30,30,.85);box-shadow:0 0 .6em #f33}
+.tb{width:4.4em;height:2.9em;font-size:.95em;line-height:1.05;color:#fff;background:rgba(150,16,18,.6);border:2px solid #ff6a5a;box-shadow:0 0 .5em rgba(255,60,50,.6);text-shadow:0 0 .3em #f44;border-radius:.4em;touch-action:manipulation}
+.tb.lt{background:rgba(60,55,20,.5);border-color:rgba(255,236,150,.75);box-shadow:none;text-shadow:none}
+.tb.on{background:rgba(255,45,40,.95);box-shadow:0 0 1.1em #f33,0 0 .3em #fff inset}
 .tb.lt.on{background:rgba(255,236,150,.85);color:#000;box-shadow:0 0 .6em #ffe58a}
 #skipBtn{display:none;position:absolute;right:1em;bottom:1em;z-index:12;background:rgba(0,0,0,.6);border:1px solid #889;color:#ddd;font-size:1.15em;padding:.2em .8em}
 #skipBtn.on{display:block}
@@ -272,7 +272,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 
 <script>
 /* ============================ SPRITES (cắt từ 4 sprite sheet) ============================ */
-const SPR = {"bonny_aggr":"assets/sprites/bonny_aggr.webp?v=dbb3a6e8","bonny_cam":"assets/sprites/bonny_cam.webp?v=56596b8b","bonny_door":"assets/sprites/bonny_door.webp?v=fdb99792","bonny_idle":"assets/sprites/bonny_idle.webp?v=c28e5ebe","bonny_jump":"assets/sprites/bonny_jump.webp?v=656c8429","bonny_stare":"assets/sprites/bonny_stare.webp?v=ad7d249b","chica_aggr":"assets/sprites/chica_aggr.webp?v=747555d6","chica_cam":"assets/sprites/chica_cam.webp?v=d4b67bdc","chica_door":"assets/sprites/chica_door.webp?v=7d9209a2","chica_idle":"assets/sprites/chica_idle.webp?v=7a3eacb8","chica_jump":"assets/sprites/chica_jump.webp?v=c36ba873","chica_peek":"assets/sprites/chica_peek.webp?v=5ba34aaf","foxy_cam":"assets/sprites/foxy_cam.webp?v=19913ec9","foxy_door":"assets/sprites/foxy_door.webp?v=4866ad07","foxy_idle":"assets/sprites/foxy_idle.webp?v=80b176a1","foxy_jump":"assets/sprites/foxy_jump.webp?v=b5e98c86","foxy_peek":"assets/sprites/foxy_peek.webp?v=21c3c76c","foxy_rush":"assets/sprites/foxy_rush.webp?v=7165a99f","freddy_aggr":"assets/sprites/freddy_aggr.webp?v=ff6f20fe","freddy_cam":"assets/sprites/freddy_cam.webp?v=2d6b1090","freddy_door":"assets/sprites/freddy_door.webp?v=c19cb72f","freddy_idle":"assets/sprites/freddy_idle.webp?v=8d859794","freddy_jump":"assets/sprites/freddy_jump.webp?v=4fa7bf05","freddy_stare":"assets/sprites/freddy_stare.webp?v=bb05cb32","hung_caught":"assets/sprites/hung_caught.webp?v=241c970a","hung_door":"assets/sprites/hung_door.webp?v=39f34a78","hung_idle":"assets/sprites/hung_idle.webp?v=1c7b0fc6","hung_monitor":"assets/sprites/hung_monitor.webp?v=e0c23e40","hung_panic":"assets/sprites/hung_panic.webp?v=95b00b79","door_L":"assets/maps/door_L.webp?v=71bfb5ff","door_R":"assets/maps/door_R.webp?v=495e2c86","map_1A":"assets/maps/map_1A.webp?v=3bc5eeac","map_1B":"assets/maps/map_1B.webp?v=2af8a4b4","map_2A":"assets/maps/map_2A.webp?v=c54392e2","map_3":"assets/maps/map_3.webp?v=80e087e3","map_4A":"assets/maps/map_4A.webp?v=7dea396f","map_4B":"assets/maps/map_4B.webp?v=e39547de","map_5":"assets/maps/map_5.webp?v=2a3db2c2","map_office":"assets/maps/map_office.webp?v=fc28ff30"};
+const SPR = {"bonny_aggr":"assets/sprites/bonny_aggr.webp?v=da68edf9","bonny_cam":"assets/sprites/bonny_cam.webp?v=56596b8b","bonny_door":"assets/sprites/bonny_door.webp?v=fdb99792","bonny_idle":"assets/sprites/bonny_idle.webp?v=9b487502","bonny_jump":"assets/sprites/bonny_jump.webp?v=656c8429","bonny_stare":"assets/sprites/bonny_stare.webp?v=ce877252","chica_aggr":"assets/sprites/chica_aggr.webp?v=4c616817","chica_cam":"assets/sprites/chica_cam.webp?v=d4b67bdc","chica_door":"assets/sprites/chica_door.webp?v=7d9209a2","chica_idle":"assets/sprites/chica_idle.webp?v=616d5928","chica_jump":"assets/sprites/chica_jump.webp?v=c36ba873","chica_peek":"assets/sprites/chica_peek.webp?v=5ba34aaf","foxy_cam":"assets/sprites/foxy_cam.webp?v=19913ec9","foxy_door":"assets/sprites/foxy_door.webp?v=4866ad07","foxy_idle":"assets/sprites/foxy_idle.webp?v=d2b8e153","foxy_jump":"assets/sprites/foxy_jump.webp?v=b5e98c86","foxy_peek":"assets/sprites/foxy_peek.webp?v=21c3c76c","foxy_rush":"assets/sprites/foxy_rush.webp?v=a0afad17","freddy_aggr":"assets/sprites/freddy_aggr.webp?v=cc2b6d9a","freddy_cam":"assets/sprites/freddy_cam.webp?v=2d6b1090","freddy_door":"assets/sprites/freddy_door.webp?v=c19cb72f","freddy_idle":"assets/sprites/freddy_idle.webp?v=fe2aea47","freddy_jump":"assets/sprites/freddy_jump.webp?v=4fa7bf05","freddy_stare":"assets/sprites/freddy_stare.webp?v=801f819e","hung_caught":"assets/sprites/hung_caught.webp?v=241c970a","hung_door":"assets/sprites/hung_door.webp?v=39f34a78","hung_idle":"assets/sprites/hung_idle.webp?v=eb821da5","hung_monitor":"assets/sprites/hung_monitor.webp?v=06d54446","hung_panic":"assets/sprites/hung_panic.webp?v=cfe1e57b","door_L":"assets/maps/door_L.webp?v=71bfb5ff","door_R":"assets/maps/door_R.webp?v=495e2c86","map_1A":"assets/maps/map_1A.webp?v=3bc5eeac","map_1B":"assets/maps/map_1B.webp?v=2af8a4b4","map_2A":"assets/maps/map_2A.webp?v=c54392e2","map_3":"assets/maps/map_3.webp?v=80e087e3","map_4A":"assets/maps/map_4A.webp?v=7dea396f","map_4B":"assets/maps/map_4B.webp?v=e39547de","map_5":"assets/maps/map_5.webp?v=2a3db2c2","map_office":"assets/maps/map_office.webp?v=fc28ff30"};
 
 /* ============================ API SERVICE (mock, localStorage) ============================ */
 const ApiService = (() => {
@@ -1299,14 +1299,21 @@ const BTN = { dL: [31, 298], lL: [31, 326], dR: [950, 298], lR: [950, 326] };
 function btnRects() { const r = {}; for (const k in BTN) r[k] = [(BTN[k][0] - 26) * Z - G.panX, (BTN[k][1] - 15) * Z - G.panY, 52 * Z, 30 * Z]; return r; }
 function drawPanels() {
   const bo = G.state === 'BLACKOUT', st = { dL: G.doorL, lL: G.lightL, dR: G.doorR, lR: G.lightR };
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
   for (const k in BTN) {
     const [x, y] = BTN[k], on = st[k] && !bo, door = k[0] === 'd';
     if (on) {
       const gr = ctx.createRadialGradient(x, y, 2, x, y, 30);
       gr.addColorStop(0, door ? 'rgba(255,90,70,1)' : 'rgba(255,250,210,1)'); gr.addColorStop(.35, door ? 'rgba(255,30,20,.7)' : 'rgba(255,240,170,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = gr; ctx.fillRect(x - 30, y - 30, 60, 60);
-    } else { ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.beginPath(); ctx.arc(x, y, 11, 0, 7); ctx.fill(); }
+    } else if (door && !bo) {  // nút cửa luôn sáng đỏ dịu, nhịp thở nhẹ để dễ thấy
+      const p = .75 + .25 * Math.sin(performance.now() / 380 + (k === 'dR' ? 1.5 : 0));
+      const gr = ctx.createRadialGradient(x, y, 1, x, y, 24);
+      gr.addColorStop(0, `rgba(255,120,90,${.95 * p})`); gr.addColorStop(.4, `rgba(230,40,30,${.5 * p})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gr; ctx.fillRect(x - 24, y - 24, 48, 48);
+    }
   }
+  ctx.restore();
 }
 function hungPose() {
   if (G.state === 'BLACKOUT') return 'panic';
@@ -1339,8 +1346,9 @@ function renderOffice() {
   world(); ctx.drawImage(OFFICE, 0, 0); ctx.restore();
   const dark = bo ? .9 : .42 + G.flick * 3 + (G.out > 0 ? .38 : 0); G.roomDark = Math.min(.92, dark);
   ctx.fillStyle = `rgba(0,0,0,${Math.min(.92, dark)})`; ctx.fillRect(0, 0, W, H);
-  world(); drawDoorway('L'); drawDoorway('R'); drawPanels(); ctx.restore();
+  world(); drawDoorway('L'); drawDoorway('R'); ctx.restore();
   ctx.drawImage(VIG, 0, 0); ctx.drawImage(VIG, 0, 0);
+  world(); drawPanels(); ctx.restore(); // nút vẽ sau lớp tối/vignette để luôn sáng rõ
   updNoise(); ctx.globalAlpha = .07; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1; // hạt nhiễu phim
   const iw = 98 * Z, ih = 72 * Z, ix = 449 * Z - px, iy = Math.min(374 * Z - py, 488 - ih);
   updNoise(); drawHungInset(ix, iy, hungPose(), iw, ih, true); // webcam trên laptop

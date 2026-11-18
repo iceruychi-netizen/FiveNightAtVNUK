@@ -70,9 +70,9 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
 .tside{position:absolute;bottom:23%;display:flex;flex-direction:column;gap:.6em;z-index:12}
 .tside.L{left:1.2%}.tside.R{right:1.2%}
 .tside{transition:opacity .15s}.tside.off{opacity:0;pointer-events:none}
-.tb{width:4.4em;height:2.9em;font-size:.95em;line-height:1.05;color:rgba(255,255,255,.85);background:rgba(70,8,10,.35);border:2px solid rgba(255,80,80,.5);border-radius:.4em;touch-action:manipulation}
-.tb.lt{background:rgba(60,55,20,.5);border-color:rgba(255,236,150,.75)}
-.tb.on{background:rgba(220,30,30,.85);box-shadow:0 0 .6em #f33}
+.tb{width:4.4em;height:2.9em;font-size:.95em;line-height:1.05;color:#fff;background:rgba(150,16,18,.6);border:2px solid #ff6a5a;box-shadow:0 0 .5em rgba(255,60,50,.6);text-shadow:0 0 .3em #f44;border-radius:.4em;touch-action:manipulation}
+.tb.lt{background:rgba(60,55,20,.5);border-color:rgba(255,236,150,.75);box-shadow:none;text-shadow:none}
+.tb.on{background:rgba(255,45,40,.95);box-shadow:0 0 1.1em #f33,0 0 .3em #fff inset}
 .tb.lt.on{background:rgba(255,236,150,.85);color:#000;box-shadow:0 0 .6em #ffe58a}
 #skipBtn{display:none;position:absolute;right:1em;bottom:1em;z-index:12;background:rgba(0,0,0,.6);border:1px solid #889;color:#ddd;font-size:1.15em;padding:.2em .8em}
 #skipBtn.on{display:block}
@@ -1299,14 +1299,21 @@ const BTN = { dL: [31, 298], lL: [31, 326], dR: [950, 298], lR: [950, 326] };
 function btnRects() { const r = {}; for (const k in BTN) r[k] = [(BTN[k][0] - 26) * Z - G.panX, (BTN[k][1] - 15) * Z - G.panY, 52 * Z, 30 * Z]; return r; }
 function drawPanels() {
   const bo = G.state === 'BLACKOUT', st = { dL: G.doorL, lL: G.lightL, dR: G.doorR, lR: G.lightR };
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
   for (const k in BTN) {
     const [x, y] = BTN[k], on = st[k] && !bo, door = k[0] === 'd';
     if (on) {
       const gr = ctx.createRadialGradient(x, y, 2, x, y, 30);
       gr.addColorStop(0, door ? 'rgba(255,90,70,1)' : 'rgba(255,250,210,1)'); gr.addColorStop(.35, door ? 'rgba(255,30,20,.7)' : 'rgba(255,240,170,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = gr; ctx.fillRect(x - 30, y - 30, 60, 60);
-    } else { ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.beginPath(); ctx.arc(x, y, 11, 0, 7); ctx.fill(); }
+    } else if (door && !bo) {  // nút cửa luôn sáng đỏ dịu, nhịp thở nhẹ để dễ thấy
+      const p = .75 + .25 * Math.sin(performance.now() / 380 + (k === 'dR' ? 1.5 : 0));
+      const gr = ctx.createRadialGradient(x, y, 1, x, y, 24);
+      gr.addColorStop(0, `rgba(255,120,90,${.95 * p})`); gr.addColorStop(.4, `rgba(230,40,30,${.5 * p})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gr; ctx.fillRect(x - 24, y - 24, 48, 48);
+    }
   }
+  ctx.restore();
 }
 function hungPose() {
   if (G.state === 'BLACKOUT') return 'panic';
@@ -1339,8 +1346,9 @@ function renderOffice() {
   world(); ctx.drawImage(OFFICE, 0, 0); ctx.restore();
   const dark = bo ? .9 : .42 + G.flick * 3 + (G.out > 0 ? .38 : 0); G.roomDark = Math.min(.92, dark);
   ctx.fillStyle = `rgba(0,0,0,${Math.min(.92, dark)})`; ctx.fillRect(0, 0, W, H);
-  world(); drawDoorway('L'); drawDoorway('R'); drawPanels(); ctx.restore();
+  world(); drawDoorway('L'); drawDoorway('R'); ctx.restore();
   ctx.drawImage(VIG, 0, 0); ctx.drawImage(VIG, 0, 0);
+  world(); drawPanels(); ctx.restore(); // nút vẽ sau lớp tối/vignette để luôn sáng rõ
   updNoise(); ctx.globalAlpha = .07; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1; // hạt nhiễu phim
   const iw = 98 * Z, ih = 72 * Z, ix = 449 * Z - px, iy = Math.min(374 * Z - py, 488 - ih);
   updNoise(); drawHungInset(ix, iy, hungPose(), iw, ih, true); // webcam trên laptop
