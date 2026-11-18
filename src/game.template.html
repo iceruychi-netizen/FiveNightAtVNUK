@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Five Nights at VNUK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--f:'VT323','Courier New',monospace}
+html,body{margin:0;height:100%;background:#000;color:#ddd;font-family:var(--f);overflow:hidden;user-select:none;-webkit-user-select:none}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000}
+#stage{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);overflow:hidden}
+#c{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none;cursor:crosshair}
+.ov{position:absolute;inset:0;display:none;font-size:1em}
+.ov.on{display:flex}
+button{font-family:var(--f);cursor:pointer}
+/* MENU */
+#menu{flex-direction:column;justify-content:center;padding-left:6%;pointer-events:none}
+#menu *{pointer-events:auto}
+#menu h1{margin:0;font-size:4.1em;line-height:.9;color:#eee;letter-spacing:.04em;text-shadow:0 0 .2em #900,3px 3px 0 #300;font-weight:normal}
+#menu h1 span{color:#ff3a3a;text-shadow:0 0 .15em #ff1a1a,0 0 .45em #ff1a1a,3px 3px 0 #300;animation:neon 4.5s infinite}
+#menu h1{animation:glitch 6s infinite}
+@keyframes neon{0%,18%,22%,62%,64%,100%{opacity:1}20%,63%{opacity:.25;text-shadow:none}}
+@keyframes glitch{0%,92%,100%{transform:none;text-shadow:0 0 .2em #900,3px 3px 0 #300}93%{transform:translate(-3px,1px) skewX(-6deg);text-shadow:-4px 0 #f03,4px 0 #0cf}95%{transform:translate(3px,-1px);text-shadow:4px 0 #f03,-4px 0 #0cf}97%{transform:translate(-1px,0) skewX(4deg)}}
+#menu .sub{font-size:1.15em;color:#8aa;margin:.5em 0 1.6em;max-width:28em}
+.mbtn{display:block;background:none;border:none;color:#ccc;font-size:1.9em;text-align:left;padding:.08em 0;letter-spacing:.03em}
+.mbtn:hover,.mbtn:focus{color:#fff;outline:none;text-shadow:0 0 .3em #f33}
+.mbtn:hover::before,.mbtn:focus::before{content:'>> ';color:#d22}
+.mbtn[disabled]{color:#444;cursor:default;text-shadow:none}
+.mbtn[disabled]::before{content:''}
+#menu .meta{margin-top:1.4em;font-size:1em;color:#677}
+#menu .stars{color:#fc3;font-size:1.6em;letter-spacing:.2em}
+/* PANELS */
+.panel{margin:auto;background:rgba(6,8,10,.94);border:2px solid #3a4246;box-shadow:0 0 0 4px #000,0 0 40px #000;padding:1.2em 1.6em;max-width:88%;max-height:88%;overflow:auto;color:#ccc}
+.panel h2{margin:0 0 .5em;font-weight:normal;font-size:2.2em;color:#eee;letter-spacing:.05em}
+.panel h2 b{color:#d22;font-weight:normal}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:.8em}
+.card{border:1px solid #333;background:#0c0f12;padding:.5em;text-align:center}
+.card img{width:100%;height:6.5em;object-fit:contain;image-rendering:pixelated;background:#15191c}
+.card .nm{font-size:1.25em;color:#eee;margin-top:.2em}
+.card .al{font-size:.95em;color:#888}
+.card .val{font-size:2.6em;line-height:1;color:#f44}
+.card input[type=range]{width:100%;accent-color:#c22}
+.row{display:flex;gap:.5em;justify-content:center;align-items:center;flex-wrap:wrap}
+.sbtn{background:#141a1e;border:1px solid #4a5458;color:#ddd;font-size:1.3em;padding:.15em .7em}
+.sbtn:hover{background:#2a1214;border-color:#d22;color:#fff}
+.sbtn.red{background:#4a0d10;border-color:#d22}
+.pm{width:1.8em}
+.help li{margin:.25em 0;font-size:1.2em}
+.help b{color:#fc6;font-weight:normal}
+kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
+/* SETTINGS */
+.vrow{display:grid;grid-template-columns:14em 14em 3em auto;gap:.7em;align-items:center;font-size:1.2em;margin:.2em 0;white-space:nowrap}
+.vrow .sbtn{font-size:.9em;padding:0 .6em;white-space:nowrap}
+#settings .panel{max-height:94%}
+.vrow input{width:100%;accent-color:#c22}
+.vrow .pc{color:#fc6;text-align:right}
+.vrow:first-child{border-bottom:1px solid #333;padding-bottom:.4em;margin-bottom:.6em}
+#gearBtn{position:absolute;right:1em;top:5.8em;z-index:15;display:none;background:rgba(0,0,0,.55);border:1px solid #556;color:#ccd;font-size:1.05em;padding:.1em .6em}
+#gearBtn:hover{border-color:#d22;color:#fff}
+/* END */
+#end{flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:2.2%;pointer-events:none}
+#end .row{pointer-events:auto}
+/* DEBUG */
+#dbgBtn{position:absolute;left:.5em;bottom:.5em;z-index:20;background:rgba(0,0,0,.6);border:1px solid #3a3;color:#5f5;font-size:.95em;padding:.1em .5em;opacity:.65}
+#dbgBtn:hover{opacity:1}
+#dbg{position:absolute;left:.5em;bottom:2.2em;z-index:20;display:none;background:rgba(0,10,0,.92);border:1px solid #3a3;padding:.5em;width:15em;color:#7f7;font-size:.95em}
+#dbg.on{display:block}
+#dbg div>button{text-align:center;padding:.05em 0}
+#dbg button{display:block;width:100%;margin:.15em 0;background:#071a07;border:1px solid #2a5a2a;color:#9f9;font-size:1.05em;text-align:left;padding:.05em .4em}
+#dbg button:hover{background:#0f3a0f}
+#dbg .t{color:#4c4;margin:.3em 0 .1em;font-size:.9em}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+<canvas id="c" width="960" height="540"></canvas>
+
+<div id="menu" class="ov">
+  <h1>FIVE NIGHTS<br>AT <span>VNUK</span></h1>
+  <div class="sub">Viện Nghiên cứu và Đào tạo Việt - Anh · Đại học Đà Nẵng<br>Ca trực đêm trong phòng học — 12:00 AM → 6:00 AM</div>
+  <button class="mbtn" id="bNew">New Game (Đêm 1)</button>
+  <button class="mbtn" id="bCont" disabled>Tiếp tục</button>
+  <button class="mbtn" id="bCustom">Custom Night</button>
+  <button class="mbtn" id="bSet">Cài đặt âm thanh</button>
+  <button class="mbtn" id="bHelp">Hướng dẫn</button>
+  <button class="mbtn" id="bStory">Xem lại cốt truyện</button>
+  <div class="meta"><span class="stars" id="mStars"></span><br><span id="mPlayer">...</span></div>
+</div>
+
+<div id="custom" class="ov">
+  <div class="panel">
+    <h2>CUSTOM <b>NIGHT</b> — chỉnh AI Level 0–20</h2>
+    <div class="grid4" id="cGrid"></div>
+    <div class="row" style="margin-top:.8em">
+      <span>Hệ số hao điện:</span>
+      <input type="range" id="cMult" min="0.5" max="2" step="0.05" value="1" style="accent-color:#c22">
+      <span id="cMultV" style="color:#fc6;font-size:1.3em">x1.00</span>
+    </div>
+    <div class="row" style="margin-top:.6em">
+      <button class="sbtn" data-p="0,0,0,0">Tắt hết</button>
+      <button class="sbtn" data-p="5,5,5,5">Dễ 5/5/5/5</button>
+      <button class="sbtn" data-p="10,10,10,10">Vừa 10/10/10/10</button>
+      <button class="sbtn" data-p="20,20,20,20">4/20 MODE</button>
+      <button class="sbtn" data-p="0,0,20,0">Chỉ Sỹ</button>
+    </div>
+    <div class="row" style="margin-top:.9em">
+      <button class="sbtn" id="cBack">← Menu</button>
+      <button class="sbtn red" id="cStart">▶ BẮT ĐẦU CA TRỰC</button>
+    </div>
+  </div>
+</div>
+
+<div id="help" class="ov">
+  <div class="panel help">
+    <h2>HƯỚNG DẪN <b>TRỰC ĐÊM</b></h2>
+    <ul>
+      <li>Bạn vào vai <b>Nguyễn Tuấn Hưng</b> — sinh viên bị kẹt lại trực đêm trong phòng học VNUK.</li>
+      <li>Sống sót từ <b>12 AM</b> đến <b>6 AM</b> (mỗi giờ = 45 giây thực, cả đêm 4 phút 30 giây).</li>
+      <li>Rê chuột sang trái/phải (hoặc phím <kbd>←</kbd><kbd>→</kbd>) để quay đầu nhìn Cửa Trước / Cửa Sau, bấm nút DOOR / LIGHT trên tường cạnh mỗi cửa.</li>
+      <li><kbd>Q</kbd>/<kbd>E</kbd>: đóng-mở cửa trái/phải · <kbd>A</kbd>/<kbd>D</kbd>: đèn hành lang trái/phải · <kbd>Space</kbd>: Camera · <kbd>1</kbd>–<kbd>7</kbd>: chọn cam · <kbd>Esc</kbd>: tạm dừng &amp; cài đặt âm thanh.</li>
+      <li>Đóng cửa, bật đèn, xem camera đều làm <b>tụt pin nhanh hơn</b>. Hết pin = mất điện, Phát sẽ tới.</li>
+      <li><b>Long</b> đi cánh trái → Cửa Trước. <b>Phát</b> &amp; <b>Phúc</b> đi cánh phải → Cửa Sau. Phát không di chuyển khi bạn đang nhìn hắn qua cam.</li>
+      <li><b>Sỹ</b> trốn sau rèm Phòng Lab (CAM 3). Lâu không soi CAM 3 là hắn chạy dọc hành lang trái — đóng Cửa Trước trong 3 giây!</li>
+      <li>Bật đèn thấy ai đứng ngoài cửa → đóng cửa ngay cho tới khi họ bỏ đi.</li>
+    </ul>
+    <div class="row"><button class="sbtn" id="hBack">← Menu</button></div>
+  </div>
+</div>
+
+<div id="settings" class="ov">
+  <div class="panel">
+    <h2>CÀI ĐẶT <b>ÂM THANH</b></h2>
+    <div id="volRows"></div>
+    <label style="display:flex;gap:.6em;align-items:center;font-size:1.15em;margin:.6em 0 0;cursor:pointer"><input type="checkbox" id="ttsChk" style="width:1.1em;height:1.1em;accent-color:#c22"> Ông bảo vệ đọc bằng giọng tiếng Việt thật của trình duyệt (rõ lời nhưng không có hiệu ứng bộ đàm)</label>
+    <div class="row" style="margin-top:.9em">
+      <button class="sbtn" id="sBack">← Menu</button>
+      <button class="sbtn" id="sMenu">⌂ Bỏ ca trực, về Menu</button>
+      <button class="sbtn red" id="sResume">▶ Tiếp tục ca trực [ESC]</button>
+    </div>
+  </div>
+</div>
+<button id="gearBtn">⚙ CÀI ĐẶT [ESC]</button>
+
+<div id="end" class="ov"><div class="row" id="endRow"></div></div>
+
+<button id="dbgBtn">DEBUG</button>
+<div id="dbg">
+  <div class="t">TEST JUMPSCARE</div>
+  <button data-js="freddy">▶ Freddy · Bá Phát</button>
+  <button data-js="bonny">▶ Bonny · Thành Long</button>
+  <button data-js="foxy">▶ Foxy · Tấn Sỹ</button>
+  <button data-js="chica">▶ Chica · Minh Phúc</button>
+  <div class="t">CHƠI THẲNG ĐÊM</div>
+  <div style="display:flex;gap:.2em"><button data-night="1">1</button><button data-night="2">2</button><button data-night="3">3</button><button data-night="4">4</button><button data-night="5">5</button></div>
+  <button id="dUnlock">Mở khoá cả 5 đêm</button>
+  <button id="dEnd">Xem Ending (sau đêm 5)</button>
+  <div class="t">TRONG CA TRỰC</div>
+  <button id="dWin">★ Thắng đêm này (6 AM)</button>
+  <button id="dHour">+1 giờ</button>
+  <button id="dPow">Pin −25%</button>
+  <button id="dSpd">Tốc độ: x1</button>
+  <button id="dInfo">Hiện trạng thái AI: TẮT</button>
+  <button id="dReset">Xoá tiến độ (localStorage)</button>
+</div>
+</div></div>
+
+<script>
+/* ============================ SPRITES (cắt từ 4 sprite sheet) ============================ */
+const SPR = /*SPRITES*/;
+
+/* ============================ API SERVICE (mock, localStorage) ============================ */
+const ApiService = (() => {
+  const KEY = 'fnavnuk_db_v1';
+  let mem = null;
+  const DEFAULT_CONFIGS = [ // chế độ cân bằng, thân thiện với người chơi
+    { night_number:1, freddy_ai:0, bonny_ai:2, foxy_ai:0, chica_ai:1, start_power:100, power_drain_multiplier:1 }, // Án phạt bắt đầu
+    { night_number:2, freddy_ai:0, bonny_ai:3, foxy_ai:2, chica_ai:3, start_power:100, power_drain_multiplier:1 }, // Bóng gió về Tấn Sỹ
+    { night_number:3, freddy_ai:2, bonny_ai:4, foxy_ai:3, chica_ai:4, start_power:90,  power_drain_multiplier:1 }, // Sụt giảm điện năng & bóng tối cầu thang
+    { night_number:4, freddy_ai:4, bonny_ai:6, foxy_ai:5, chica_ai:6, start_power:90,  power_drain_multiplier:1 }, // Nhiễu sóng & thực thể manh động
+    { night_number:5, freddy_ai:6, bonny_ai:8, foxy_ai:7, chica_ai:8, start_power:85,  power_drain_multiplier:1 }, // Đêm trực cuối cùng
+  ];
+  const uid = () => 'id_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) {} };
+  function load() {
+    if (mem) return mem;
+    let db = null;
+    try { db = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+    if (!db || !db.Players || !db.GameProgress) {
+      const pid = uid();
+      db = {
+        Players: [{ player_id: pid, username: 'Nguyễn Tuấn Hưng', created_at: new Date().toISOString() }],
+        GameProgress: [{ progress_id: uid(), player_id: pid, current_night: 1, stars_unlocked: 0, best_survival_seconds: 0 }],
+        NightConfigs: DEFAULT_CONFIGS,
+      };
+    }
+    if (db.Players[0].username === 'SinhVien_VNUK') db.Players[0].username = 'Nguyễn Tuấn Hưng';
+    db.NightConfigs = DEFAULT_CONFIGS; // luôn dùng cấu hình độ khó mới nhất
+    mem = db; persist(); return db;
+  }
+  const wait = (ms = 60) => new Promise(r => setTimeout(r, ms));
+  const ok = data => ({ status: 200, ok: true, data });
+  const fail = (status, error) => ({ status, ok: false, error });
+
+  async function request(method, path, body) {
+    await wait();
+    const db = load(); let m;
+    if (method === 'GET' && (m = path.match(/^\/api\/night-config\/(\d+)$/))) {
+      const cfg = db.NightConfigs.find(c => c.night_number === +m[1]);
+      return cfg ? ok({ ...cfg }) : fail(404, 'Night not found');
+    }
+    if (method === 'GET' && path === '/api/progress') {
+      return ok({ ...db.GameProgress[0], player: { ...db.Players[0] } });
+    }
+    if (method === 'POST' && path === '/api/progress/save') {
+      const p = db.GameProgress[0];
+      const { night_completed, power_remaining, survival_seconds } = body || {};
+      if (Number.isInteger(night_completed) && night_completed >= 1) {
+        p.current_night = Math.min(5, Math.max(p.current_night, night_completed + 1));
+        if (night_completed >= 5) p.stars_unlocked = Math.max(p.stars_unlocked, 1);
+        p.last_power_remaining = +(+power_remaining || 0).toFixed(1);
+        p.best_survival_seconds = Math.max(p.best_survival_seconds, 270);
+      }
+      if (survival_seconds) p.best_survival_seconds = Math.max(p.best_survival_seconds, Math.floor(survival_seconds));
+      persist();
+      return ok({ ...p });
+    }
+    return fail(404, 'Route not found');
+  }
+  return {
+    request,
+    getNightConfig: n => request('GET', `/api/night-config/${n}`),
+    getProgress: () => request('GET', '/api/progress'),
+    saveProgress: payload => request('POST', '/api/progress/save', payload),
+    reset() { mem = null; try { localStorage.removeItem(KEY); } catch (e) {} },
+  };
+})();
+
+/* ============================ AUDIO ENGINE (Web Audio, tự tổng hợp) ============================ */
+const VOL_KEYS = [
+  ['master', 'Âm lượng tổng'], ['amb', 'Quạt & tiếng rè điện'], ['sfx', 'Cửa, đèn, camera'],
+  ['ai', 'Bước chân & tiếng gõ cửa'], ['scare', 'Jumpscare & tiếng hét'], ['music', 'Nhạc hộp & chuông 6 AM'],
+];
+const VOL = { master: .8, amb: .7, sfx: .8, ai: .9, scare: .8, music: .7 };
+try { Object.assign(VOL, JSON.parse(localStorage.getItem('fnavnuk_settings') || '{}')); } catch (e) {}
+const A = {
+  bus: {},
+  setVol(k, v) {
+    VOL[k] = v; try { localStorage.setItem('fnavnuk_settings', JSON.stringify(VOL)); } catch (e) {}
+    if (!this.ctx) return;
+    const node = k === 'master' ? this.master : this.bus[k]; node.gain.setTargetAtTime(v, this.ctx.currentTime, .03);
+  },
+  ctx: null, master: null, nb: null, amb: null, lightG: null, music: null,
+  init() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const c = this.ctx = new AC();
+    this.master = c.createGain(); this.master.gain.value = VOL.master; this.master.connect(c.destination);
+    for (const [k] of VOL_KEYS.slice(1)) { const b = c.createGain(); b.gain.value = VOL[k]; b.connect(this.master); this.bus[k] = b; }
+    const len = c.sampleRate * 2, b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    this.nb = b;
+    const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 120;
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900;
+    const g = c.createGain(); g.gain.value = 0;
+    // tiếng rè đèn hành lang: 60Hz + hài bậc cao, có rung điện
+    const o2 = c.createOscillator(); o2.type = 'square'; o2.frequency.value = 180;
+    const g2 = c.createGain(); g2.gain.value = .25; o2.connect(g2); g2.connect(f);
+    const am = c.createOscillator(); am.frequency.value = 9; const amg = c.createGain(); amg.gain.value = .35; am.connect(amg);
+    const fg = c.createGain(); fg.gain.value = 1; amg.connect(fg.gain);
+    o.frequency.value = 60; f.frequency.value = 1400; f.Q.value = 2;
+    o.connect(f); f.connect(fg); fg.connect(g); g.connect(this.bus.sfx); o.start(); o2.start(); am.start(); this.lightG = g;
+    // nhiễu nền khi đang xem camera
+    const cs = c.createBufferSource(); cs.buffer = this.nb; cs.loop = true; const cf = c.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 1800; cf.Q.value = .6;
+    const cg = c.createGain(); cg.gain.value = 0; cs.connect(cf); cf.connect(cg); cg.connect(this.bus.sfx); cs.start(); this.camG = cg;
+    // nén cho kênh jumpscare: to mà không vỡ tiếng
+    const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 6; comp.attack.value = .002; comp.release.value = .2;
+    this.bus.scare.disconnect(); this.bus.scare.connect(comp); comp.connect(this.master);
+
+  },
+  noise(dur, { type = 'lowpass', freq = 1000, q = 1, vol = .3, t = 0, attack = .005, bus = 'sfx' } = {}) {
+    const c = this.ctx; if (!c) return;
+    const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+    const g = c.createGain(); const t0 = c.currentTime + t;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + attack); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(f); f.connect(g); g.connect(this.bus[bus]); s.start(t0, Math.random()); s.stop(t0 + dur + .05);
+  },
+  tone(freq, dur, { type = 'sine', vol = .2, t = 0, to = null, attack = .005, bus = 'sfx' } = {}) {
+    const c = this.ctx; if (!c) return;
+    const o = c.createOscillator(); o.type = type; const t0 = c.currentTime + t;
+    o.frequency.setValueAtTime(freq, t0); if (to) o.frequency.exponentialRampToValueAtTime(to, t0 + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + attack); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(this.bus[bus]); o.start(t0); o.stop(t0 + dur + .05);
+  },
+  startAmb() { // tiếng rè quạt trần + hum điện
+    const c = this.ctx; if (!c || this.amb) return;
+    const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true;
+    const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 320;
+    const g = c.createGain(); g.gain.value = 0.07;
+    const lfo = c.createOscillator(); lfo.frequency.value = 6.5; const lg = c.createGain(); lg.gain.value = 0.03; lfo.connect(lg); lg.connect(g.gain);
+    const hum = c.createOscillator(); hum.frequency.value = 50; const hg = c.createGain(); hg.gain.value = 0.02; hum.connect(hg); hg.connect(this.bus.amb);
+    s.connect(f); f.connect(g); g.connect(this.bus.amb); s.start(); lfo.start(); hum.start();
+    // tiếng ù nền rợn người: 2 nốt trầm lệch nhau tạo nhịp "đập" + pad nghịch tai rất nhỏ
+    const nodes = [s, lfo, hum];
+    [[41, .05], [41.8, .05], [55.3, .02]].forEach(([fq, v]) => { const o = c.createOscillator(); o.frequency.value = fq; const og = c.createGain(); og.gain.value = v; o.connect(og); og.connect(this.bus.amb); o.start(); nodes.push(o); });
+    const slow = c.createOscillator(); slow.frequency.value = .07; const sg = c.createGain(); sg.gain.value = .008; slow.connect(sg); slow.start(); nodes.push(slow);
+    [[220, 'triangle'], [233.1, 'triangle'], [311, 'sine']].forEach(([fq, ty]) => { const o = c.createOscillator(); o.type = ty; o.frequency.value = fq; const og = c.createGain(); og.gain.value = .006; sg.connect(og.gain); o.connect(og); og.connect(this.bus.amb); o.start(); nodes.push(o); });
+    this.amb = nodes;
+  },
+  ambientEvent() { // tiếng động xa ngẫu nhiên trong trường
+    const c = this.ctx; if (!c) return; const r = Math.floor(Math.random() * 6), bus = 'amb';
+    if (r === 0) { // cửa kẽo kẹt
+      const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true; const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 18;
+      const g = c.createGain(), t = c.currentTime; f.frequency.setValueAtTime(380, t); f.frequency.linearRampToValueAtTime(900, t + 1.1); f.frequency.linearRampToValueAtTime(520, t + 1.8);
+      g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.35, t + .3); g.gain.exponentialRampToValueAtTime(.0001, t + 1.9);
+      s.connect(f); f.connect(g); g.connect(this.bus.amb); s.start(t); s.stop(t + 2);
+    } else if (r === 1) { // sắt va xa
+      [523, 787, 1180].forEach(fq => this.tone(fq, 2.2, { type: 'triangle', vol: .04, bus })); this.noise(.15, { freq: 1200, vol: .15, bus });
+    } else if (r === 2) { // gõ cửa xa
+      for (let i = 0; i < 3; i++) { this.noise(.1, { freq: 250, vol: .2, t: i * .35, bus }); this.tone(60, .1, { vol: .2, t: i * .35, to: 40, bus }); }
+    } else if (r === 3) { // tiếng thở ngay sau lưng
+      for (let i = 0; i < 2; i++) { this.noise(1.1, { type: 'bandpass', freq: 700, q: .7, vol: .09, t: i * 1.5, attack: .5, bus }); this.noise(.9, { type: 'bandpass', freq: 450, q: .7, vol: .06, t: i * 1.5 + .75, attack: .35, bus }); }
+    } else if (r === 4) { // thì thầm
+      for (let i = 0; i < 6; i++) this.noise(.18 + Math.random() * .15, { type: 'bandpass', freq: 1800 + Math.random() * 1600, q: 6, vol: .05, t: i * .22, attack: .05, bus });
+    } else { // bước chân xa trên gạch
+      this.steps(5, .5, .09);
+    }
+  },
+  titleHit() { // cảnh hiện tên game: rít dâng lên → BRAAAM → neon rè → nhạc hộp
+    const c = this.ctx; if (!c) return; const bus = 'music', t0 = c.currentTime;
+    { const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true; const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 2500; const g = c.createGain();
+      g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.35, t0 + .42); g.gain.linearRampToValueAtTime(.0001, t0 + .46); s.connect(f); f.connect(g); g.connect(this.bus[bus]); s.start(t0); s.stop(t0 + .5); }
+    this.tone(180, .45, { vol: .12, to: 900, attack: .4, bus });
+    const T = .45;
+    this.tone(64, 2.6, { vol: .9, to: 30, t: T, bus }); this.noise(.6, { freq: 160, vol: .8, t: T, attack: .002, bus });
+    { const ws = c.createWaveShaper(), k = new Float32Array(1024); for (let i = 0; i < 1024; i++) { const x = i / 512 - 1; k[i] = Math.tanh(x * 4); } ws.curve = k;
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 6; lp.frequency.setValueAtTime(180, t0 + T); lp.frequency.exponentialRampToValueAtTime(1600, t0 + T + .35); lp.frequency.exponentialRampToValueAtTime(260, t0 + T + 2.6);
+      const g = c.createGain(); g.gain.setValueAtTime(.0001, t0 + T); g.gain.exponentialRampToValueAtTime(.45, t0 + T + .05); g.gain.setValueAtTime(.45, t0 + T + 1.4); g.gain.exponentialRampToValueAtTime(.0001, t0 + T + 2.8);
+      ws.connect(lp); lp.connect(g); g.connect(this.bus.scare);
+      [55, 55.4, 82.4, 110, 164.8].forEach(f => { const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; const og = c.createGain(); og.gain.value = .35; o.connect(og); og.connect(ws); o.start(t0 + T); o.stop(t0 + T + 2.9); }); }
+    this.noise(.5, { type: 'highpass', freq: 1500, vol: .3, t: T, attack: .002, bus });
+    for (let i = 0; i < 7; i++) this.tone(120, .05 + Math.random() * .08, { type: 'square', vol: .05, t: .95 + i * .09 + Math.random() * .05, bus }); // neon rè
+    [659, 622, 587, 554, 523].forEach((f, i) => { this.tone(f, .9, { type: 'triangle', vol: .09, t: 1.9 + i * .34, bus }); this.tone(f * 2, .5, { vol: .025, t: 1.9 + i * .34, bus }); });
+  },
+  menuAmb(on) { // nhạc nền menu: tiếng ù trầm + gió + nhạc hộp lạc nhịp
+    const c = this.ctx; if (!c) return;
+    if (!on) { if (this.mAmb) { this.mAmb.nodes.forEach(n => { try { n.stop(); } catch (e) {} }); clearInterval(this.mAmb.iv); this.mAmb = null; } return; }
+    if (this.mAmb) return;
+    const nodes = [];
+    [[49, .05], [49.7, .05], [73.5, .015]].forEach(([f, v]) => { const o = c.createOscillator(); o.frequency.value = f; const g = c.createGain(); g.gain.value = v; o.connect(g); g.connect(this.bus.music); o.start(); nodes.push(o); });
+    const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true; const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = .8; const sg = c.createGain(); sg.gain.value = .05;
+    const l = c.createOscillator(); l.frequency.value = .11; const lg = c.createGain(); lg.gain.value = 300; l.connect(lg); lg.connect(bp.frequency);
+    s.connect(bp); bp.connect(sg); sg.connect(this.bus.music); s.start(); l.start(); nodes.push(s, l);
+    const mel = [[659, 587, 523, 494], [523, 494, 440, 415], [659, 698, 659, 554]]; let k = 0;
+    const play = () => { const m = mel[k++ % mel.length]; m.forEach((f, i) => { const d = (Math.random() - .5) * 8; this.tone(f + d, .9, { type: 'triangle', vol: .05, t: i * .42, bus: 'music' }); this.tone((f + d) * 2, .5, { vol: .012, t: i * .42, bus: 'music' }); }); };
+    play(); const iv = setInterval(play, 5200);
+    this.mAmb = { nodes, iv };
+  },
+  // Giọng nói thật (Web Speech API, tiếng Việt) — trầm như ông bảo vệ, phát cùng nền rè của bộ đàm
+  viVoice() {
+    if (!('speechSynthesis' in window)) return null;
+    const vs = speechSynthesis.getVoices() || [];
+    return vs.find(v => /vi[-_]VN/i.test(v.lang) && /male|nam|an\b/i.test(v.name)) || vs.find(v => /^vi/i.test(v.lang)) || null;
+  },
+  say(text, onend) {
+    if (!('speechSynthesis' in window)) return false;
+    const voice = this.viVoice(); if (!voice) return false;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text.replace(/\*[^*]*\*/g, ' ').replace(/\.\.\./g, ', '));
+      u.voice = voice; u.lang = voice.lang; u.rate = 1.02; u.pitch = .55;
+      u.volume = Math.max(0, Math.min(1, (VOL.master ?? .8) * (VOL.sfx ?? .8) * 1.4));
+      u.onend = () => onend && onend(); u.onerror = () => onend && onend();
+      speechSynthesis.speak(u); return true;
+    } catch (e) { return false; }
+  },
+  hush() { try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {} },
+  // ===== Bộ đàm thật: chuỗi lọc băng hẹp + méo + nhiễu, giọng tổng hợp theo âm tiết =====
+  walkieChain() {
+    const c = this.ctx; if (!c) return null; if (this.wk) return this.wk;
+    const inp = c.createGain(); inp.gain.value = 1;
+    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 300; hp.Q.value = .7;
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3000; lp.Q.value = 1;
+    const pk = c.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 1200; pk.gain.value = 4; pk.Q.value = 1;
+    const ws = c.createWaveShaper(), k = new Float32Array(2048);
+    for (let i = 0; i < 2048; i++) { const x = i / 1024 - 1; k[i] = Math.tanh(x * 4); } // méo nhẹ kiểu loa bộ đàm
+    ws.curve = k;
+    const lp2 = c.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 3300;
+    const out = c.createGain(); out.gain.value = .5;
+    const hum = c.createOscillator(); hum.frequency.value = 50; const hg = c.createGain(); hg.gain.value = .06; // rè nguồn điện điều biên
+    const am = c.createGain(); am.gain.value = .8; hum.connect(hg); hg.connect(am.gain); hum.start();
+    inp.connect(hp); hp.connect(pk); pk.connect(lp); lp.connect(ws); ws.connect(lp2); lp2.connect(am); am.connect(out); out.connect(this.bus.sfx);
+    // nền xì khi đang phát (kênh mở)
+    const ns = c.createBufferSource(); ns.buffer = this.nb; ns.loop = true; const nf = c.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = 1600; nf.Q.value = .5;
+    const hiss = c.createGain(); hiss.gain.value = 0; ns.connect(nf); nf.connect(hiss); hiss.connect(this.bus.sfx); ns.start();
+    this.wk = { inp, hiss, nodes: [hum, ns] }; return this.wk;
+  },
+  walkieKill() { if (this.wk) { this.wk.nodes.forEach(n => { try { n.stop(); } catch (e) {} }); this.wk = null; } },
+  pttDown() { // bấm nút nói: "tách" + xì mở kênh nhẹ
+    const w = this.walkieChain(); if (!w) return; const t = this.ctx.currentTime;
+    this.noise(.012, { type: 'highpass', freq: 3000, vol: .3, attack: .001 });
+    w.hiss.gain.cancelScheduledValues(t); w.hiss.gain.setValueAtTime(.0001, t); w.hiss.gain.linearRampToValueAtTime(.06, t + .05); w.hiss.gain.exponentialRampToValueAtTime(.02, t + .3);
+  },
+  pttUp() { // thả nút: bíp–bíp + "kssh" rồi im
+    const w = this.walkieChain(); if (!w) return; const t = this.ctx.currentTime;
+    this.tone(1650, .07, { type: 'triangle', vol: .09 }); this.tone(1250, .09, { type: 'triangle', vol: .09, t: .08 });
+    w.hiss.gain.cancelScheduledValues(t); w.hiss.gain.setValueAtTime(.02, t); w.hiss.gain.setValueAtTime(.02, t + .17); w.hiss.gain.linearRampToValueAtTime(.12, t + .2); w.hiss.gain.exponentialRampToValueAtTime(.0001, t + .4);
+  },
+  syl(f0 = 120, stress = 1) { // tiếng "xì xào" mềm qua bộ đàm theo nhịp nói
+    const w = this.walkieChain(); if (!w) return; const c = this.ctx, t = c.currentTime;
+    const d = .12 + Math.random() * .1, F = [[650, 1150], [480, 1500], [800, 1350], [420, 950], [600, 1700]][Math.floor(Math.random() * 5)];
+    const src = c.createBufferSource(); src.buffer = this.nb; src.loop = true;
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.42 * stress, t + .035); g.gain.linearRampToValueAtTime(.32 * stress, t + d * .65); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    src.connect(g);
+    F.forEach((f, i) => { const b = c.createBiquadFilter(); b.type = 'bandpass'; b.frequency.setValueAtTime(f, t); b.frequency.linearRampToValueAtTime(f * (.9 + Math.random() * .2), t + d); b.Q.value = 2 + i; const bg = c.createGain(); bg.gain.value = i ? .7 : 1.1; g.connect(b); b.connect(bg); bg.connect(w.inp); });
+    src.start(t, Math.random() * 1.5); src.stop(t + d + .03);
+    w.hiss.gain.cancelScheduledValues(t); w.hiss.gain.setValueAtTime(.025, t); w.hiss.gain.linearRampToValueAtTime(.04, t + .04); w.hiss.gain.linearRampToValueAtTime(.025, t + d);
+    if (Math.random() < .08) this.noise(.012, { type: 'highpass', freq: 3500, vol: .06, attack: .001 });
+  },
+  radioOn() { // bật bộ đàm: "kssh" + bíp (không còn nền xì xào liên tục)
+    const c = this.ctx; if (!c) return; this.radioOff(true);
+    this.radioSquelch(); this.tone(1250, .09, { type: 'square', vol: .06, t: .05 });
+    this.radio = { nodes: [], ivs: [], out: null }; this.walkieChain();
+  },
+  blip(f = 1000) { // tiếng "tít" chạy chữ, đi qua loa bộ đàm
+    const w = this.walkieChain(); if (!w) return; const c = this.ctx, t = c.currentTime, d = .045;
+    const o = c.createOscillator(); o.type = 'square'; o.frequency.setValueAtTime(f, t); o.frequency.linearRampToValueAtTime(f * .97, t + d);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.32, t + .004); g.gain.setValueAtTime(.28, t + d * .7); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(w.inp); o.start(t); o.stop(t + d + .01);
+  },
+  radioOff(silent) {
+    this.hush(); this.walkieKill();
+    if (this.radio) { this.radio.nodes.forEach(n => { try { n.stop(); } catch (e) {} }); this.radio.ivs.forEach(clearInterval); try { this.radio.out && this.radio.out.disconnect(); } catch (e) {} this.radio = null; }
+    if (!silent && this.ctx) { this.radioSquelch(); this.tone(820, .14, { type: 'square', vol: .06, t: .12 }); this.tone(820, .14, { type: 'square', vol: .06, t: .34 }); }
+  },
+  radioSquelch() { this.noise(.22, { type: 'bandpass', freq: 2200, q: .5, vol: .22, attack: .003 }); },
+  radioCrackle() { for (let i = 0; i < 3; i++) this.noise(.012, { type: 'highpass', freq: 3200, vol: .05 + Math.random() * .06, t: Math.random() * .25, attack: .001 }); },
+  voice() { // giọng ông bảo vệ qua bộ đàm: trầm, méo, bị lọc như radio
+    const c = this.ctx; if (!c) return; const t = c.currentTime, f0 = 92 + Math.random() * 45, d = .07 + Math.random() * .04;
+    const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f0, t); o.frequency.linearRampToValueAtTime(f0 * (.9 + Math.random() * .25), t + d);
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 700 + Math.random() * 900; bp.Q.value = 2.5;
+    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 350;
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.45, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(bp); bp.connect(hp); hp.connect(g); g.connect(this.bus.sfx); o.start(t); o.stop(t + d + .02);
+    this.noise(d, { type: 'bandpass', freq: 2500, q: 1, vol: .05 });
+  },
+  birds() { const bus = 'music'; for (let i = 0; i < 14; i++) { const t = .8 + i * .45 + Math.random() * .3, f = 2600 + Math.random() * 1400; this.tone(f, .09, { vol: .05, t, to: f * 1.3, bus }); this.tone(f * 1.1, .07, { vol: .04, t: t + .1, to: f * .9, bus }); }
+    [392, 494, 587, 784].forEach((f, i) => this.tone(f, 3.5, { type: 'triangle', vol: .05, t: .3 + i * .4, attack: .6, bus })); },
+  paper() { this.noise(.45, { type: 'bandpass', freq: 3000, q: .7, vol: .25, attack: .05 }); },
+  stamp() { this.tone(90, .25, { vol: .7, to: 40 }); this.noise(.12, { freq: 600, vol: .6, attack: .001 }); },
+  schoolBell() { for (let i = 0; i < 10; i++) { this.tone(1046, .12, { type: 'square', vol: .04, t: i * .13, bus: 'music' }); this.tone(1318, .1, { vol: .05, t: i * .13 + .06, bus: 'music' }); } },
+  talk(who) { const base = { freddy: 520, bonny: 300, chica: 360, foxy: 700, hung: 600 }[who] || 450; this.tone(base * (.92 + Math.random() * .16), .05, { type: 'square', vol: .045 }); },
+  type(v = 1) { this.tone(1500 + Math.random() * 900, .018, { type: 'square', vol: .035 * v }); this.noise(.025, { type: 'highpass', freq: 3500, vol: .09 * v, attack: .001 }); },
+  heartbeat() { const bus = 'amb'; this.tone(52, .14, { vol: .45, to: 38, bus }); this.tone(48, .12, { vol: .35, t: .2, to: 36, bus }); },
+  whisper() { for (let i = 0; i < 4; i++) this.noise(.2, { type: 'bandpass', freq: 2200 + Math.random() * 1200, q: 7, vol: .08, t: i * .18, attack: .05, bus: 'scare' }); this.tone(196, 1.2, { type: 'sine', vol: .03, to: 185, attack: .3, bus: 'scare' }); },
+
+  stopAmb() { this.lightOff(); this.camHum(false); if (!this.amb) return; this.amb.forEach(n => { try { n.stop(); } catch (e) {} }); this.amb = null; },
+  setLight(on) {
+    if (!this.lightG) return;
+    this.lightG.gain.setTargetAtTime(on ? 0.075 : 0, this.ctx.currentTime, 0.015);
+    // tiếng công tắc + "tách" bóng đèn
+    this.noise(.05, { type: 'highpass', freq: 2500, vol: .35 }); this.tone(140, .08, { type: 'square', vol: .12, to: 60 });
+    if (on) { this.noise(.18, { type: 'bandpass', freq: 5000, q: 3, vol: .12, t: .03 }); this.tone(60, .5, { type: 'sawtooth', vol: .08, t: .02 }); }
+  },
+  lightOff() { if (this.lightG) this.lightG.gain.setTargetAtTime(0, this.ctx.currentTime, .015); },
+  lightFlick() { if (!this.lightG) return; const t = this.ctx.currentTime; this.lightG.gain.cancelScheduledValues(t); this.lightG.gain.setValueAtTime(0, t); this.lightG.gain.setValueAtTime(.09, t + .06); this.noise(.04, { type: 'highpass', freq: 3000, vol: .15 }); },
+  camHum(on) { if (this.camG) this.camG.gain.setTargetAtTime(on ? .03 : 0, this.ctx.currentTime, .05); },
+
+  slam() { this.noise(.35, { freq: 700, vol: .7 }); this.tone(90, .35, { to: 35, vol: .7 }); this.tone(230, .3, { type: 'square', vol: .06, to: 170 }); },
+  click() { this.tone(1800, .03, { type: 'square', vol: .05 }); },
+  camOpen() { // lật tablet: tiếng sượt + click + bật màn hình
+    const c = this.ctx; if (!c) return;
+    const s = c.createBufferSource(); s.buffer = this.nb; const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
+    const g = c.createGain(), t = c.currentTime; f.frequency.setValueAtTime(500, t); f.frequency.exponentialRampToValueAtTime(3200, t + .22);
+    g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.35, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + .28);
+    s.connect(f); f.connect(g); g.connect(this.bus.sfx); s.start(t, Math.random()); s.stop(t + .3);
+    this.tone(2200, .025, { type: 'square', vol: .08, t: .22 }); this.noise(.3, { type: 'highpass', freq: 2500, vol: .2, t: .24 }); this.camHum(true);
+  },
+  camClose() {
+    const c = this.ctx; if (!c) return;
+    const s = c.createBufferSource(); s.buffer = this.nb; const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2;
+    const g = c.createGain(), t = c.currentTime; f.frequency.setValueAtTime(3000, t); f.frequency.exponentialRampToValueAtTime(450, t + .22);
+    g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.3, t + .04); g.gain.exponentialRampToValueAtTime(.0001, t + .26);
+    s.connect(f); f.connect(g); g.connect(this.bus.sfx); s.start(t, Math.random()); s.stop(t + .3);
+    this.tone(900, .04, { type: 'square', vol: .06 }); this.camHum(false);
+  },
+  camSwitch() { // kiểu FNAF: "bíp" đanh + xẹt nhiễu sóng có tiếng lách tách
+    this.tone(1760, .045, { type: 'square', vol: .11 }); this.tone(2640, .03, { type: 'square', vol: .05, t: .01 });
+    this.noise(.32, { type: 'highpass', freq: 1800, vol: .32, attack: .002 });
+    this.noise(.22, { type: 'bandpass', freq: 600, q: .8, vol: .18, attack: .002 });
+    for (let i = 0; i < 7; i++) this.noise(.012, { type: 'highpass', freq: 4000, vol: .3 + Math.random() * .3, t: .02 + Math.random() * .28, attack: .001 });
+  },
+  staticBurst() { this.noise(.8, { type: 'highpass', freq: 1500, vol: .14 }); },
+  steps(n = 4, gap = .45, vol = .25) { const bus = 'ai'; for (let i = 0; i < n; i++) { this.noise(.09, { freq: 500, vol: vol * (.7 + Math.random() * .3), t: i * gap, bus }); this.tone(80, .08, { vol: vol * .6, t: i * gap, to: 50, bus }); } },
+  run(sec) { const bus = 'ai', n = Math.floor(sec / .16); for (let i = 0; i < n; i++) { const v = .06 + .45 * (i / n); this.noise(.07, { freq: 650, vol: v, t: i * .16, bus }); this.tone(95, .06, { vol: v * .5, t: i * .16, to: 55, bus }); } },
+  knock() { const bus = 'ai'; for (let i = 0; i < 3; i++) { this.noise(.12, { freq: 400, vol: .5, t: i * .22, bus }); this.tone(70, .12, { vol: .5, t: i * .22, to: 45, bus }); } },
+  bang() { const bus = 'ai'; for (let i = 0; i < 6; i++) { this.noise(.15, { freq: 900, vol: .8, t: i * .13, bus }); this.tone(110, .15, { type: 'square', vol: .15, t: i * .13, to: 60, bus }); } },
+  stinger() { // soi đèn thấy quái: cú "đánh" trầm + hợp âm nghịch + tiếng rít
+    const bus = 'scare';
+    this.tone(70, 1.2, { vol: .7, to: 32, bus }); this.noise(.5, { freq: 300, vol: .5, bus });
+    [233, 247, 349, 370, 466].forEach(f => this.tone(f, 1.6, { type: 'sawtooth', vol: .07, to: f * .94, bus }));
+    this.noise(1.2, { type: 'bandpass', freq: 3200, q: 4, vol: .22, attack: .08, bus });
+    this.tone(2400, 1.0, { type: 'sine', vol: .05, to: 2700, attack: .2, bus });
+  },
+
+  powerDown() { this.tone(420, 1.8, { type: 'sawtooth', vol: .15, to: 30 }); this.noise(.25, { freq: 3000, vol: .4 }); },
+  scream(who = 'freddy') { // tiếng hét jumpscare riêng cho từng người
+    const c = this.ctx; if (!c) return;
+    const P = {
+      bonny:  { f: [62, 93, 124, 186, 248], up: 1.15, down: .7, lfo: 18, dep: .06, nf: 380, nq: .8, nv: .7, drive: 14, sub: 38, vol: .95, len: 1.7 },              // Long: to, trầm
+      freddy: { f: [740, 990, 1320, 1760, 2350], up: 1.35, down: .92, lfo: 34, dep: .09, nf: 4200, nq: 1.2, nv: .5, drive: 7, sub: 0, vol: .9, len: 1.6 },        // Phát: to, nốt cao
+      chica:  { f: [82, 110, 165, 220, 330], up: 1.08, down: .78, lfo: 7, dep: .12, nf: 520, nq: 1.4, nv: .6, drive: 18, sub: 46, vol: .95, len: 1.7, trem: 11 }, // Phúc: to, trầm, gầm rung
+      foxy:   { f: [560, 760, 1020, 1380, 1860, 2500], up: 1.6, down: .85, lfo: 46, dep: .12, nf: 2600, nq: .6, nv: .9, drive: 10, sub: 0, vol: 1, len: 1.8 },   // Sỹ: hét toáng lên
+    }[who] || {};
+    const ws = c.createWaveShaper(), k = new Float32Array(2048);
+    for (let i = 0; i < 2048; i++) { const x = i / 1024 - 1; k[i] = Math.tanh(x * P.drive); } ws.curve = k;
+    const g = c.createGain(), t0 = c.currentTime, L = P.len;
+    g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(P.vol, t0 + .02); g.gain.setValueAtTime(P.vol, t0 + L - .45); g.gain.exponentialRampToValueAtTime(.0001, t0 + L);
+    ws.connect(g); g.connect(this.bus.scare);
+    if (P.trem) { const tr = c.createOscillator(), tg = c.createGain(); tr.frequency.value = P.trem; tg.gain.value = .35; tr.connect(tg); tg.connect(g.gain); tr.start(t0); tr.stop(t0 + L); }
+    const lfo = c.createOscillator(); lfo.frequency.value = P.lfo; lfo.start(t0); lfo.stop(t0 + L + .05);
+    P.f.forEach((f, i) => {
+      const o = c.createOscillator(); o.type = i % 2 ? 'square' : 'sawtooth'; o.detune.value = (Math.random() - .5) * 30;
+      o.frequency.setValueAtTime(f * .9, t0); o.frequency.exponentialRampToValueAtTime(f * P.up, t0 + .18); o.frequency.exponentialRampToValueAtTime(f * P.down, t0 + L);
+      const lg = c.createGain(); lg.gain.value = f * P.dep; lfo.connect(lg); lg.connect(o.frequency);
+      const og = c.createGain(); og.gain.value = 1 / P.f.length * 1.6; o.connect(og); og.connect(ws); o.start(t0); o.stop(t0 + L + .05);
+    });
+    const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true; const nf = c.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = P.nf; nf.Q.value = P.nq;
+    const ng = c.createGain(); ng.gain.value = P.nv; s.connect(nf); nf.connect(ng); ng.connect(ws); s.start(t0); s.stop(t0 + L);
+    if (P.sub) { // cú dội trầm
+      const o = c.createOscillator(), sg = c.createGain(); o.frequency.setValueAtTime(P.sub * 2, t0); o.frequency.exponentialRampToValueAtTime(P.sub, t0 + .4);
+      sg.gain.setValueAtTime(.9, t0); sg.gain.exponentialRampToValueAtTime(.0001, t0 + L); o.connect(sg); sg.connect(this.bus.scare); o.start(t0); o.stop(t0 + L);
+    }
+    this.noise(.25, { type: 'highpass', freq: 1500, vol: .6, attack: .001, bus: 'scare' }); // cú "chát" mở đầu
+  },
+  musicBox() {
+    this.stopMusic(); if (!this.ctx) return;
+    const mel = [659, 587, 523, 494, 523, 587, 659, 0, 659, 698, 659, 587, 523, 0, 494, 523, 587, 523, 494, 440, 0, 0];
+    let i = 0;
+    this.music = setInterval(() => {
+      const f = mel[i++ % mel.length];
+      if (f) { this.tone(f, .5, { type: 'triangle', vol: .11, bus: 'music' }); this.tone(f * 2, .3, { vol: .03, bus: 'music' }); }
+    }, 290);
+  },
+  stopMusic() { if (this.music) clearInterval(this.music); this.music = null; },
+  victory() { // trống dồn → nổ lớn → kèn chiến thắng → chuông 6 giờ → reo hò
+    const bus = 'music', H0 = 1.6;
+    for (let i = 0; i < 26; i++) { const tt = H0 * (1 - Math.pow(1 - i / 26, 1.7)); this.noise(.06, { type: 'bandpass', freq: 260, q: 1, vol: .12 + .35 * i / 26, t: tt, bus }); this.tone(70, .06, { vol: .1 + .25 * i / 26, t: tt, to: 50, bus }); }
+    this.tone(58, 1.8, { vol: .95, to: 28, t: H0, bus }); this.noise(.5, { freq: 220, vol: .9, t: H0, attack: .002, bus });
+    this.noise(2.6, { type: 'highpass', freq: 4500, vol: .32, t: H0, attack: .003, bus });
+    [523, 659, 784, 1047].forEach((f, i) => { this.tone(f, .32, { type: 'sawtooth', vol: .13, t: H0 + .12 + i * .12, bus }); this.tone(f / 2, .32, { type: 'square', vol: .07, t: H0 + .12 + i * .12, bus }); });
+    [523, 659, 784, 1047, 1319].forEach(f => { this.tone(f, 2.4, { type: 'sawtooth', vol: .065, t: H0 + .62, attack: .02, bus }); this.tone(f * 1.003, 2.4, { type: 'square', vol: .03, t: H0 + .62, attack: .02, bus }); });
+    [262, 131].forEach(f => this.tone(f, 2.4, { type: 'triangle', vol: .12, t: H0 + .62, bus }));
+    for (let i = 0; i < 6; i++) { this.tone(1568, 1.6, { vol: .08, t: H0 + .9 + i * .45, bus }); this.tone(784, 1.9, { vol: .07, t: H0 + .9 + i * .45, bus }); }
+    this.noise(4, { type: 'bandpass', freq: 1100, q: .5, vol: .28, t: H0 + .1, attack: .5, bus });
+    for (let i = 0; i < 18; i++) { const f = 450 + Math.random() * 700; this.tone(f, .35, { type: 'triangle', vol: .035, t: H0 + .3 + Math.random() * 3, to: f * 1.25, bus }); }
+  },
+  pop() { const bus = 'music'; this.noise(.14, { freq: 1800, vol: .32, attack: .002, bus }); this.tone(110, .2, { vol: .3, to: 45, bus }); for (let i = 0; i < 9; i++) this.noise(.02, { type: 'highpass', freq: 5000, vol: .12, t: .15 + Math.random() * .7, attack: .001, bus }); },
+  chime() { const bus = 'music'; for (let i = 0; i < 6; i++) { this.tone(880, 1.6, { vol: .14, t: i * .55, bus }); this.tone(1320, 1.1, { vol: .05, t: i * .55, bus }); this.tone(440, 1.8, { vol: .06, t: i * .55, bus }); } this.noise(3.5, { type: 'bandpass', freq: 1400, vol: .05, t: 3.4, attack: .8, bus }); },
+  preview(k) {
+    if (k === 'master') { this.camSwitch(); this.slam(); }
+    else if (k === 'amb') { this.noise(2.2, { freq: 320, vol: .12, attack: .2, bus: 'amb' }); this.tone(50, 2.2, { vol: .04, attack: .2, bus: 'amb' }); }
+    else if (k === 'sfx') { this.slam(); this.tone(1500, .03, { type: 'square', vol: .05, t: .5 }); this.noise(.35, { type: 'bandpass', freq: 2500, q: .7, vol: .18, t: .5 }); }
+    else if (k === 'ai') { this.steps(4, .3, .3); }
+    else if (k === 'scare') { this.scream(['bonny', 'freddy', 'chica', 'foxy'][Math.floor(Math.random() * 4)]); }
+    else if (k === 'music') { [659, 587, 523, 494, 523, 587, 659].forEach((f, i) => { this.tone(f, .5, { type: 'triangle', vol: .11, t: i * .29, bus: 'music' }); }); }
+  },
+  stopAll() { this.stopAmb(); this.stopMusic(); this.menuAmb(false); this.radioOff(true); },
+};
+
+/* ============================ CORE SETUP ============================ */
+const HOUR = 45, NIGHT = HOUR * 6; // 45 giây thực = 1 giờ trong game → 4 phút 30 giây / đêm
+const Z = 1.35, PMAX_X = 960 * (Z - 1), PMAX_Y = 540 * (Z - 1); // phóng to phòng học để nhìn qua lại
+const W = 960, H = 540, FONT = "VT323,'Courier New',monospace";
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const $ = id => document.getElementById(id);
+function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return [c, g]; }
+function painter(g, s = 4) { return (x, y, w, h, c) => { g.fillStyle = c; g.fillRect(Math.round(x * s), Math.round(y * s), Math.round(w * s), Math.round(h * s)); }; }
+let seed = 1; const srand = n => { seed = n; }; const sr = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+const rand = (a, b) => a + Math.random() * (b - a);
+const roll20 = () => 1 + Math.floor(Math.random() * 20);
+function txt(g, s, x, y, size, color = '#ddd', align = 'left', shadow = true) {
+  g.font = `${size}px ${FONT}`; g.textAlign = align; g.textBaseline = 'top';
+  if (shadow) { g.fillStyle = 'rgba(0,0,0,.85)'; g.fillText(s, x + 2, y + 2); }
+  g.fillStyle = color; g.fillText(s, x, y);
+}
+
+const CH = {
+  freddy: { name: 'Nguyễn Bá Phát', alias: 'Freddy' },
+  bonny:  { name: 'Nguyễn Thành Long', alias: 'Bonny' },
+  foxy:   { name: 'Huỳnh Tấn Sỹ', alias: 'Foxy' },
+  chica:  { name: 'Minh Phúc', alias: 'Chica' },
+};
+const CAMS = {
+  '1A': 'SẢNH CHÍNH / HỘI TRƯỜNG VNUK',
+  '1B': 'KHU TỰ HỌC / THƯ VIỆN',
+  '2A': 'HÀNH LANG LỚP HỌC (CÁNH TRÁI)',
+  '3':  'PHÒNG LAB MÁY TÍNH',
+  '4A': 'CẦU THANG BỘ & HÀNH LANG (CÁNH PHẢI)',
+  '4B': 'GÓC HÀNH LANG NGOÀI CỬA SAU',
+  '5':  'CĂNG-TIN VNUK',
+};
+const CAM_KEYS = ['1A', '1B', '2A', '3', '4A', '4B', '5'];
+const ROUTES = {
+  freddy: ['1A', '1B', '4A', '4B', 'R'],
+  bonny:  ['1A', '1B', '2A', 'L'],
+  chica:  ['1A', '5', '4A', '4B', 'R'],
+};
+
+/* ============================ IMAGES ============================ */
+const IMG = {}, DARK = {}, SCENE = {};
+function darken(img, f, keepRed) {
+  const [c, g] = mk(img.width, img.height); g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height), a = d.data;
+  for (let i = 0; i < a.length; i += 4) {
+    const r = a[i], gg = a[i + 1], b = a[i + 2];
+    if (keepRed && r > 130 && r > gg * 1.7 && r > b * 1.5) { a[i] = Math.min(255, r * 1.4); continue; }
+    a[i] = r * f; a[i + 1] = gg * f; a[i + 2] = b * f;
+  }
+  g.putImageData(d, 0, 0); return c;
+}
+function softMask(img, scale) { // phóng to nguyên lần (pixel sắc nét) + viền mềm hình elip, không còn khung vuông
+  const w = img.width * scale, h = img.height * scale, [c, g] = mk(w, h);
+  g.drawImage(img, 0, 0, w, h);
+  g.globalCompositeOperation = 'destination-in';
+  g.save(); g.translate(w / 2, h / 2); g.scale(1, h / w);
+  const gr = g.createRadialGradient(0, 0, w * .28, 0, 0, w * .5);
+  gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(.7, 'rgba(0,0,0,.6)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(-w / 2, -w / 2, w, w); g.restore();
+  return c;
+}
+function feather(img, h) { // ảnh cảnh camera, viền mờ để hoà vào nền phòng
+  const s = h / img.height, w = Math.round(img.width * s);
+  const [c, g] = mk(w, h); g.drawImage(img, 0, 0, w, h);
+  g.globalCompositeOperation = 'destination-in';
+  const gr = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * .3, w / 2, h / 2, Math.max(w, h) * .56);
+  gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h); return c;
+}
+const ready = Promise.all(Object.keys(SPR).map(k => new Promise(res => {
+  const i = new Image(); i.onload = () => { IMG[k] = i; res(); }; i.onerror = res; i.src = SPR[k];
+}))).then(() => {
+  ['freddy_idle', 'freddy_stare', 'freddy_aggr'].forEach(k => DARK[k] = darken(IMG[k], .13, true));
+  DARK.freddy_door = darken(IMG.freddy_door, .3, false);
+  ['chica_cam', 'bonny_cam', 'freddy_cam', 'foxy_cam', 'foxy_peek'].forEach(k => SCENE[k] = feather(IMG[k], 470));
+  DARK.hung_panic = darken(IMG.hung_panic, .2, false);
+  SCENE.hung_door = feather(IMG.hung_door, 215); SCENE.hung_caught = softMask(IMG.hung_caught, 2);
+  ['freddy', 'bonny', 'chica'].forEach(n => DARK['sil_' + n] = darken(IMG[n + '_' + ({ freddy: 'stare', bonny: 'stare', chica: 'idle' })[n]], .04, false));
+  // khuôn mặt cận cảnh cho menu: cắt phần đầu từ sprite, làm tối, viền tan vào bóng đêm
+  const FACE_BOX = FACE_BOX_G = { freddy: [.25, 0, .5, .38], bonny: [.27, 0, .46, .36], chica: [.26, .02, .52, .42], foxy: [.3, 0, .5, .39] };
+  for (const n in FACE_BOX) {
+    const src = IMG[n + '_idle'], [fx, fy, fw, fh] = FACE_BOX[n], sw = Math.round(src.width * fw), sh = Math.round(src.height * fh);
+    const [c, g] = mk(sw, sh); g.drawImage(src, Math.round(src.width * fx), Math.round(src.height * fy), sw, sh, 0, 0, sw, sh);
+    SCENE['face_' + n] = softMask(c, 5); SCENE['faceD_' + n] = softMask(darken(c, .2, false), 5);
+    SCENE['jumpD_' + n] = softMask(darken(IMG[n + '_jump'], .5, false), 2);
+  }
+  ['chica', 'freddy'].forEach(n => SCENE['peek_' + n] = softMask(IMG[n + '_door'], 2));
+  SCENE.peek_bonny = softMask(darken(IMG.bonny_door, 1.7, false), 3); // ảnh gốc của Long tối & nhỏ hơn → làm sáng, x3
+  SCENE.peek_freddy_dark = softMask(DARK.freddy_door, 2);
+});
+
+/* ============================ PRE-RENDER: PHÒNG HỌC VNUK ============================ */
+let OFFICE = null; const ROOM = {};
+function buildOffice() { OFFICE = IMG.map_office; } // ảnh phòng học VNUK (map gốc)
+
+/* ============================ PRE-RENDER: CAMERA ROOMS (240x135 x4) ============================ */
+function corridor(R, o) {
+  const vx = o.vx, bx0 = vx - o.bw, bx1 = vx + o.bw, by0 = o.by0, by1 = o.by1;
+  const bands = [];
+  for (let k = 1; k <= 9; k++) bands.push(Math.round(by1 + (135 - by1) * Math.pow(k / 9, 1.7)));
+  for (let x = 0; x < 240; x++) {
+    let top, bot, wall;
+    if (x < bx0) { const t = x / bx0; top = Math.round(by0 * t); bot = Math.round(135 - (135 - by1) * t); wall = o.wall; }
+    else if (x >= bx1) { const t = (239 - x) / (239 - bx1); top = Math.round(by0 * t); bot = Math.round(135 - (135 - by1) * t); wall = o.wall2 || o.wall; }
+    else { top = by0; bot = by1; wall = o.back; }
+    R(x, 0, 1, top, o.ceil); R(x, top, 1, bot - top, wall); R(x, bot, 1, 135 - bot, o.floor);
+    for (const b of bands) if (b > bot) R(x, b, 1, 1, o.grout);
+    if (x % 2 === 0) R(x, bot, 1, 1, '#0d0f10');
+  }
+  for (let j = -5; j <= 5; j++) for (let y = by1; y < 135; y += 1) {
+    const t = (y - by1) / (135 - by1); const x = vx + j * (o.bw / 3) + j * 30 * t;
+    if (x >= 0 && x < 240) R(Math.round(x), y, 1, 1, o.grout);
+  }
+  for (const t of [.25, .55, .9]) { // đèn trần
+    const y = Math.round(by0 * (1 - t) * .9 + 2), w = Math.round(o.bw * 0.6 + 40 * t);
+    R(vx - w / 2, y, w, Math.max(1, Math.round(3 * t)), o.lamp);
+  }
+  // sidewall helper
+  return (side, x0, x1, f0, f1, col) => {
+    for (let x = x0; x < x1; x++) {
+      let top, bot;
+      if (side === 'L') { const t = x / bx0; top = by0 * t; bot = 135 - (135 - by1) * t; }
+      else { const t = (239 - x) / (239 - bx1); top = by0 * t; bot = 135 - (135 - by1) * t; }
+      const h = bot - top; R(x, top + h * f0, 1, h * (f1 - f0), col);
+    }
+  };
+}
+function buildRooms() {
+  let c, g, R;
+  // CAM 1A — Sảnh / Hội trường
+  [c, g] = mk(960, 540); R = painter(g); srand(3);
+  R(0, 0, 240, 135, '#151219'); R(0, 0, 240, 8, '#0c0a0e');
+  R(14, 8, 26, 84, '#3b0c12'); R(200, 8, 26, 84, '#3b0c12');
+  for (let i = 0; i < 6; i++) { R(16 + i * 4, 8, 1, 84, '#2a080c'); R(202 + i * 4, 8, 1, 84, '#2a080c'); }
+  R(40, 10, 160, 62, '#1b1820'); R(58, 14, 124, 14, '#0f2d63'); R(58, 27, 124, 2, '#a51d24');
+  R(30, 72, 180, 6, '#4a3020'); R(30, 72, 180, 1, '#6a4a30'); R(30, 78, 180, 14, '#2b1a10');
+  for (let i = 0; i < 9; i++) R(36 + i * 20, 80, 10, 1, '#3a2416');
+  R(110, 56, 20, 16, '#3a2a1c'); R(110, 56, 20, 2, '#5a4430'); R(118, 50, 2, 6, '#555');
+  R(0, 92, 240, 43, '#1a1818');
+  for (let row = 0; row < 3; row++) for (let i = 0; i < 9; i++) {
+    const x = 8 + i * 26 + (row % 2) * 6, y = 100 + row * 12;
+    R(x, y, 18, 6, '#5a1a1a'); R(x, y, 18, 1, '#7a2626'); R(x + 1, y + 6, 1, 4, '#2b3033'); R(x + 16, y + 6, 1, 4, '#2b3033');
+  }
+  txt(g, 'CHÀO MỪNG TÂN SINH VIÊN VNUK', 480, 66, 22, '#c9d4ee', 'center', false);
+  ROOM['1A'] = c;
+  // CAM 1B — Thư viện / tự học
+  [c, g] = mk(960, 540); R = painter(g); srand(5);
+  R(0, 0, 240, 135, '#161c1b'); R(0, 0, 240, 6, '#0b0e0e');
+  R(78, 12, 84, 42, '#25303a'); R(80, 14, 80, 38, '#1b2a3e');
+  for (let i = 0; i < 80; i += 3) R(80 + i, 14, 2, 38, (i / 3) % 2 ? '#3b4246' : '#333a3e');
+  for (const x0 of [0, 172]) {
+    R(x0, 8, 68, 92, '#2a1c12');
+    for (let s = 0; s < 6; s++) {
+      const y = 12 + s * 14; R(x0 + 2, y + 11, 64, 2, '#3a2818');
+      for (let x = x0 + 3; x < x0 + 65;) { const w = 2 + Math.floor(sr() * 3), h = 7 + Math.floor(sr() * 4); R(x, y + 11 - h, w, h, ['#3a1e1e', '#1e2a3a', '#2a3a22', '#3a341e', '#2a2a2e'][Math.floor(sr() * 5)]); x += w + (sr() < .15 ? 2 : 0); }
+    }
+  }
+  R(0, 100, 240, 35, '#1c2024');
+  for (let y = 100; y < 135; y += 5) R(0, y, 240, 1, '#191c20');
+  R(60, 86, 120, 4, '#5a4028'); R(60, 90, 120, 4, '#3a2818'); R(64, 94, 3, 14, '#2b3033'); R(173, 94, 3, 14, '#2b3033');
+  for (const x of [70, 96, 122, 148]) { R(x, 80, 12, 6, '#2d3a4a'); R(x, 96, 12, 2, '#2d3a4a'); }
+  R(186, 104, 48, 16, '#3a2030'); R(186, 98, 48, 8, '#4a2a3c');
+  txt(g, 'THƯ VIỆN · LIBRARY & LOUNGE', 480, 228, 18, '#4a5a64', 'center', false);
+  ROOM['1B'] = c;
+  // CAM 2A — Hành lang trái
+  [c, g] = mk(960, 540); R = painter(g); srand(8);
+  let side = corridor(R, { vx: 132, bw: 26, by0: 30, by1: 82, ceil: '#0f1213', wall: '#232a2b', wall2: '#1e2425', back: '#151a1b', floor: '#2a2826', grout: '#1d1c1a', lamp: '#3b4548' });
+  side('L', 18, 34, .2, 1, '#2c1e14'); side('L', 60, 70, .22, 1, '#2c1e14'); side('L', 84, 92, .25, 1, '#2c1e14');
+  side('L', 40, 52, .3, .55, '#3a4a3a');
+  side('R', 200, 228, .35, .7, '#192026'); side('R', 160, 172, .22, 1, '#2c1e14');
+  R(122, 52, 20, 30, '#0a0b0b'); R(126, 46, 12, 4, '#0f5a22');
+  txt(g, 'EXIT', 528, 182, 14, '#7fe08a', 'center', false);
+  txt(g, 'A2-04', 104, 140, 16, '#6a7276', 'left', false);
+  ROOM['2A'] = c;
+  // CAM 3 — Lab máy tính
+  [c, g] = mk(960, 540); R = painter(g); srand(13);
+  R(0, 0, 240, 135, '#14181d'); R(0, 0, 240, 6, '#0a0c0e'); R(0, 94, 240, 41, '#1a1d22');
+  for (let y = 94; y < 135; y += 6) R(0, y, 240, 1, '#15181c');
+  R(0, 70, 165, 6, '#3a3f44'); R(0, 70, 165, 1, '#50565c');
+  for (let x = 6; x < 160; x += 26) { R(x, 52, 18, 13, '#0b0d0e'); R(x + 1, 53, 16, 10, sr() < .3 ? '#123a6a' : '#0e2a1c'); R(x + 8, 65, 2, 5, '#222'); }
+  R(0, 104, 165, 8, '#3a3f44'); R(0, 104, 165, 1, '#565c62');
+  for (let x = 4; x < 160; x += 40) { R(x, 78, 28, 20, '#0b0d0e'); R(x + 2, 80, 24, 15, sr() < .4 ? '#16416e' : '#0e2a1c'); R(x + 12, 98, 4, 6, '#222'); }
+  R(168, 8, 66, 98, '#0d0b0c'); R(166, 6, 70, 3, '#2b2f32');
+  txt(g, 'LAB 3 — ĐANG BẢO TRÌ', 800, 422, 16, '#8a2a2a', 'center', false);
+  txt(g, 'VNUK', 74, 214, 12, '#6a9ad0', 'left', false);
+  ROOM['3'] = c;
+  // CAM 4A — Cầu thang
+  [c, g] = mk(960, 540); R = painter(g); srand(17);
+  R(0, 0, 240, 135, '#1b2022'); R(0, 0, 240, 6, '#0d1011');
+  R(0, 14, 46, 121, '#0b0d0e'); R(46, 14, 3, 121, '#2a3033');
+  R(176, 12, 48, 34, '#26313a'); R(178, 14, 44, 30, '#1c2c40');
+  for (let i = 0; i < 44; i += 3) R(178 + i, 14, 2, 30, '#3b4246');
+  for (let i = 0; i < 11; i++) { const x = 60 + i * 13, y = 122 - i * 8; R(x, y, 240 - x, 8, i % 2 ? '#34312e' : '#2c2a27'); R(x, y, 240 - x, 1, '#4a4642'); }
+  for (let i = 0; i < 11; i++) { const x = 66 + i * 13, y = 100 - i * 8; R(x, y, 1, 20, '#55595c'); }
+  for (let i = 0; i < 140; i++) R(66 + i, Math.round(100 - i * 8 / 13), 2, 1, '#6a6e72');
+  R(0, 122, 240, 13, '#252321');
+  txt(g, 'TẦNG 2 ↑', 920, 60, 16, '#6a7276', 'right', false);
+  ROOM['4A'] = c;
+  // CAM 4B — Góc hành lang ngoài cửa sau
+  [c, g] = mk(960, 540); R = painter(g); srand(21);
+  side = corridor(R, { vx: 92, bw: 22, by0: 32, by1: 80, ceil: '#0e1112', wall: '#1f2526', wall2: '#252c2d', back: '#121617', floor: '#2a2826', grout: '#1d1c1a', lamp: '#384245' });
+  side('L', 20, 46, .3, .65, '#4a3a22'); side('R', 176, 214, .1, 1, '#2c1e14'); side('R', 178, 212, .12, 1, '#3a2818');
+  side('R', 128, 136, .55, .8, '#8a1414');
+  R(84, 54, 14, 26, '#08090a');
+  txt(g, 'THÔNG BÁO', 132, 168, 14, '#c0a060', 'center', false);
+  txt(g, 'PHÒNG HỌC A2-05 →', 920, 120, 16, '#9aa4a8', 'right', false);
+  ROOM['4B'] = c;
+  // CAM 5 — Căng-tin
+  [c, g] = mk(960, 540); R = painter(g); srand(29);
+  R(0, 0, 240, 135, '#211c17'); R(0, 0, 240, 6, '#0f0c0a');
+  R(56, 12, 128, 26, '#0e130e'); R(56, 12, 128, 1, '#3a3a30');
+  R(24, 50, 168, 32, '#3b3026'); R(24, 50, 168, 3, '#5a4a3a'); for (let x = 30; x < 190; x += 18) R(x, 56, 1, 26, '#2c241c');
+  R(198, 20, 34, 64, '#1d2a2e'); R(200, 22, 30, 60, '#1b3a44'); for (let y = 30; y < 80; y += 12) R(200, y, 30, 1, '#2a5866');
+  R(0, 84, 240, 51, '#262220'); for (let y = 84; y < 135; y += 6) for (let x = 0; x < 240; x += 12) R(x, y, 12, 1, '#1d1a18');
+  for (const [x, w] of [[14, 70], [140, 80]]) { R(x, 96, w, 4, '#5a4a3a'); R(x, 100, w, 2, '#3a2e24'); R(x + 4, 102, 2, 18, '#2b3033'); R(x + w - 6, 102, 2, 18, '#2b3033'); for (let i = 0; i < 3; i++) R(x + 6 + i * (w / 3), 110, 10, 3, '#8a3a1a'); }
+  txt(g, 'CĂNG-TIN VNUK', 480, 54, 26, '#e0c070', 'center', false);
+  txt(g, 'Cơm gà 30k · Bánh mì 15k · Trà đá 5k', 480, 92, 16, '#a09060', 'center', false);
+  ROOM['5'] = c;
+}
+
+/* ============================ NOISE / SCANLINES ============================ */
+const [NOISE, ng] = mk(240, 135); const nimg = ng.createImageData(240, 135);
+function updNoise() { const d = nimg.data; for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } ng.putImageData(nimg, 0, 0); }
+const [SCAN, sg] = mk(960, 540); sg.fillStyle = 'rgba(0,0,0,.22)'; for (let y = 0; y < 540; y += 3) sg.fillRect(0, y, 960, 1);
+const VIG = (() => { const [c, g] = mk(960, 540); const gr = g.createRadialGradient(480, 270, 180, 480, 270, 560); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.85)'); g.fillStyle = gr; g.fillRect(0, 0, 960, 540); return c; })();
+
+/* ============================ GAME STATE ============================ */
+const G = {
+  state: 'LOADING', night: 1, custom: false, ai: { freddy: 0, bonny: 0, foxy: 0, chica: 0 }, mult: 1, speed: 1, info: false,
+  t: 0, mx: -1, my: -1, keys: {},
+};
+function resetRun() {
+  Object.assign(G, {
+    time: 0, power: 100, call: null, ambT: null, outT: null, out: 0, hbT: 0, fake: null, flashes: [], doorL: false, doorR: false, lightL: false, lightR: false, cam: false, curCam: '1A', panX: PMAX_X / 2, panY: 160, tgtX: PMAX_X / 2, tgtY: 160,
+    dAL: 0, dAR: 0, poseT: 0, moveAcc: 0, staticT: 0, shake: 0, bo: null, js: null, winT: 0, playT: 0, flick: 0,
+    c: { freddy: { pos: 0, doorT: 0, seen: false, leaveT: null }, bonny: { pos: 0, doorT: 0, seen: false, leaveT: null }, chica: { pos: 0, doorT: 0, seen: false, leaveT: null } },
+    foxy: { stage: 0, runT: 0, lastSeen: 0, hits: 0 },
+  });
+}
+resetRun();
+const loc = n => ROUTES[n][G.c[n].pos];
+const charsIn = id => Object.keys(G.c).filter(n => loc(n) === id);
+const atDoor = side => Object.keys(G.c).find(n => loc(n) === side);
+const usage = () => 1 + (G.doorL ? 1 : 0) + (G.doorR ? 1 : 0) + ((G.lightL || G.lightR) ? 1 : 0) + (G.cam ? 1 : 0);
+const playing = () => G.state === 'PLAYING';
+
+/* ============================ AI LOGIC ============================ */
+function attackDelay() { return rand(4, 5); } // thời gian phản xạ: 4–5 giây để đóng cửa
+function viewing(id) { return G.cam && G.curCam === id; }
+function moveChar(n, np) {
+  const from = loc(n); G.c[n].pos = np; const to = loc(n);
+  if (viewing(from) || viewing(to)) { G.staticT = 1.1; A.staticBurst(); }
+  if (to === '2A' || to === '4B') A.steps(4, .42, .18);
+  if (to === 'L' || to === 'R') { A.steps(3, .5, .32); G.c[n].doorT = attackDelay(n); G.c[n].seen = false; G.c[n].leaveT = null; }
+}
+function aiTick() {
+  const easy = G.night === 1 && !G.custom;
+  if (easy && G.time < HOUR * 1.5) return; // Đêm 1: 1 tiếng rưỡi đầu yên tĩnh để làm quen
+  for (const n of ['freddy', 'bonny', 'chica']) {
+    const c = G.c[n], route = ROUTES[n], ai = G.ai[n];
+    if (ai <= 0 || c.pos === route.length - 1) continue;
+    if (n === 'freddy' && viewing(loc(n))) continue; // Phát đứng im khi bị soi
+    if (roll20() > ai) continue;
+    let np = c.pos + 1;
+    if (n === 'chica' && c.pos > 0 && Math.random() < .25) np = c.pos - 1; // Phúc lang thang
+    if (np === route.length - 1 && atDoor(route[np])) continue; // cửa đã có người
+    if (easy && np === route.length - 1 && (atDoor('L') || atDoor('R'))) continue; // Đêm 1: mỗi lúc chỉ 1 con tới cửa
+    moveChar(n, np);
+  }
+  const f = G.foxy;
+  if (G.ai.foxy > 0 && f.stage < 3 && !viewing('3') && G.time - f.lastSeen > 2 && roll20() <= G.ai.foxy) {
+    f.stage++;
+    if (f.stage === 3) { f.runT = 3; A.run(3); if (viewing('2A')) G.staticT = .5; }
+  }
+}
+function doorLogic(sdt) {
+  for (const n of Object.keys(G.c)) {
+    const side = loc(n); if (side !== 'L' && side !== 'R') continue;
+    const c = G.c[n], closed = side === 'L' ? G.doorL : G.doorR;
+    if (closed) { // cửa đã đóng: quái đứng đập/rình 3–4 giây rồi rút về
+      if (c.leaveT == null) c.leaveT = rand(3, 4);
+      c.leaveT -= sdt;
+      if (c.leaveT <= 0) { A.knock(); c.pos = 1; c.seen = false; c.leaveT = null; }
+    } else {
+      c.leaveT = null; c.doorT -= sdt;
+      if (c.doorT <= 0) return jumpscare(n);
+    }
+  }
+  const f = G.foxy;
+  if (f.stage === 3) {
+    f.runT -= sdt;
+    if (f.runT <= 0) {
+      if (G.doorL) { A.bang(); G.power = Math.max(0, G.power - (2 + f.hits * 3)); f.hits++; f.stage = Math.random() < .5 ? 0 : 1; f.lastSeen = G.time; }
+      else return jumpscare('foxy');
+    }
+  }
+}
+
+/* ============================ STATE TRANSITIONS ============================ */
+function ui(id) { ['menu', 'custom', 'help', 'end', 'settings'].forEach(k => $(k).classList.toggle('on', k === id)); }
+async function refreshMenu() {
+  const r = await ApiService.getProgress(); const p = r.data;
+  const b = $('bCont');
+  if (p.current_night > 1) { b.disabled = false; b.textContent = `Tiếp tục (Đêm ${p.current_night})`; b.dataset.n = p.current_night; }
+  else { b.disabled = true; b.textContent = 'Tiếp tục'; }
+  $('mStars').textContent = '★'.repeat(p.stars_unlocked);
+  const bc = $('bCustom'); bc.disabled = p.stars_unlocked < 1; bc.textContent = p.stars_unlocked < 1 ? 'Custom Night 🔒 (phá đảo 5 đêm để mở)' : 'Custom Night ★';
+  $('mPlayer').textContent = `Người trực: ${p.player.username} · Kỷ lục sống sót: ${Math.floor(p.best_survival_seconds / 60)}p${String(p.best_survival_seconds % 60).padStart(2, '0')}s`;
+}
+function toMenu() { G.paused = false; G.call = null; A.stopAll(); G.state = 'MENU'; G.js = null; ui('menu'); refreshMenu(); A.menuAmb(true); }
+async function startNight(n, cfg) {
+  A.init();
+  let c = cfg;
+  if (!c) { const r = await ApiService.getNightConfig(n); c = r.data; }
+  G.night = n; G.custom = !!cfg;
+  G.ai = { freddy: c.freddy_ai, bonny: c.bonny_ai, foxy: c.foxy_ai, chica: c.chica_ai };
+  G.mult = c.power_drain_multiplier; G.cfg = c;
+  resetRun(); G.power = c.start_power ?? 100; G.wantCall = !cfg && !!CALLS[n]; G.state = 'INTRO'; G.introT = 3.2; ui(null);
+}
+function blackout() {
+  G.state = 'BLACKOUT'; G.cam = false; G.lightL = G.lightR = false; G.doorL = G.doorR = false;
+  A.stopAmb(); A.powerDown(); A.slam();
+  G.bo = { t: 0, appear: rand(2, 3.5), jump: rand(5, 10), music: false };
+}
+function jumpscare(n, preview = false) {
+  if (!preview) { G.call = null; A.radioOff(true); }
+  G.js = { n, t: 0, preview, ret: G.state };
+  G.state = 'JUMPSCARE'; G.shake = 1;
+  A.stopMusic(); if (!preview) A.stopAmb(); A.lightOff(); A.camHum(false); A.scream(n);
+  ui(null);
+}
+function endJumpscare() {
+  const js = G.js;
+  if (js.preview) {
+    G.state = js.ret; G.js = null;
+    if (G.state === 'MENU') ui('menu');
+    else if (G.state === 'GAMEOVER' || G.state === 'WIN') ui('end');
+    else if (G.state === 'BLACKOUT' && G.bo && G.bo.music) A.musicBox();
+    return;
+  }
+  G.state = 'GAMEOVER'; G.killer = js.n; G.goT = 0;
+  ApiService.saveProgress({ night_completed: null, power_remaining: G.power, survival_seconds: G.time });
+  showEnd([['↻ Thử lại', () => G.custom ? startNight(G.night, G.cfg) : startNight(G.night)], ['← Menu', toMenu]]);
+}
+async function win() {
+  G.state = 'WIN'; G.winT = 0; G.fx = []; G.fwT = 0; G.winBoom = false; A.stopAll(); A.victory();
+  ui(null);
+  let next = null;
+  if (!G.custom) {
+    const r = await ApiService.saveProgress({ night_completed: G.night, power_remaining: G.power });
+    if (G.night < 5) next = G.night + 1;
+    G.winNote = G.night >= 5 ? '★ HOÀN THÀNH 5 ĐÊM TRỰC — mở khoá ngôi sao!' : `Đã mở khoá Đêm ${r.data.current_night}`;
+  } else G.winNote = 'Custom Night hoàn thành';
+  const finale = !G.custom && G.night >= 5;
+  setTimeout(() => {
+    if (G.state !== 'WIN') return;
+    if (finale) return startEnding(); // phá đảo đêm 5 → xem kết thúc
+    const btns = [];
+    if (next) btns.push([`▶ Đêm ${next}`, () => startNight(next)]);
+    btns.push(['← Menu', toMenu]);
+    showEnd(btns);
+  }, 4300);
+}
+function showEnd(btns) {
+  const row = $('endRow'); row.innerHTML = '';
+  btns.forEach(([l, f]) => { const b = document.createElement('button'); b.className = 'sbtn'; b.textContent = l; b.style.fontSize = '1.7em'; b.onclick = () => { A.click(); f(); }; row.appendChild(b); });
+  ui('end');
+}
+
+/* ============================ PAUSE / SETTINGS ============================ */
+function openSettings(inGame) {
+  A.init();
+  if (inGame) { G.paused = true; A.stopAmb(); A.stopMusic(); A.radioOff(true); }
+  $('sBack').style.display = inGame ? 'none' : '';
+  $('sMenu').style.display = $('sResume').style.display = inGame ? '' : 'none';
+  ui('settings');
+}
+function resumeGame() {
+  G.paused = false; ui(null);
+  if (G.call) { A.radioOn(); setTimeout(() => sayLine(), 300); }
+  if (G.state === 'PLAYING') { A.startAmb(); if (G.lightL || G.lightR) A.setLight(true); if (G.cam) A.camHum(true); }
+  else if (G.state === 'BLACKOUT' && G.bo && G.bo.music) A.musicBox();
+}
+
+/* ============================ PLAYER ACTIONS ============================ */
+function toggleDoor(s) {
+  if (!playing() || G.cam) return;
+  if (s === 'L') G.doorL = !G.doorL; else G.doorR = !G.doorR;
+  A.slam(); G.poseT = 1; if (s === 'L' ? G.doorL : G.doorR) G.shake = .3;
+}
+function toggleLight(s) {
+  if (!playing() || G.cam) return;
+  if (s === 'L') { G.lightL = !G.lightL; G.lightR = false; } else { G.lightR = !G.lightR; G.lightL = false; }
+  A.setLight(G.lightL || G.lightR); G.poseT = .8;
+  const on = s === 'L' ? G.lightL : G.lightR, who = atDoor(s);
+  if (on && who && !G.c[who].seen) { G.c[who].seen = true; A.stinger(); }
+  if (on) { // đếm số lần nháy đèn: nháy quá nhiều (≥4 lần trong 6 giây) thì bóng đen hiện ra dọa
+    G.flashes = (G.flashes || []).filter(t => G.t - t < 6); G.flashes.push(G.t);
+    if (!who && G.flashes.length >= 4) { G.flashes = []; G.fake = { side: s, until: G.t + rand(.7, 1.2), n: ['freddy', 'bonny', 'chica'][Math.floor(Math.random() * 3)] }; A.whisper(); }
+  }
+}
+function toggleCam() {
+  if (!playing()) return;
+  G.cam = !G.cam;
+  if (G.cam) { const had = G.lightL || G.lightR; G.lightL = G.lightR = false; if (had) A.lightOff(); A.camOpen(); G.staticT = .45; }
+  else A.camClose();
+}
+function selectCam(id) { if (!G.cam || G.curCam === id) return; G.curCam = id; G.staticT = .45; A.camSwitch(); }
+
+/* ============================ UPDATE ============================ */
+function update(dt) {
+  G.t += dt;
+  if (G.paused) return; G.shake = Math.max(0, G.shake - dt * .7); G.staticT = Math.max(0, G.staticT - dt);
+  if (G.state === 'STORY') { updateStory(dt); return; }
+  if (G.state === 'ENDING') { updateEnding(dt); return; }
+  if (G.state === 'INTRO') { G.introT -= dt; if (G.introT <= 0) { G.state = 'PLAYING'; A.startAmb(); if (G.wantCall) { G.wantCall = false; startCall(); } } return; }
+  if (G.state === 'PLAYING' || G.state === 'BLACKOUT') {
+    const sdt = dt * G.speed;
+    if (!G.call) G.time += sdt; G.playT += dt; G.poseT = Math.max(0, G.poseT - dt);
+    G.dAL += ((G.doorL ? 1 : 0) - G.dAL) * Math.min(1, dt * 14);
+    G.dAR += ((G.doorR ? 1 : 0) - G.dAR) * Math.min(1, dt * 14);
+    if (!G.cam) { // góc nhìn đi theo chuột (mượt), phím ←/→ cũng được
+      if (G.mx >= 0) { G.tgtX = Math.min(1, Math.max(0, (G.mx - 70) / 820)) * PMAX_X; G.tgtY = 140 + Math.min(1, Math.max(0, G.my / 540)) * 49; }
+      if (G.keys.ArrowLeft) G.tgtX -= 520 * dt; if (G.keys.ArrowRight) G.tgtX += 520 * dt;
+      G.tgtX = Math.max(0, Math.min(PMAX_X, G.tgtX));
+      const k = Math.min(1, dt * 5); G.panX += (G.tgtX - G.panX) * k; G.panY += (G.tgtY - G.panY) * k;
+    }
+    if (G.time >= NIGHT) return win();
+    if (G.state === 'PLAYING' && G.call) updateCall(dt); // đang nghe bộ đàm: giờ, pin, quái đều đứng yên
+    else if (G.state === 'PLAYING') {
+      G.power -= (0.15 + 0.25 * (usage() - 1)) * G.mult * sdt; // 1 vạch: 0.15%/s, mỗi thứ bật thêm: +0.25%/s
+      if (G.power <= 0) { G.power = 0; return blackout(); }
+      G.moveAcc += sdt; while (G.moveAcc >= 5) { G.moveAcc -= 5; aiTick(); }
+      if (viewing('3')) G.foxy.lastSeen = G.time;
+      doorLogic(sdt);
+      G.flick = Math.random() < .015 ? .12 : Math.max(0, G.flick - dt);
+      G.ambT = (G.ambT ?? rand(8, 16)) - dt; if (G.ambT <= 0) { G.ambT = rand(12, 30); A.ambientEvent(); }
+      G.outT = (G.outT ?? rand(15, 30)) - dt; if (G.outT <= 0) { G.outT = rand(18, 40); G.out = rand(.15, .45); A.lightFlick(); A.noise(.05, { type: 'highpass', freq: 3000, vol: .2 }); } // đèn trần tắt phụt
+      G.out = Math.max(0, (G.out || 0) - dt);
+      if (hungPose() === 'panic') { G.hbT = (G.hbT || 0) - dt; if (G.hbT <= 0) { G.hbT = .72; A.heartbeat(); } }
+    } else {
+      const b = G.bo; b.t += dt;
+      if (b.t >= b.appear && !b.music) { b.music = true; A.musicBox(); }
+      if (b.t >= b.jump) jumpscare('freddy');
+    }
+  }
+  if (G.state === 'JUMPSCARE') { G.js.t += dt; if (G.js.t > 1.9) endJumpscare(); }
+  if (G.state === 'WIN') { G.winT += dt; updateWinFx(dt); }
+  if (G.state === 'GAMEOVER') G.goT += dt;
+}
+
+/* ============================ RENDER ============================ */
+// Ô cửa đo đúng theo phối cảnh của ảnh phòng học (hình thang, không phải hình chữ nhật)
+const DOOR_POLY = { L: [[62, 132], [150, 155], [150, 466], [62, 514]], R: [[842, 157], [922, 132], [922, 514], [842, 471]] };
+const TRANSOM_POLY = { L: [[63, 44], [150, 82], [150, 152], [63, 129]], R: [[835, 82], [921, 44], [921, 129], [835, 153]] };
+const DOOR = {}; for (const k in DOOR_POLY) { const p = DOOR_POLY[k], xs = p.map(q => q[0]), ys = p.map(q => q[1]); DOOR[k] = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) }; }
+const DOOR_IMG = { L: [56, 116, 110, 394], R: [826, 118, 110, 394] };   // vùng cánh cửa sắt trong ảnh cửa đóng của bạn
+function polyPath(p, grow = 0) {
+  const cx = p.reduce((a, q) => a + q[0], 0) / p.length, cy = p.reduce((a, q) => a + q[1], 0) / p.length;
+  ctx.beginPath(); p.forEach((q, i) => { const dx = q[0] - cx, dy = q[1] - cy, l = Math.hypot(dx, dy) || 1, x = q[0] + dx / l * grow, y = q[1] + dy / l * grow; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath();
+}
+function drawDoorClosed(side, dA) { // cánh cửa sắt trượt xuống, khít đúng ô cửa
+  if (dA < .01) return;
+  const [x, y, w, h] = DOOR_IMG[side], img = IMG['door_' + side], oy = Math.round(-(1 - dA) * h);
+  ctx.save(); polyPath(DOOR_POLY[side], 3); ctx.clip();
+  ctx.drawImage(img, x, y + oy, w, h);
+  ctx.fillStyle = `rgba(0,0,0,${G.roomDark || .3})`; ctx.fillRect(x - 10, y + oy - 10, w + 20, h + 20);
+  ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x - 10, y + oy + h - 8, w + 20, 8);
+  ctx.restore();
+}
+const DOOR_CF = { bonny: .5, chica: .4, freddy: .45 }; // tâm khuôn mặt trong sprite DOOR SNEAK // tâm nhân vật trong sprite DOOR SNEAK
+function drawCover(img, x, y, w, h, fx = .5, fy = .5) {
+  const iw = img.width, ih = img.height, s = Math.max(w / iw, h / ih), dw = iw * s, dh = ih * s;
+  const dx = x + (w - dw) * fx, dy = y + (h - dh) * fy;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.drawImage(img, dx, dy, dw, dh); ctx.restore();
+  return { dx, dy, s };
+}
+function drawFocus(img, x, y, w, h, cf, fill = .86) { // nhân vật đứng giữa khung cửa, chân chạm sàn
+  const s = h * fill / img.height, dw = img.width * s, dh = img.height * s, dx = x + w / 2 - cf * dw, dy = y + h - dh;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.drawImage(img, dx, dy, dw, dh);
+  const gr = ctx.createLinearGradient(0, dy, 0, dy + 50); gr.addColorStop(0, 'rgba(10,8,4,.95)'); gr.addColorStop(1, 'rgba(10,8,4,0)');
+  ctx.fillStyle = gr; ctx.fillRect(x, dy, w, 50); ctx.restore();
+  return { dx, dy, s };
+}
+// Đổ bóng + nhuộm màu môi trường cho quái (chỉ tác động lên thân quái, không lên nền)
+let SH = null, shg = null;
+const ROOM_TINT = {
+  '1A': 'rgba(8,24,22,.62)', '1B': 'rgba(6,20,30,.62)', '2A': 'rgba(12,20,24,.58)', '3': 'rgba(8,24,16,.62)',
+  '4A': 'rgba(16,22,18,.58)', '4B': 'rgba(16,18,14,.6)', '5': 'rgba(8,24,20,.62)', door: 'rgba(24,14,4,.4)',
+};
+function drawShaded(img, cx, bottom, h, tint) {
+  const w = Math.ceil(img.width * h / img.height), hh = Math.ceil(h);
+  if (!SH || SH.width < w || SH.height < hh) { [SH, shg] = mk(Math.max(w, SH ? SH.width : 0), Math.max(hh, SH ? SH.height : 0)); }
+  shg.globalCompositeOperation = 'source-over'; shg.clearRect(0, 0, SH.width, SH.height);
+  shg.drawImage(img, 0, 0, w, hh);
+  shg.globalCompositeOperation = 'source-atop';
+  shg.fillStyle = tint; shg.fillRect(0, 0, w, hh);
+  const g = shg.createLinearGradient(0, 0, 0, hh); g.addColorStop(0, 'rgba(0,0,0,.05)'); g.addColorStop(.5, 'rgba(0,0,0,.2)'); g.addColorStop(1, 'rgba(0,0,0,.7)');
+  shg.fillStyle = g; shg.fillRect(0, 0, w, hh);
+  shg.globalCompositeOperation = 'source-over';
+  ctx.drawImage(SH, 0, 0, w, hh, Math.round(cx - w / 2), Math.round(bottom - hh), w, hh);
+}
+// Vị trí mắt thật trên từng sprite (tỉ lệ theo ảnh gốc): [mắt trái x, mắt phải x, y]
+const EYES = { // chỉ dùng cho dạng: jumpscare, đứng sau cửa, chuẩn bị tấn công
+  freddy_stare: [.53, .62, .27], bonny_stare: [.55, .61, .24], chica_idle: [.46, .57, .27], // đứng sau cửa
+  freddy_aggr: [.49, .575, .27], bonny_aggr: [.455, .53, .23], chica_aggr: [.5, .61, .285], foxy_rush: [.64, .68, .29], // chuẩn bị tấn công
+  freddy_jump: [.41, .66, .31], bonny_jump: [.39, .62, .49], chica_jump: [.41, .61, .46], foxy_jump: [.42, .58, .4], // jumpscare
+};
+function eyesAt(key, x, y, w, h, a = 1, seed = 0) { // luồng sáng đỏ phát ra từ đúng mắt của quái, nhấp nháy
+  const E = EYES[key]; if (!E || a <= 0) return;
+  const fl = (.72 + .28 * Math.sin(G.t * 7.3 + seed * 3.1)) * (.85 + .15 * Math.sin(G.t * 23 + seed)) * (Math.random() < .04 ? .15 : 1);
+  glowEyes(x + w * E[0], y + h * E[2], x + w * E[1], y + h * E[2], Math.min(7, Math.max(1.6, w * .02)), a * fl);
+}
+function drawSprite(img, cx, bottom, h) { const w = img.width * h / img.height; ctx.drawImage(img, Math.round(cx - w / 2), Math.round(bottom - h), Math.round(w), Math.round(h)); return { x: cx - w / 2, y: bottom - h, s: h / img.height }; }
+function glowEyes(x1, y1, x2, y2, r = 7, a = 1) {
+  for (const [x, y] of [[x1, y1], [x2, y2]]) {
+    const gr = ctx.createRadialGradient(x, y, 0, x, y, r * 2.4); gr.addColorStop(0, `rgba(255,240,220,${a})`); gr.addColorStop(.3, `rgba(255,60,40,${.8 * a})`); gr.addColorStop(1, 'rgba(255,0,0,0)');
+    ctx.fillStyle = gr; ctx.fillRect(x - r * 2.4, y - r * 2.4, r * 4.8, r * 4.8);
+  }
+}
+function drawHall(x, y, w, h) {
+  ctx.fillStyle = '#4a4430'; ctx.fillRect(x, y, w, h);
+  const fy = y + Math.round(h * .62 / 8) * 8;
+  ctx.fillStyle = '#3a3424'; ctx.fillRect(x, fy, w, y + h - fy);
+  ctx.fillStyle = '#2b2619'; for (let i = 1; i < 7; i++) { const yy = fy + Math.round((y + h - fy) * Math.pow(i / 7, 1.6) / 4) * 4; ctx.fillRect(x, yy, w, 4); }
+  ctx.fillStyle = '#3b3626'; ctx.fillRect(x + w * .35, y + 56, w * .3, 96); ctx.fillStyle = '#2a271c'; ctx.fillRect(x + w * .35 + 8, y + 64, w * .3 - 16, 80);
+  const gr = ctx.createRadialGradient(x + w / 2, y, 10, x + w / 2, y + h * .5, h * .8);
+  gr.addColorStop(0, 'rgba(255,240,180,.28)'); gr.addColorStop(1, 'rgba(0,0,0,.35)'); ctx.fillStyle = gr; ctx.fillRect(x, y, w, h);
+}
+function drawShutter(x, y, w, h) {
+  if (h < 2) return;
+  ctx.fillStyle = '#3a4044'; ctx.fillRect(x, y, w, h);
+  for (let yy = y + h - 4; yy > y; yy -= 16) { ctx.fillStyle = '#2a2f32'; ctx.fillRect(x, yy - 4, w, 4); ctx.fillStyle = '#50585c'; ctx.fillRect(x, yy - 8, w, 4); }
+  ctx.fillStyle = '#1d2124'; ctx.fillRect(x, y + h - 20, w, 20);
+  for (let xx = x; xx < x + w; xx += 32) { ctx.fillStyle = '#c9a400'; ctx.fillRect(xx, y + h - 16, 16, 12); }
+  ctx.fillStyle = '#22272a'; ctx.fillRect(x, y + h - 4, w, 4);
+}
+const DOOR_POSE = { bonny: 'stare', chica: 'idle', freddy: 'stare' };
+const FACE_CX = { bonny: .5, chica: .44, freddy: .49, foxy: .48 }; // tâm khuôn mặt trong sprite → đặt đúng giữa ô cửa
+function drawDoorway(side) { // vẽ trong toạ độ ảnh phòng (đã nhân Z)
+  const d = DOOR[side], x = d.x, y = d.y, w = d.w, h = d.h, dA = side === 'L' ? G.dAL : G.dAR;
+  const bo = G.state === 'BLACKOUT', poly = DOOR_POLY[side];
+  let lit = !bo && (side === 'L' ? G.lightL : G.lightR);
+  const who = atDoor(side), open = dA < .05;
+  if (lit && who && open && !G.c[who].seen) { G.c[who].seen = true; A.stinger(); }
+  if (lit && who && Math.random() < .1) { lit = false; if (G.t - (G.lastFlick || 0) > .25) { G.lastFlick = G.t; A.lightFlick(); } } // đèn chập chờn khi có người
+  const floorY = Math.max(...poly.map(q => q[1]));
+  const doorRect = (img, n) => { const hh = 300, ww = img.width * hh / img.height, cf = FACE_CX[n] || .5; return [x + w / 2 - ww * cf, floorY - 30 - hh, ww, hh]; };
+  const behind = (img, key) => { // quái đứng ngoài hành lang, sau khung cửa
+    const hh = 300, ww = img.width * hh / img.height, cf = FACE_CX[who] || FACE_CX.freddy, cx = x + w / 2;
+    ctx.save(); polyPath(poly); ctx.clip();
+    if (img === DARK.freddy_stare) ctx.drawImage(img, Math.round(cx - ww * cf), Math.round(floorY - 30 - hh), Math.round(ww), hh);
+    else drawShaded(img, cx - ww * cf + ww / 2 + Math.sin(G.t * 1.5) * 1.5, floorY - 30, hh, ROOM_TINT.door);
+    const fx = cx, fy = floorY - 30 - hh + hh * .28;
+    const gr = ctx.createRadialGradient(fx, fy, 18, fx, fy + 20, 125);
+    gr.addColorStop(0, 'rgba(0,0,0,.18)'); gr.addColorStop(.45, 'rgba(0,0,0,.5)'); gr.addColorStop(1, 'rgba(0,0,0,.94)');
+    ctx.fillStyle = gr; ctx.fillRect(x - 10, y - 10, w + 20, h + 20);
+    if (key) { const r = doorRect(img, key.split('_')[0]); eyesAt(key, r[0], r[1], r[2], r[3], .85, side === 'L' ? 1 : 2); }
+    ctx.restore();
+  };
+  ctx.save(); polyPath(poly); ctx.clip();
+  if (lit) {
+    if (who && open) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x, y, w, h); }
+    else { // hành lang trống: đèn vàng-xanh bệnh hoạn chập chờn, bụi bay, bóng tối nuốt cuối hành lang
+      const k = .7 + .3 * Math.sin(G.t * 23) * Math.sin(G.t * 7.3);
+      ctx.fillStyle = 'rgba(0,0,0,.15)'; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = `rgba(110,120,50,${.14 * k})`; ctx.fillRect(x, y, w, h);
+      const cone = ctx.createRadialGradient(x + w / 2, y + 10, 5, x + w / 2, y + h * .5, h * .7);
+      cone.addColorStop(0, `rgba(235,228,165,${.55 * k})`); cone.addColorStop(.5, `rgba(160,160,95,${.22 * k})`); cone.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = cone; ctx.fillRect(x, y, w, h);
+      ctx.globalCompositeOperation = 'lighter'; const glow = ctx.createRadialGradient(x + w / 2, y + h * .2, 5, x + w / 2, y + h * .45, h * .6);
+      glow.addColorStop(0, `rgba(120,112,60,${.5 * k})`); glow.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = glow; ctx.fillRect(x, y, w, h); ctx.globalCompositeOperation = 'source-over';
+      const far = ctx.createRadialGradient(x + w / 2, y + h * .42, 4, x + w / 2, y + h * .42, w * .55);
+      far.addColorStop(0, 'rgba(0,0,0,.75)'); far.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = far; ctx.fillRect(x, y, w, h);
+      if (G.fake && G.fake.side === side && G.t < G.fake.until) { // thoáng thấy ai đó đứng cuối hành lang
+        const sil = DARK['sil_' + G.fake.n]; ctx.globalAlpha = .85 * Math.min(1, (G.fake.until - G.t) * 3);
+        const hh = 300, ww = sil.width * hh / sil.height, cf = FACE_CX[G.fake.n] || .5, top = floorY - 30 - hh; // cùng cỡ & vị trí như quái thật đứng sau cửa
+        ctx.drawImage(sil, Math.round(x + w / 2 - ww * cf), Math.round(top), Math.round(ww), hh);
+        eyesAt(G.fake.n + '_' + DOOR_POSE[G.fake.n], Math.round(x + w / 2 - ww * cf), top, ww, hh, .9, 7); ctx.globalAlpha = 1;
+      }
+      for (let i = 0; i < 16; i++) { // bụi bay trong ánh đèn
+        const fx = (Math.sin(i * 12.9898) * 43758.5453) % 1, fy = (Math.sin(i * 78.233) * 12345.678) % 1;
+        const px = x + Math.abs(fx) * w + Math.sin(G.t * .7 + i) * 6, py2 = y + ((Math.abs(fy) * h + G.t * (6 + i % 5)) % h);
+        ctx.fillStyle = `rgba(240,235,190,${.25 * k})`; ctx.fillRect(px, py2, 1.5, 1.5);
+      }
+    }
+    ctx.fillStyle = 'rgba(255,215,130,.05)'; ctx.fillRect(x, y, w, h);
+
+  } else { ctx.fillStyle = 'rgba(0,0,0,.9)'; ctx.fillRect(x, y, w, h); }
+  ctx.restore();
+  ctx.save(); polyPath(TRANSOM_POLY[side]); ctx.clip(); ctx.fillStyle = lit ? 'rgba(0,0,0,.45)' : 'rgba(0,0,0,.85)'; ctx.fillRect(x - 5, 30, w + 10, 140); ctx.restore();
+  if (lit && who && open) behind(IMG[who + '_' + DOOR_POSE[who]], who + '_' + DOOR_POSE[who]);
+  if (!lit && !bo && who && open && Math.sin(G.t * 2.3 + (side === 'L' ? 0 : 2)) > .88) { const k = who + '_' + DOOR_POSE[who], r = doorRect(IMG[k], who); ctx.save(); polyPath(poly); ctx.clip(); eyesAt(k, r[0], r[1], r[2], r[3], .55, 5); ctx.restore(); }
+  if (bo && side === 'L' && G.bo.t > G.bo.appear) {
+    if (Math.floor(G.t * 3.4) % 2 === 0) behind(DARK.freddy_stare, 'freddy_stare');
+    else { const r = doorRect(DARK.freddy_stare, 'freddy'); ctx.save(); polyPath(poly); ctx.clip(); eyesAt('freddy_stare', r[0], r[1], r[2], r[3], .6, 6); ctx.restore(); }
+  }
+  drawDoorClosed(side, dA);
+  if (lit) { const gr = ctx.createLinearGradient(x, 0, side === 'L' ? x + w + 200 : x - 200, 0); gr.addColorStop(0, 'rgba(255,230,160,.07)'); gr.addColorStop(1, 'rgba(255,230,160,0)'); ctx.fillStyle = gr; ctx.fillRect(side === 'L' ? x + w : x - 200, y + h * .6, 200, h * .4); }
+}
+function drawFans(p) {
+  const a = G.t * (G.state === 'BLACKOUT' ? 1.5 : 14);
+  // quạt trần
+  const cx = 600 - p, cy = 18;
+  ctx.fillStyle = '#2b3033'; ctx.fillRect(cx - 4, 0, 8, cy);
+  for (let k = 0; k < 3; k++) {
+    const ang = a + k * 2.094;
+    for (let t = 6; t < 92; t += 6) { ctx.fillStyle = '#3b3329'; ctx.fillRect(Math.round((cx + Math.cos(ang) * t) / 4) * 4 - 4, Math.round((cy + Math.sin(ang) * t * .14) / 4) * 4, 8, 4); }
+  }
+  ctx.fillStyle = '#4a4f52'; ctx.fillRect(cx - 10, cy - 4, 20, 10);
+  // quạt treo tường
+  const wx = 664 - p, wy = 70;
+  ctx.fillStyle = '#2c3134'; ctx.beginPath(); ctx.arc(wx, wy, 30, 0, 7); ctx.fill();
+  for (let k = 0; k < 3; k++) { const ang = a * 1.3 + k * 2.094; ctx.fillStyle = '#566064'; ctx.beginPath(); ctx.ellipse(wx + Math.cos(ang) * 14, wy + Math.sin(ang) * 14, 14, 6, ang, 0, 7); ctx.fill(); }
+  ctx.strokeStyle = '#6a7276'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(wx, wy, 30, 0, 7); ctx.stroke();
+  ctx.fillStyle = '#1e2224'; ctx.fillRect(wx - 5, wy - 5, 10, 10);
+}
+const BTN = { dL: [31, 298], lL: [31, 326], dR: [950, 298], lR: [950, 326] };
+function btnRects() { const r = {}; for (const k in BTN) r[k] = [(BTN[k][0] - 26) * Z - G.panX, (BTN[k][1] - 15) * Z - G.panY, 52 * Z, 30 * Z]; return r; }
+function drawPanels() {
+  const bo = G.state === 'BLACKOUT', st = { dL: G.doorL, lL: G.lightL, dR: G.doorR, lR: G.lightR };
+  for (const k in BTN) {
+    const [x, y] = BTN[k], on = st[k] && !bo, door = k[0] === 'd';
+    if (on) {
+      const gr = ctx.createRadialGradient(x, y, 2, x, y, 30);
+      gr.addColorStop(0, door ? 'rgba(255,90,70,1)' : 'rgba(255,250,210,1)'); gr.addColorStop(.35, door ? 'rgba(255,30,20,.7)' : 'rgba(255,240,170,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = gr; ctx.fillRect(x - 30, y - 30, 60, 60);
+    } else { ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.beginPath(); ctx.arc(x, y, 11, 0, 7); ctx.fill(); }
+  }
+}
+function hungPose() {
+  if (G.state === 'BLACKOUT') return 'panic';
+  if (G.poseT > 0) return 'door';
+  const scared = Object.keys(G.c).some(n => { const l = loc(n); return (l === 'L' || l === 'R') && G.c[n].seen; });
+  return (scared || G.foxy.stage === 3 || G.power < 15) ? 'panic' : 'idle';
+}
+const HUNG_LABEL = { idle: 'BÌNH TĨNH', door: 'ĐANG BẤM CÔNG TẮC', panic: 'HOẢNG LOẠN!', monitor: 'ĐANG XEM CAM', caught: '!!!' };
+function drawHungInset(x, y, pose, w = 118, h = 132, face = false) { // ô "camera" nhỏ quay Hưng — dùng chung cho mọi trạng thái
+  const bo = G.state === 'BLACKOUT', panic = pose === 'panic';
+  ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillRect(x, y, w, h);
+  ctx.save(); ctx.beginPath(); ctx.rect(x + 2, y + 2, w - 4, h - 4); ctx.clip();
+  const jx = panic ? rand(-1.5, 1.5) : 0, bob = panic ? Math.sin(G.t * 18) * 2 : Math.sin(G.t * 2) * 2;
+  if (pose === 'door') drawCover(IMG.hung_door, x + 2 + jx, y + 2 + bob * .5, w - 4, h - 4, .45, .3);
+  else if (face) { const sh = h * 1.9; drawSprite(bo ? DARK.hung_panic : IMG['hung_' + pose], x + w / 2 + jx, y + 4 + sh + bob, sh); } // ô nhỏ (webcam laptop): khung mặt
+  else drawSprite(bo ? DARK.hung_panic : IMG['hung_' + pose], x + w / 2 + jx, y + h + bob, pose === 'monitor' ? 128 : 136);
+  ctx.fillStyle = bo ? 'rgba(0,0,0,.15)' : 'rgba(8,30,16,.18)'; ctx.fillRect(x, y, w, h);
+  for (let yy = y + 2; yy < y + h; yy += 3) { ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(x, yy, w, 1); }
+  ctx.globalAlpha = (bo ? .14 : .08) + (panic && Math.random() < .15 ? .25 : 0); ctx.drawImage(NOISE, 0, 0, 60, 66, x, y, w, h); ctx.globalAlpha = 1;
+  ctx.restore();
+  const blink = panic && Math.floor(G.t * 4) % 2;
+  ctx.strokeStyle = blink ? '#e33' : '#6a7'; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
+  txt(ctx, 'TUẤN HƯNG', x + w / 2, y - 38, 16, '#9c9', 'center');
+  txt(ctx, HUNG_LABEL[pose] || '', x + w / 2, y - 20, 14, panic ? '#f66' : '#bbb', 'center');
+}
+function renderOffice() {
+  const bo = G.state === 'BLACKOUT', panic = hungPose() === 'panic';
+  const px = G.panX, py = G.panY + Math.sin(G.t * (panic ? 7 : 1.6)) * (panic ? 3 : 2); // nhịp thở / run rẩy
+  const world = () => { ctx.save(); ctx.translate(-Math.round(px), -Math.round(py)); ctx.scale(Z, Z); };
+  world(); ctx.drawImage(OFFICE, 0, 0); ctx.restore();
+  const dark = bo ? .9 : .42 + G.flick * 3 + (G.out > 0 ? .38 : 0); G.roomDark = Math.min(.92, dark);
+  ctx.fillStyle = `rgba(0,0,0,${Math.min(.92, dark)})`; ctx.fillRect(0, 0, W, H);
+  world(); drawDoorway('L'); drawDoorway('R'); drawPanels(); ctx.restore();
+  ctx.drawImage(VIG, 0, 0); ctx.drawImage(VIG, 0, 0);
+  updNoise(); ctx.globalAlpha = .07; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1; // hạt nhiễu phim
+  const iw = 98 * Z, ih = 72 * Z, ix = 449 * Z - px, iy = Math.min(374 * Z - py, 488 - ih);
+  updNoise(); drawHungInset(ix, iy, hungPose(), iw, ih, true); // webcam trên laptop
+}
+const SPOTS = {
+  '1A': { freddy: [565, 322, 142, 'stare', 'stage'], bonny: [652, 322, 142, 'idle', 'stage'], chica: [745, 322, 142, 'idle', 'stage'] }, // đứng trên bục sân khấu
+  '1B': { bonny: [250, 425, 215, 'stare', 'front'], freddy: [400, 340, 150, 'stare', 'mid'] },                                            // sau bàn đọc sách
+  '2A': { bonny: [302, 432, 250, 'aggr', 'pile'] },                                                                                       // sau đống ghế đổ
+  '4A': { freddy: [330, 362, 210, 'stare'], chica: [700, 600, 340, 'idle'] },                             // Phúc sát camera (chân ngoài khung)
+  '4B': { freddy: [470, 545, 390, 'aggr'], chica: [680, 545, 370, 'aggr'] },
+  '5':  { chica: [505, 398, 220, 'idle', 'table'] }, // sau bàn ăn
+};
+const SCENE_OWN = {};
+// Vật che chắn (bàn, ghế, quầy...) lấy lại từ chính ảnh map, vẽ đè lên quái để che phần chân bị cắt của sprite
+const OCC = {
+  '1A': { stage: [[462, 314], [838, 310], [838, 350], [462, 352]], chairsL: [[120, 345], [520, 322], [525, 470], [120, 470]], chairsR: [[548, 338], [910, 330], [910, 540], [548, 540]] },
+  '1B': { front: [[0, 368], [418, 360], [422, 430], [0, 436]], mid: [[155, 296], [506, 290], [506, 348], [155, 352]] },
+  '2A': { pile: [[228, 340], [374, 336], [374, 464], [228, 464]] },
+  '3':  { desks: [[470, 395], [606, 382], [606, 318], [700, 262], [726, 262], [726, 470], [470, 470]] },
+  '5':  { table: [[398, 338], [612, 333], [628, 472], [392, 472]] },
+};
+function drawOccluder(id, name) { // vẽ lại đúng vật đó (từ ảnh map) đè lên quái đứng sau nó
+  const p = OCC[id] && OCC[id][name]; if (!p) return;
+  ctx.save(); ctx.beginPath(); ctx.moveTo(p[0][0], p[0][1]); for (const q of p.slice(1)) ctx.lineTo(q[0], q[1]); ctx.closePath();
+  ctx.clip(); ctx.drawImage(ROOM[id], 0, 0); ctx.restore();
+}
+function drawLab() { // Sỹ nấp sau rèm sáo ở giữa phòng Lab
+  const f = G.foxy, bx = 482, by = 132, bw = 226, bh = 188;
+  if (f.stage === 1) {
+    const sc = SCENE.foxy_peek, k = 200 / sc.height;
+    ctx.save(); ctx.beginPath(); ctx.rect(bx, by, bw, bh); ctx.clip(); ctx.globalAlpha = .9;
+    ctx.drawImage(sc, bx + bw / 2 - sc.width * k / 2, by - 6, sc.width * k, sc.height * k); ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(8,24,16,.5)'; ctx.fillRect(bx, by, bw, bh); ctx.restore();
+  }
+  const fw = IMG.foxy_idle.width * 232 / IMG.foxy_idle.height;
+  if (f.stage === 2) drawShaded(IMG.foxy_idle, 600, 422, 232, ROOM_TINT['3']); // đứng sau dãy bàn máy tính
+  if (f.stage === 3) txt(ctx, '!! KHÔNG CÒN Ở ĐÂY !!', 596, 200, 22, '#f44', 'center');
+}
+function renderCam() {
+  const id = G.curCam;
+  ctx.drawImage(ROOM[id], 0, 0);
+  const present = charsIn(id);
+  if (id === '3') { drawLab(); drawOccluder(id, 'desks'); }
+  else {
+    const owner = (SCENE_OWN[id] || []).find(n => present.includes(n));
+    if (owner) {
+      const sc = SCENE[owner + '_cam'], x = id === '1B' && owner === 'bonny' ? 220 : 480 - sc.width / 2;
+      ctx.drawImage(sc, Math.round(x - (id === '1B' ? sc.width / 2 - 260 : 0)), 50);
+      if (owner === 'freddy') glowEyes(480 - sc.width / 2 + 102 * sc.width / IMG.freddy_cam.width, 50 + 50 * sc.height / IMG.freddy_cam.height, 480 - sc.width / 2 + 120 * sc.width / IMG.freddy_cam.width, 50 + 50 * sc.height / IMG.freddy_cam.height, 4, .8);
+    }
+    const order = present.filter(n => n !== owner && (SPOTS[id] || {})[n]).sort((a, b) => SPOTS[id][a][1] - SPOTS[id][b][1]); // xa → gần
+    for (const n of order) {
+      const sp = SPOTS[id][n];
+      const key = n + '_' + sp[3];
+      if (n === 'freddy') drawSprite(DARK[key], sp[0], sp[1], sp[2]); else drawShaded(IMG[key], sp[0], sp[1], sp[2], ROOM_TINT[id]);
+      if (sp[3] === 'aggr') { const im = IMG[key], ww = im.width * sp[2] / im.height; eyesAt(key, sp[0] - ww / 2, sp[1] - sp[2], ww, sp[2], .85, sp[0]); } // chỉ khi sắp tấn công
+      if (sp[4]) drawOccluder(id, sp[4]);
+    }
+    if (id === '2A' && G.foxy.stage === 3) { const t = 1 - G.foxy.runT / 3; const rh = 110 + t * 380, rw = IMG.foxy_rush.width * rh / IMG.foxy_rush.height, rx = 330 + t * 110; drawShaded(IMG.foxy_rush, rx, 360 + t * 300, rh, 'rgba(12,20,24,.45)'); eyesAt('foxy_rush', rx - rw / 2, 360 + t * 300 - rh, rw, rh, .9, 4); }
+  }
+  // CRT
+  ctx.fillStyle = 'rgba(8,24,16,.16)'; ctx.fillRect(0, 0, W, H);
+  const nz = G.custom ? 0 : G.night === 4 ? 1 : G.night === 5 ? 1.5 : 0; // đêm 4 nhiễu nhẹ, đêm 5 nhiễu hơn một chút
+  const n4 = nz > 0;
+  if (!G.custom && G.night >= 3 && id === '4A') { ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, 0, W, H); } // bóng tối cầu thang
+  if (n4 && Math.random() < .005 * nz) G.staticT = Math.max(G.staticT, rand(.2, .5)); // mất tín hiệu từng lúc
+  updNoise(); ctx.globalAlpha = Math.min(.95, .09 + .05 * nz + G.staticT * 1.6 + (Math.random() < .03 + .03 * nz ? .2 : 0)); ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+  if (G.staticT > .6) txt(ctx, 'MẤT TÍN HIỆU...', 480, 250, 34, '#ddd', 'center');
+  ctx.drawImage(SCAN, 0, 0); ctx.drawImage(VIG, 0, 0);
+  ctx.strokeStyle = 'rgba(200,220,210,.5)'; ctx.lineWidth = 3; ctx.strokeRect(16, 16, 928, 508);
+  if (Math.floor(G.t * 2) % 2) { ctx.fillStyle = '#e22'; ctx.beginPath(); ctx.arc(46, 46, 9, 0, 7); ctx.fill(); }
+  txt(ctx, 'REC', 62, 33, 26, '#eee');
+  txt(ctx, 'CAM ' + id, 40, 66, 38, '#fff'); txt(ctx, CAMS[id], 40, 102, 20, '#9fc');
+  drawMap();
+  drawHungInset(20, 314, 'monitor');
+}
+const MAP = { '1A': [770, 352], '5': [862, 352], '3': [690, 392], '1B': [770, 392], '4A': [862, 412], '2A': [690, 446], '4B': [862, 446] };
+const MW = 62, MH = 26;
+function drawMap() {
+  ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(678, 322, 258, 194);
+  ctx.strokeStyle = '#6a7'; ctx.lineWidth = 2; ctx.strokeRect(678, 322, 258, 194);
+  ctx.strokeStyle = '#4a5a50'; ctx.lineWidth = 5;
+  const link = (a, b) => { ctx.beginPath(); ctx.moveTo(MAP[a][0] + MW / 2, MAP[a][1] + MH / 2); ctx.lineTo(MAP[b][0] + MW / 2, MAP[b][1] + MH / 2); ctx.stroke(); };
+  link('1A', '1B'); link('1A', '5'); link('1B', '3'); link('1B', '2A'); link('1B', '4A'); link('5', '4A'); link('4A', '4B');
+  ctx.beginPath(); ctx.moveTo(721, 472); ctx.lineTo(721, 494); ctx.lineTo(770, 494); ctx.moveTo(893, 472); ctx.lineTo(893, 494); ctx.lineTo(832, 494); ctx.stroke();
+  ctx.fillStyle = '#2a3a30'; ctx.fillRect(770, 482, 62, 26); ctx.strokeStyle = '#9c9'; ctx.lineWidth = 2; ctx.strokeRect(770, 482, 62, 26);
+  txt(ctx, 'BẠN', 801, 485, 19, '#ff6', 'center', false);
+  for (const id of CAM_KEYS) {
+    const [x, y] = MAP[id], cur = id === G.curCam;
+    ctx.fillStyle = cur ? '#3c8a3c' : '#1a221d'; ctx.fillRect(x, y, MW, MH);
+    ctx.strokeStyle = cur ? '#cfc' : '#7a8'; ctx.strokeRect(x, y, MW, MH);
+    txt(ctx, 'CAM ' + id, x + MW / 2, y + 4, 17, cur ? '#fff' : '#cdd', 'center', false);
+  }
+  txt(ctx, 'BẢN ĐỒ TRƯỜNG VNUK', 686, 328, 15, '#8a9', 'left', false);
+}
+function renderHUD() {
+  const h = Math.floor(G.time / HOUR);
+  txt(ctx, (h === 0 ? 12 : h) + ' AM', 940, 18, 46, '#eee', 'right');
+  txt(ctx, G.custom ? 'CUSTOM NIGHT' : 'ĐÊM ' + G.night, 940, 64, 22, '#aaa', 'right');
+  if (G.state === 'BLACKOUT') return;
+  txt(ctx, 'Pin còn lại: ' + Math.max(0, Math.floor(G.power)) + '%', 20, 456, 26, G.power < 20 ? '#f55' : '#eee');
+  txt(ctx, 'Mức dùng:', 20, 488, 24, '#eee');
+  const u = usage(), cols = ['#3c3', '#3c3', '#dd3', '#e33'], bx = 30 + ctx.measureText('Mức dùng:').width;
+  for (let i = 0; i < 4; i++) { ctx.fillStyle = i < u ? cols[i] : '#222'; ctx.fillRect(bx + i * 24, 490, 18, 24); }
+  // thanh camera
+  const hov = G.mx > 300 && G.mx < 660 && G.my > 494;
+  ctx.fillStyle = hov ? 'rgba(80,160,90,.75)' : 'rgba(60,120,70,.45)'; ctx.fillRect(300, 498, 360, 34);
+  ctx.strokeStyle = '#aea'; ctx.lineWidth = 2; ctx.strokeRect(300, 498, 360, 34);
+  txt(ctx, G.cam ? '▼  ĐÓNG CAMERA  [SPACE]' : '▲  MỞ CAMERA  [SPACE]', 480, 503, 24, '#fff', 'center', false);
+  if (G.playT < 14 && !G.cam && !G.call) txt(ctx, 'Rê chuột để nhìn qua lại · Q/E: cửa · A/D: đèn · SPACE: camera', 480, 70, 20, `rgba(230,230,230,${Math.min(1, (14 - G.playT) / 3)})`, 'center');
+  if (G.info) {
+    const f = G.foxy, s = n => { const l = loc(n); return (l === 'L' || l === 'R') ? `CỬA ${l === 'L' ? 'TRÁI' : 'PHẢI'} (${G.c[n].doorT.toFixed(1)}s)` : 'CAM ' + l; };
+    const lines = [`Phát[${G.ai.freddy}]: ${s('freddy')}`, `Long[${G.ai.bonny}]: ${s('bonny')}`, `Sỹ[${G.ai.foxy}]: ${['IDLE', 'PEEKING', 'READY', 'RUSHING ' + f.runT.toFixed(1) + 's'][f.stage]}`, `Phúc[${G.ai.chica}]: ${s('chica')}`, `Pin: ${G.power.toFixed(2)}%  t=${G.time.toFixed(0)}s  x${G.speed}`];
+    ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(14, 120, 290, lines.length * 22 + 10);
+    lines.forEach((l, i) => txt(ctx, l, 22, 126 + i * 22, 19, '#7f7', 'left', false));
+  }
+}
+function renderJumpscare() {
+  const js = G.js, img = IMG[js.n + '_jump'], t = js.t;
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  if (t < 1.45) {
+    const p = Math.min(1, t / .16), s = .55 + .65 * (1 - Math.pow(1 - p, 3)) + Math.sin(t * 40) * .015;
+    const zk = { bonny: .72, freddy: .78 }[js.n] || 1; // Long & Phát: zoom vừa phải, không sát quá
+    const w = W * s * 1.05 * zk, h = w * img.height / img.width, sh = 26 * G.shake;
+    const ox = 480 - w / 2 + rand(-sh, sh), oy = 300 - h / 2 + rand(-sh, sh);
+    ctx.drawImage(img, ox, oy, w, h);
+    ctx.fillStyle = `rgba(255,0,0,${.12 + .12 * Math.sin(t * 30)})`; ctx.fillRect(0, 0, W, H);
+    { const E = EYES[js.n + '_jump'], fl = .7 + .3 * Math.sin(t * 40); glowEyes(ox + w * E[0], oy + h * E[2], ox + w * E[1], oy + h * E[2], w * .018, fl); } // mắt đỏ rực khi hù
+  }
+  updNoise(); ctx.globalAlpha = t < 1.45 ? .12 : .8; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+}
+let FACE_BOX_G = {};
+const MENU_FACES = ['freddy', 'bonny', 'chica', 'foxy'];
+function renderMenuBG() { // mặt tối → nháy sang hình jumpscare → nhảy sang người khác
+  ctx.fillStyle = '#030303'; ctx.fillRect(0, 0, W, H);
+  const CYC = 4.2, k = Math.floor(G.t / CYC), ph = (G.t % CYC) / CYC, n = MENU_FACES[k % 4];
+  const face = SCENE['faceD_' + n], jump = SCENE['jumpD_' + n];
+  if (face && jump) {
+    // 0–55%: mặt chìm trong bóng tối, thỉnh thoảng chớp sang jumpscare 1 khung
+    // 55–85%: nháy liên tục giữa mặt và jumpscare, giật nhiễu
+    // 85–100%: tắt phụt, sang người tiếp theo
+    // mặt hiện dần → chớp jumpscare 1 lần → giữ jumpscare 1 nhịp → tắt
+    let showJump = false, a = 1;
+    if (ph < .15) a = ph / .15;
+    else if (ph > .6 && ph < .64) showJump = true;
+    else if (ph > .74 && ph < .88) showJump = true;
+    else if (ph >= .88) a = Math.max(0, 1 - (ph - .88) / .06);
+    const img = showJump ? jump : face, cx = 700 + (k % 2 ? -25 : 25), cy = 275;
+    const s = showJump ? 1.05 + (ph > .74 ? (ph - .74) * .6 : 0) : 1 + ph * .05, w = img.width * s, h = img.height * s;
+    const j = showJump ? 4 : 0;
+    const ox = cx - w / 2 + rand(-j, j), oy = cy - h / 2 + rand(-j, j);
+    ctx.globalAlpha = a; ctx.drawImage(img, ox, oy, w, h); ctx.globalAlpha = 1;
+    if (showJump) eyesAt(n + '_jump', ox, oy, w, h, .9, k); // mắt đỏ chỉ khi ở dạng jumpscare
+    if (showJump) { // lệch màu + đỏ khi chớp jumpscare
+      ctx.fillStyle = 'rgba(110,0,0,.18)'; ctx.fillRect(0, 0, W, H);
+    }
+  }
+  for (let i = 0; i < 5; i++) { const fx = (i * 220 + G.t * (10 + i * 4)) % (W + 400) - 200, fy = 120 + i * 80 + Math.sin(G.t * .4 + i) * 30;
+    const g = ctx.createRadialGradient(fx, fy, 10, fx, fy, 220); g.addColorStop(0, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.fillRect(fx - 220, fy - 220, 440, 440); }
+  const lg = ctx.createLinearGradient(0, 0, W * .6, 0); lg.addColorStop(0, 'rgba(0,0,0,.92)'); lg.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+  updNoise(); ctx.globalAlpha = .09 + (Math.random() < .04 ? .25 : 0); ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+  ctx.drawImage(SCAN, 0, 0); ctx.drawImage(VIG, 0, 0); ctx.drawImage(VIG, 0, 0);
+}
+function renderIntro() {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const a = Math.min(1, G.introT / .6, (3.2 - G.introT) / .5);
+  ctx.globalAlpha = Math.max(0, a);
+  txt(ctx, '12:00 AM', 480, 190, 80, '#eee', 'center');
+  txt(ctx, G.custom ? 'CUSTOM NIGHT' : 'ĐÊM ' + G.night, 480, 276, 40, '#ccc', 'center');
+  txt(ctx, 'Nguyễn Tuấn Hưng · Phòng học VNUK · ca trực đêm', 480, 326, 24, '#888', 'center');
+  if (G.power < 100) txt(ctx, `Pin dự phòng tối đa: ${Math.round(G.power)}%`, 480, 362, 22, '#d88', 'center');
+  ctx.globalAlpha = 1;
+}
+/* ============================ MÀN CHIẾN THẮNG: bùng nổ & vỡ òa ============================ */
+const WIN_HIT = 1.6; // thời điểm 5 AM → 6 AM
+const FX_COLORS = ['#ffd84a', '#ff4d4d', '#4da3ff', '#ffffff', '#7dff9a', '#ff9a3c', '#c86bff'];
+function spawnFirework(x, y) {
+  const col = FX_COLORS[Math.floor(Math.random() * FX_COLORS.length)], col2 = FX_COLORS[Math.floor(Math.random() * FX_COLORS.length)];
+  const n = 70 + Math.floor(Math.random() * 40);
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, sp = 90 + Math.random() * 260;
+    G.fx.push({ k: 'spark', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1.1 + Math.random() * .7, age: 0, c: i % 3 ? col : col2, s: 2 + Math.random() * 2 });
+  }
+  G.fx.push({ k: 'flash', x, y, life: .25, age: 0 });
+  A.pop();
+}
+function spawnConfetti(n) {
+  for (let i = 0; i < n; i++) G.fx.push({ k: 'conf', x: Math.random() * W, y: -20 - Math.random() * 300, vx: rand(-40, 40), vy: rand(80, 200), rot: Math.random() * 6, vr: rand(-8, 8), life: 6, age: 0, c: FX_COLORS[i % FX_COLORS.length], w: rand(6, 11), h: rand(3, 6), ph: Math.random() * 6 });
+}
+function updateWinFx(dt) {
+  const t = G.winT, after = t - WIN_HIT;
+  if (after >= 0 && !G.winBoom) {
+    G.winBoom = true; G.shake = 1.4; spawnConfetti(180);
+    for (let i = 0; i < 4; i++) spawnFirework(rand(150, 810), rand(70, 240));
+  }
+  if (after > 0) {
+    G.fwT -= dt;
+    if (G.fwT <= 0) { G.fwT = after < 4 ? rand(.25, .5) : rand(.7, 1.3); spawnFirework(rand(120, 840), rand(50, 250)); }
+    if (Math.random() < dt * 6) spawnConfetti(3);
+  }
+  for (const p of G.fx) {
+    p.age += dt;
+    if (p.k === 'spark') { p.vx *= .985; p.vy = p.vy * .985 + 160 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+    if (p.k === 'conf') { p.x += (p.vx + Math.sin(p.age * 3 + p.ph) * 40) * dt; p.y += p.vy * dt; p.rot += p.vr * dt; }
+  }
+  G.fx = G.fx.filter(p => p.age < p.life && p.y < H + 40);
+}
+function renderWin() {
+  const t = G.winT, after = t - WIN_HIT, boom = after >= 0;
+  ctx.save();
+  if (G.shake > 0) ctx.translate(rand(-14, 14) * G.shake, rand(-14, 14) * G.shake);
+  // ----- nền: giữ màu đen, chỉ có nhiễu nhẹ -----
+  ctx.fillStyle = '#000'; ctx.fillRect(-20, -20, W + 40, H + 40);
+  updNoise(); ctx.globalAlpha = boom ? .06 : .12 + (t / WIN_HIT) * .1; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+  // ----- pháo hoa / giấy màu -----
+  for (const p of G.fx) {
+    const a = Math.max(0, 1 - p.age / p.life);
+    if (p.k === 'spark') { ctx.globalAlpha = a; ctx.fillStyle = p.c; ctx.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s); ctx.globalAlpha = a * .35; ctx.fillRect(Math.round(p.x - p.vx * .03), Math.round(p.y - p.vy * .03), p.s * .7, p.s * .7); }
+    else if (p.k === 'flash') { const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 90); g.addColorStop(0, `rgba(255,255,230,${a * .8})`); g.addColorStop(1, 'rgba(255,255,230,0)'); ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(p.x - 90, p.y - 90, 180, 180); }
+    else if (p.k === 'conf') { ctx.globalAlpha = Math.min(1, a * 2); ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.abs(Math.cos(p.age * 6 + p.ph))); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore(); }
+  }
+  ctx.globalAlpha = 1;
+  // ----- đồng hồ 5 → 6 (số và "AM" đứng sát nhau, căn giữa) -----
+  const roll = Math.min(1, Math.max(0, (t - .9) / (WIN_HIT - .9)));
+  const ease = roll < 1 ? roll * roll * roll : 1;
+  ctx.font = `140px ${FONT}`; const dw = ctx.measureText('6').width, aw = ctx.measureText('AM').width, gap = dw * .35;
+  const x0 = 480 - (dw + gap + aw) / 2, dx = x0 + dw / 2, ax = x0 + dw + gap + aw / 2;
+  if (!boom) {
+    const jit = (t / WIN_HIT) * 3;
+    ctx.save(); ctx.beginPath(); ctx.rect(dx - dw, 150, dw * 2, 150); ctx.clip();
+    txt(ctx, '5', dx + rand(-jit, jit), 160 - ease * 150, 140, '#fff', 'center'); txt(ctx, '6', dx + rand(-jit, jit), 310 - ease * 150, 140, '#fff', 'center');
+    ctx.restore();
+    txt(ctx, 'AM', ax + rand(-jit, jit), 160, 140, '#fff', 'center');
+  } else {
+    const pop = 1 + .35 * Math.exp(-after * 5) * Math.cos(after * 18), glow = 20 + 12 * Math.sin(t * 5);
+    ctx.save(); ctx.translate(480, 230); ctx.scale(pop, pop); ctx.translate(-480, -230);
+    ctx.shadowColor = '#ffd84a'; ctx.shadowBlur = glow;
+    txt(ctx, '6', dx, 160, 140, '#fffbe8', 'center', false); txt(ctx, 'AM', ax, 160, 140, '#fffbe8', 'center', false);
+    ctx.restore();
+    // sóng xung kích + chớp trắng
+    if (after < .9) { ctx.strokeStyle = `rgba(255,255,255,${1 - after / .9})`; ctx.lineWidth = 14 * (1 - after / .9) + 2; ctx.beginPath(); ctx.arc(480, 230, after * 1100, 0, 7); ctx.stroke(); }
+    if (after < .5) { ctx.fillStyle = `rgba(255,255,255,${1 - after * 2})`; ctx.fillRect(0, 0, W, H); }
+    // tiêu đề nảy vào
+    const tA = Math.min(1, Math.max(0, (after - .25) / .35)), tS = tA < 1 ? .3 + .7 * tA + Math.sin(tA * Math.PI) * .25 : 1 + .03 * Math.sin(t * 6);
+    if (tA > 0) {
+      ctx.save(); ctx.translate(480, 340); ctx.scale(tS, tS); ctx.globalAlpha = tA;
+      ctx.shadowColor = '#ff4d4d'; ctx.shadowBlur = 18;
+      txt(ctx, 'SỐNG SÓT QUA ĐÊM TẠI VNUK!', 0, -24, 46, Math.floor(t * 4) % 2 ? '#ffd84a' : '#ffffff', 'center');
+      ctx.restore(); ctx.globalAlpha = 1;
+    }
+    const sA = Math.min(1, Math.max(0, (after - .8) / .5));
+    if (sA > 0) {
+      ctx.globalAlpha = sA;
+      txt(ctx, G.custom ? 'CUSTOM NIGHT HOÀN THÀNH' : `ĐÊM ${G.night} — HOÀN THÀNH`, 480, 372, 26, '#fff', 'center');
+      txt(ctx, G.winNote || '', 480, 400, 22, '#c8ffcf', 'center');
+      const pw = Math.floor(G.power * Math.min(1, (after - .8) / 1.2));
+      txt(ctx, `Pin còn lại: ${pw}%`, 480, 424, 20, '#ffe6b0', 'center');
+      if (!G.custom) { const st = '★'.repeat(G.night) + '☆'.repeat(5 - G.night); txt(ctx, st, 480, 446, 26, '#ffd84a', 'center'); }
+      ctx.globalAlpha = 1;
+    }
+    // Hưng nhảy cẫng lên ăn mừng
+    const jump = Math.abs(Math.sin(after * 5.5)) * 24, sq = 1 + (jump < 4 ? .06 : 0);
+    ctx.save(); ctx.translate(86, 548 - jump); ctx.scale(1 / sq, sq); drawSprite(IMG.hung_idle, 0, 0, 160); ctx.restore();
+  }
+  ctx.restore();
+}
+function renderGameOver() {
+  // nền đỏ thẫm hoà với ảnh, không phủ lớp lên mặt Hưng
+  const t = Math.max(0, G.goT - .3), pulse = Math.sin(t * 6) > 0 ? 1 : 0;
+  const bg = ctx.createRadialGradient(480, 250, 40, 480, 250, 560);
+  bg.addColorStop(0, `rgb(${70 + pulse * 25},6,8)`); bg.addColorStop(1, '#050000');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  updNoise(); ctx.globalAlpha = .05; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+  if (G.goT < .3) return;
+  const img = SCENE.hung_caught, p = Math.min(1, t / .35), e = 1 - Math.pow(1 - p, 3);
+  const k = .55 + .45 * e; // dừng ở đúng x2 → pixel vuông đều, sắc nét
+  const sh = Math.max(0, 1 - t / .9) * 12;
+  const w = Math.round(img.width * k), h = Math.round(img.height * k);
+  ctx.drawImage(img, Math.round(480 - w / 2 + rand(-sh, sh)), Math.round(232 - h / 2 + rand(-sh, sh)), w, h);
+  const fade = ctx.createLinearGradient(0, 360, 0, 540); fade.addColorStop(0, 'rgba(5,0,0,0)'); fade.addColorStop(.35, 'rgba(5,0,0,.85)'); fade.addColorStop(1, '#050000');
+  ctx.fillStyle = fade; ctx.fillRect(0, 360, W, 180);
+  ctx.globalAlpha = Math.min(1, t / .4);
+  txt(ctx, 'GAME OVER', 480, 6, 72, '#ff2a2a', 'center');
+  const c = CH[G.killer], s = Math.floor(G.time);
+  txt(ctx, `Nguyễn Tuấn Hưng đã bị ${c.name} (${c.alias}) tóm gọn`, 480, 418, 24, '#fff', 'center');
+  const hr = Math.floor(G.time / HOUR);
+  txt(ctx, `Trụ được ${Math.floor(s / 60)} phút ${s % 60} giây · tới ${hr === 0 ? '12' : hr} AM`, 480, 446, 20, '#bbb', 'center');
+  ctx.globalAlpha = 1;
+}
+/* ============================ MÀN MỞ ĐẦU: CỐT TRUYỆN ============================ */
+const STORY = [
+  { scene: 'home', pose: 'monitor', time: '11:47 PM · Phòng trọ của Hưng', text: 'Màn hình chiếc laptop vẫn hắt thứ ánh sáng xanh nhợt nhạt lên cặp kính cận dày cộp của Hưng.' },
+  { scene: 'home', pose: 'monitor', time: '11:47 PM · Phòng trọ của Hưng', text: 'Bên cạnh bàn là chiếc tai nghe chụp tai vắt hờ, chiếc cà vạt đen nới lỏng trên cổ áo sơ mi trắng nhàu nhĩ sau một ngày dài chạy deadline.' },
+  { scene: 'home', pose: 'monitor', time: '11:52 PM · Phòng trọ của Hưng', text: 'Hưng đang gõ những dòng code cuối cùng cho dự án thì bỗng khựng lại.', freeze: true },
+  { scene: 'home', pose: 'panic', time: '11:52 PM · Phòng trọ của Hưng', text: 'Mồ hôi lạnh túa ra trên trán: cuốn tài liệu thuyết trình và chiếc USB chứa toàn bộ source code dự phòng vẫn nằm nguyên trên bàn học ở trường VNUK...' },
+  { scene: 'school', time: '11:58 PM · Trường VNUK', text: '...nên cậu phải quay lại trường.' },
+];
+function startStoryScreen() { G.state = 'STORY'; G.story = { started: false, page: 0, chars: 0, pt: 0, hb: 0, lastTyped: 0, end: -1 }; ui(null); }
+function storyAdvance() {
+  const st = G.story; A.init();
+  if (!st.started) { st.started = true; st.pt = 0; return; }
+  if (st.end >= 0) return;
+  const p = STORY[st.page];
+  if (st.chars < p.text.length) { st.chars = p.text.length; return; }
+  A.click();
+  if (st.page < STORY.length - 1) { st.page++; st.chars = 0; st.pt = 0; if (STORY[st.page].scene === 'school') A.stinger(); }
+  else { st.end = 0; st.face = ['freddy', 'bonny', 'chica', 'foxy'][Math.floor(Math.random() * 4)]; A.titleHit(); }
+}
+function storySkip() { if (G.state === 'STORY') { A.init(); toMenu(); } }
+function updateStory(dt) {
+  const st = G.story; if (!st.started) return;
+  if (st.end >= 0) { st.end += dt; if (st.end > 4.2) toMenu(); return; }
+  const p = STORY[st.page]; st.pt += dt;
+  const before = Math.floor(st.chars); st.chars = Math.min(p.text.length, st.chars + dt * 34);
+  if (Math.floor(st.chars) > before && p.text[Math.floor(st.chars) - 1] !== ' ' && st.pt - st.lastTyped > .045) { st.lastTyped = st.pt; A.type(); }
+  if (p.scene === 'home' && !p.freeze && p.pose === 'monitor' && Math.random() < dt * 7) A.type(.5); // tiếng gõ phím của Hưng
+  if (p.pose === 'panic') { st.hb -= dt; if (st.hb <= 0) { st.hb = .7; A.heartbeat(); } }
+}
+function wrapText(s, maxW, size) {
+  ctx.font = `${size}px ${FONT}`; const words = s.split(' '), lines = []; let cur = '';
+  for (const w of words) { const t = cur ? cur + ' ' + w : w; if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
+  if (cur) lines.push(cur); return lines;
+}
+function drawHomeScene(p, st) {
+  const R = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x * 4, y * 4, w * 4, h * 4); };
+  const panic = p.pose === 'panic', zoom = p.freeze ? 1 + Math.min(.08, st.pt * .03) : 1;
+  ctx.save(); ctx.translate(480, 300); ctx.scale(zoom, zoom); ctx.translate(-480, -300);
+  // phòng trọ tối
+  R(0, 0, 240, 105, '#070a12'); R(0, 0, 240, 6, '#04060b');
+  R(14, 12, 40, 44, '#1a2232'); R(16, 14, 36, 40, '#0c1424'); // cửa sổ
+  ctx.fillStyle = '#d8e2f0'; ctx.beginPath(); ctx.arc(32 * 4, 24 * 4, 18, 0, 7); ctx.fill(); ctx.fillStyle = '#0c1424'; ctx.beginPath(); ctx.arc(35 * 4, 22 * 4, 16, 0, 7); ctx.fill();
+  for (let i = 0; i < 36; i += 3) R(16 + i, 14, 2, 40, '#2a3446'); R(16, 33, 36, 1, '#2a3446'); R(16, 14, 1, 40, '#2a3446');
+  R(186, 18, 26, 34, '#141a26'); R(188, 20, 22, 30, '#1c2436'); R(190, 23, 18, 3, '#2e3a52'); R(190, 28, 12, 1, '#2e3a52'); R(190, 31, 15, 1, '#2e3a52'); // poster deadline
+  R(150, 40, 30, 3, '#2a2016'); for (let i = 0; i < 6; i++) R(151 + i * 4, 32, 3, 8, ['#3a1e1e', '#1e2a3a', '#2a3a22'][i % 3]); // kệ sách
+  // ánh xanh từ laptop hắt lên Hưng + căn phòng
+  ctx.globalCompositeOperation = 'lighter';
+  const fl = .85 + .15 * Math.sin(st.pt * 9) * Math.sin(st.pt * 2.3);
+  const gl = ctx.createRadialGradient(540, 300, 20, 540, 260, 420); gl.addColorStop(0, `rgba(60,130,255,${.32 * fl})`); gl.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gl; ctx.fillRect(0, 0, W, 420); ctx.globalCompositeOperation = 'source-over';
+  // Hưng
+  const jx = panic ? rand(-2, 2) : 0, bob = panic ? 0 : Math.sin(st.pt * 2) * 2;
+  drawShaded(IMG['hung_' + p.pose], 470 + jx, 430 + bob, 330, panic ? 'rgba(30,10,30,.25)' : 'rgba(10,30,80,.35)');
+  ctx.globalCompositeOperation = 'lighter';
+  const face = ctx.createRadialGradient(470, 170, 10, 470, 190, 150); face.addColorStop(0, `rgba(80,150,255,${(panic ? .12 : .22) * fl})`); face.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = face; ctx.fillRect(300, 40, 340, 300); ctx.globalCompositeOperation = 'source-over';
+  // bàn + laptop (nhìn từ phía sau màn hình) + tai nghe vắt hờ
+  R(0, 86, 240, 50, '#2a1d12'); R(0, 86, 240, 2, '#3e2c1c'); R(0, 88, 240, 1, '#1a120b');
+  R(112, 62, 46, 26, '#2b2f36'); R(113, 63, 44, 24, '#363b44'); R(130, 71, 10, 7, '#1e4c8c'); R(132, 73, 6, 3, '#d0d8e8'); // nắp laptop + sticker VNUK
+  R(108, 86, 54, 3, '#1c2026'); // đế laptop
+  ctx.globalCompositeOperation = 'lighter'; const spill = ctx.createLinearGradient(0, 240, 0, 360); spill.addColorStop(0, `rgba(70,140,255,${.18 * fl})`); spill.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = spill; ctx.fillRect(420, 220, 240, 140); ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = '#1b1d22'; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(250, 352, 36, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke(); // tai nghe
+  R(54, 84, 7, 9, '#15171b'); R(78, 84, 7, 9, '#15171b'); R(55, 85, 5, 7, '#24272d'); R(79, 85, 5, 7, '#24272d');
+  R(178, 82, 10, 6, '#d8d8d0'); R(179, 82, 8, 1, '#f0f0e8'); R(176, 88, 14, 1, '#111'); // cốc cà phê
+  ctx.restore();
+  if (panic) { const v = ctx.createRadialGradient(480, 270, 150, 480, 270, 560); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, `rgba(120,0,0,${.35 + .2 * Math.sin(st.pt * 9)})`); ctx.fillStyle = v; ctx.fillRect(0, 0, W, H); }
+}
+function drawSchoolScene(st) {
+  const z = 1 + st.pt * .025;
+  ctx.save(); ctx.translate(480, 270); ctx.scale(z, z); ctx.translate(-480, -270);
+  ctx.drawImage(IMG.map_office, 0, 0, W, H); ctx.restore();
+  ctx.fillStyle = 'rgba(0,4,12,.72)'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(30,60,120,.12)'; ctx.fillRect(0, 0, W, H);
+  if (Math.sin(st.pt * 2.1) > .9) glowEyes(110, 230, 128, 230, 2.5, .7); // có gì đó đang chờ ở cửa
+}
+function glitchText(str, x, y, size, color, amt) { // chữ lệch màu đỏ/xanh + cắt lát như tín hiệu hỏng
+  ctx.font = `${size}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  const ox = amt * 6;
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = 'rgba(255,0,40,.75)'; ctx.fillText(str, x - ox, y);
+  ctx.fillStyle = 'rgba(0,200,255,.6)'; ctx.fillText(str, x + ox, y + amt);
+  ctx.globalCompositeOperation = 'source-over';
+  const n = Math.round(amt * 6);
+  ctx.fillStyle = color; ctx.fillText(str, x, y);
+  for (let i = 0; i < n; i++) { const sy = y + Math.random() * size, sh = 3 + Math.random() * 10, dx = (Math.random() - .5) * 40 * amt;
+    ctx.save(); ctx.beginPath(); ctx.rect(0, sy, W, sh); ctx.clip(); ctx.fillStyle = '#000'; ctx.fillRect(0, sy, W, sh); ctx.fillStyle = color; ctx.fillText(str, x + dx, y); ctx.restore(); }
+}
+function neonText(str, x, y, size, on) { // đèn neon đỏ chập chờn
+  ctx.font = `${size}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  if (on) { ctx.shadowColor = '#ff1a1a'; ctx.shadowBlur = 28; ctx.fillStyle = '#ff3a3a'; ctx.fillText(str, x, y); ctx.shadowBlur = 10; ctx.fillStyle = '#ffd0d0'; ctx.fillText(str, x, y); ctx.shadowBlur = 0; }
+  else { ctx.fillStyle = '#3a0d0d'; ctx.fillText(str, x, y); }
+}
+function drawTitleReveal(e, face) {
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const T = .45;
+  if (e < T) { updNoise(); ctx.globalAlpha = e / T * .5; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1; return; }
+  const a = e - T, z = 1 + a * .02;
+  ctx.save(); ctx.translate(480, 230); ctx.scale(z, z); ctx.translate(-480, -230);
+  const g = Math.max(0, 1 - a / 1.2) * 1.2 + (Math.random() < .04 ? .8 : 0);
+  glitchText('FIVE NIGHTS', 480 + (Math.random() - .5) * g * 10, 130, 104, '#ececec', g);
+  const flick = a < .5 ? false : a < 1.1 ? Math.random() > .45 : Math.random() > .03;
+  neonText('AT VNUK', 480, 250, 104, flick);
+  if (a > 1.3) { const n = Math.floor((a - 1.3) * 40), sub = 'Viện Nghiên cứu và Đào tạo Việt - Anh · Đại học Đà Nẵng'; txt(ctx, sub.slice(0, n), 480, 372, 22, '#8aa', 'center'); }
+  ctx.restore();
+  if (a < .25) { ctx.fillStyle = `rgba(255,255,255,${.9 - a * 3.6})`; ctx.fillRect(0, 0, W, H); }
+  ctx.drawImage(SCAN, 0, 0); ctx.drawImage(VIG, 0, 0);
+  updNoise(); ctx.globalAlpha = .08 + (Math.random() < .05 ? .2 : 0); ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+  if (e > 3.6) { ctx.fillStyle = `rgba(0,0,0,${Math.min(1, (e - 3.6) / .6)})`; ctx.fillRect(0, 0, W, H); }
+}
+function renderStory() {
+  const st = G.story;
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  if (!st.started) {
+    updNoise(); ctx.globalAlpha = .08; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+    glitchText('FIVE NIGHTS AT VNUK', 480, 180, 48, '#9a9a9a', Math.random() < .06 ? .8 : .1);
+    if (Math.floor(G.t * 1.6) % 2) txt(ctx, '▶ NHẤN ĐỂ BẮT ĐẦU', 480, 270, 34, '#fff', 'center');
+    txt(ctx, '(nên bật âm thanh)', 480, 318, 20, '#777', 'center');
+    return;
+  }
+  if (st.end >= 0) { drawTitleReveal(st.end, st.face); return; }
+  const p = STORY[st.page];
+  if (p.scene === 'home') drawHomeScene(p, st); else drawSchoolScene(st);
+  ctx.drawImage(SCAN, 0, 0); ctx.drawImage(VIG, 0, 0);
+  updNoise(); ctx.globalAlpha = .06; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+  const fade = Math.min(1, st.pt * 2.5); ctx.fillStyle = `rgba(0,0,0,${1 - fade})`; ctx.fillRect(0, 0, W, H);
+  txt(ctx, p.time, 30, 24, 22, '#9fb4d8');
+  // khung lời kể
+  ctx.fillStyle = 'rgba(0,0,0,.82)'; ctx.fillRect(40, 404, 880, 120); ctx.strokeStyle = '#4a5a6a'; ctx.lineWidth = 2; ctx.strokeRect(40, 404, 880, 120);
+  const lines = wrapText(p.text.slice(0, Math.floor(st.chars)), 840, 26);
+  lines.forEach((l, i) => txt(ctx, l, 60, 418 + i * 30, 26, p.pose === 'panic' ? '#ffd0d0' : '#e8eef8'));
+  if (st.chars >= p.text.length && Math.floor(G.t * 2) % 2) txt(ctx, '▼', 896, 496, 22, '#fff', 'center');
+  txt(ctx, `${st.page + 1}/${STORY.length}  ·  Bấm để tiếp  ·  ESC: bỏ qua`, 920, 24, 18, '#667', 'right');
+}
+/* ============================ CUỘC GỌI BỘ ĐÀM ĐÊM 1 (ông bảo vệ) ============================ */
+const CALLS = {};
+const CALL_N1 = [
+  '*rè rè*... Alo, alo... Hưng phải không? Bảo vệ trường đây. Nghe rõ thì cứ ngồi yên đó.',
+  'Tối qua camera ghi lại cảnh cậu lẻn vào trường lúc nửa đêm. Đột nhập ban đêm là vi phạm nghiêm trọng đấy, cậu biết chứ?',
+  'Ban giám hiệu đã họp rồi. Không đuổi học, cũng không bắt đền tiền... nhưng cậu phải chuộc lỗi.',
+  'Cậu bị phạt TRỰC ĐÊM: kiểm tra an ninh và tắt thiết bị điện toàn trường, 5 đêm liên tiếp, từ 12 giờ đêm đến 6 giờ sáng.',
+  'Cứ ngồi trong phòng học, xem camera trên tablet. Điện dự phòng có hạn thôi, đóng cửa, bật đèn đều tốn pin... tiết kiệm mà dùng.',
+  'À... còn chuyện này. *rè* Giờ này trong trường... đôi khi có "người" đi lại. Nếu thấy ai đứng ngoài cửa... ĐỪNG cho họ vào.',
+  'Thế nhé. Đêm đầu thường... yên ổn thôi. *rè rè* ...Chúc may mắn. *tút*',
+];
+CALLS[1] = CALL_N1;
+CALLS[2] = ['*rè*... Làm tốt lắm. À mà đêm nay cậu để mắt tới cái Phòng Lab (CAM 3) một chút nhé...', 'Hình như thằng Tấn Sỹ hay nấp trong đó, đừng để nó thấy cậu lơ là. *tút*'];
+CALLS[3] = ['*rè rè*... Hệ thống ắc quy dự phòng của phòng học đang hơi yếu, đêm nay dung lượng pin tối đa còn 90% thôi.', 'Nhớ tiết kiệm điện nhé... *tút*'];
+CALLS[4] = ['*rè... rè*... Đường truyền camera đêm nay nhiễu nặng lắm, hình ảnh chập chờn liên tục.', 'Bọn ngoài hành lang cũng bắt đầu manh động hơn rồi, cẩn thận hai bên cửa! *tút*'];
+CALLS[5] = ['*rè*... Đêm 5/5. Đêm cuối cùng để hoàn thành án phạt và nhận lại tài liệu đồ án.', 'Cầm cự đến 06:00 AM. *tút*'];
+function startCall() { G.call = { i: 0, chars: 0, wait: 0, vt: 0, lines: CALLS[G.night] || CALL_N1 }; A.radioOn(); setTimeout(() => sayLine(), 450); }
+function sayLine() { // mặc định: giọng bộ đàm tổng hợp; bật "giọng tiếng Việt thật" trong Cài đặt thì dùng TTS
+  const c = G.call; if (!c) return; const i = c.i;
+  c.spoken = !!VOL.tts && A.say(c.lines[i], () => { if (G.call && G.call.i === i) G.call.speechDone = true; });
+  c.speechDone = !c.spoken; c.words = 0; c.released = false; c.lastCh = -1; c.bt = 0;
+  if (!c.spoken) A.pttDown();
+}
+function endCall() { if (!G.call) return; G.call = null; G.playT = 0; A.radioOff(); }
+function updateCall(dt) {
+  const c = G.call, line = c.lines[c.i];
+  if (c.chars < line.length) {
+    c.chars = Math.min(line.length, c.chars + dt * (c.spoken ? 17 : 20));
+    if (!c.spoken) { // tiếng "tít tít" theo từng ký tự chạy chữ (cao thấp như giọng nói)
+      const ci = Math.floor(c.chars) - 1, ch = line[ci];
+      if (ci > (c.lastCh ?? -1)) { c.lastCh = ci; c.bt = (c.bt || 0);
+        if (ch && /[^\s*.,…]/.test(ch) && G.t - c.bt > .05) { c.bt = G.t; const up = /[A-ZĐ!]/.test(ch) ? 1.2 : 1, q = /\?/.test(line.slice(ci, ci + 3)) ? 1.15 : 1; A.blip((880 + Math.random() * 160) * up * q); }
+      }
+    }
+    if (false) {
+      const typed = line.slice(0, Math.ceil(c.chars)), ws = typed.split(/\s+/).filter(Boolean), n = ws.length;
+      while (c.words < n) {
+        const wd = ws[c.words], allW = line.split(/\s+/).length; c.words++;
+        if (/^\*|\*$/.test(wd)) { A.radioCrackle(); continue; }
+        const f0 = 132 - 30 * (c.words / allW), stress = /[A-ZĐ]{2,}|!/.test(wd) ? 1.3 : (/[?]/.test(wd) ? 1.15 : 1);
+        // (không phát tiếng thì thầm theo âm tiết — chỉ giữ nền xì xào liên tục)
+      }
+    }
+  } else {
+    c.wait += dt;
+    if (!c.spoken && !c.released) { c.released = true; A.pttUp(); }
+    const ready = c.spoken ? (c.speechDone && c.wait > .5) || c.wait > 14 : c.wait > 1.1;
+    if (ready) { c.i++; c.chars = 0; c.wait = 0; if (c.i >= c.lines.length) return endCall(); A.radioSquelch(); setTimeout(() => sayLine(), 250); }
+  }
+  if (Math.random() < dt * .4) A.radioCrackle();
+}
+function drawCallBox() {
+  const c = G.call; if (!c) return;
+  const x = G.cam ? 160 : 110, y = G.cam ? 196 : 92, w = 640, h = 112; CALL_SKIP[0] = x + w - 250; CALL_SKIP[1] = y + h - 26;
+  ctx.fillStyle = 'rgba(0,0,0,.78)'; ctx.fillRect(x, y, w, h); ctx.strokeStyle = '#5a6a4a'; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, h);
+  // bộ đàm pixel
+  const bx = x + 14, by = y + 16;
+  ctx.fillStyle = '#1c1f1c'; ctx.fillRect(bx, by + 10, 44, 78); ctx.fillStyle = '#2b302b'; ctx.fillRect(bx + 2, by + 12, 40, 74);
+  ctx.fillStyle = '#1c1f1c'; ctx.fillRect(bx + 30, by - 10, 6, 22);
+  ctx.fillStyle = '#0d1a0d'; ctx.fillRect(bx + 7, by + 18, 30, 18);
+  const talking = c.chars < c.lines[c.i].length || (c.spoken && !c.speechDone);
+  for (let i = 0; i < 6; i++) { const hh = talking ? 2 + Math.random() * 13 : 2; ctx.fillStyle = '#5fe07a'; ctx.fillRect(bx + 9 + i * 5, by + 34 - hh, 3, hh); }
+  for (let i = 0; i < 5; i++) { ctx.fillStyle = '#151815'; ctx.fillRect(bx + 8, by + 44 + i * 7, 28, 3); }
+  ctx.fillStyle = talking && Math.floor(G.t * 6) % 2 ? '#ff3030' : '#4a1010'; ctx.fillRect(bx + 18, by + 12, 6, 4);
+  // nội dung
+  txt(ctx, 'BẢO VỆ TRƯỜNG · KÊNH 03', x + 76, y + 10, 18, '#b6d98a');
+  if (talking) txt(ctx, '● ĐANG NÓI', x + w - 14, y + 10, 16, Math.floor(G.t * 3) % 2 ? '#ff5a5a' : '#a33', 'right');
+  const lines = wrapText(c.lines[c.i].slice(0, Math.floor(c.chars)), w - 100, 22);
+  lines.slice(0, 3).forEach((l, i) => txt(ctx, l, x + 76, y + 34 + i * 24, 22, '#e8eef0'));
+  txt(ctx, `${c.i + 1}/${c.lines.length} · [M] bỏ qua cuộc gọi`, x + w - 14, y + h - 22, 15, '#778', 'right');
+  updNoise(); ctx.globalAlpha = .05; ctx.drawImage(NOISE, 0, 0, 240, 135, x, y, w, h); ctx.globalAlpha = 1;
+}
+const CALL_SKIP = [560, 180, 250, 26];
+/* ============================ ENDING SAU ĐÊM 5 ============================ */
+const END_TALK = [
+  { who: null, text: 'Sáng hôm sau. Hưng lê từng bước lên lớp báo cáo đồ án, mắt thâm quầng, tay vẫn còn run...' },
+  { who: 'freddy', name: 'Bá Phát', text: 'Ủa Hưng, mắt thâm như gấu trúc vậy? Thức đêm chạy deadline hả ông?' },
+  { who: 'bonny', name: 'Thành Long', text: 'Tối qua tui ngủ từ 9 giờ mà... có đi đâu đâu. Sao nhìn tui ghê vậy?' },
+  { who: 'chica', name: 'Minh Phúc', text: 'Ăn cupcake không? Sáng nay tui mới mua ở căng-tin nè, còn nóng!' },
+  { who: 'foxy', name: 'Tấn Sỹ', text: 'Mà ai làm rối tung cái rèm Phòng Lab vậy trời? Tui định trốn ngủ trưa trong đó...' },
+  { who: 'hung', name: 'Tuấn Hưng', text: '......', panic: true },
+  { who: null, text: 'Hưng quyết định... từ nay sẽ KHÔNG BAO GIỜ để quên USB ở trường nữa.' },
+];
+function startEnding() { A.stopAll(); G.state = 'ENDING'; G.end = { sc: 0, t: 0, li: 0, chars: 0, stamped: false, bell: false }; ui(null); A.birds(); }
+function endingAdvance() {
+  const e = G.end; A.init();
+  if (e.sc === 0) { if (e.t < 1.2) return; e.sc = 1; e.t = 0; A.paper(); return; }
+  if (e.sc === 1) { if (e.t < 2.2) { e.t = 2.2; return; } e.sc = 2; e.t = 0; e.li = 0; e.chars = 0; A.schoolBell(); return; }
+  if (e.sc === 2) {
+    const L = END_TALK[e.li];
+    if (e.chars < L.text.length) { e.chars = L.text.length; return; }
+    if (e.li < END_TALK.length - 1) { e.li++; e.chars = 0; A.click(); return; }
+    e.sc = 3; e.t = 0; A.victory(); return;
+  }
+  if (e.sc === 3 && e.t > 1.5) toMenu();
+}
+function updateEnding(dt) {
+  const e = G.end; e.t += dt;
+  if (e.sc === 0 && e.t > 6) { e.sc = 1; e.t = 0; A.paper(); }
+  if (e.sc === 1 && e.t > 1.6 && !e.stamped) { e.stamped = true; A.stamp(); G.shake = .5; }
+  if (e.sc === 2) {
+    const L = END_TALK[e.li], before = Math.floor(e.chars);
+    e.chars = Math.min(L.text.length, e.chars + dt * 30);
+    if (Math.floor(e.chars) > before && /[^\s.]/.test(L.text[Math.floor(e.chars) - 1] || '')) A.talk(L.who);
+  }
+}
+function drawDawnRoom(warm, t) {
+  const z = 1.08 + t * .01;
+  ctx.save(); ctx.translate(480, 270); ctx.scale(z, z); ctx.translate(-480, -270); ctx.drawImage(IMG.map_office, 0, 0, W, H); ctx.restore();
+  const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, `rgba(255,170,80,${.35 * warm})`); g.addColorStop(1, `rgba(255,110,90,${.15 * warm})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter'; // tia nắng xuyên qua rèm sáo
+  for (let i = 0; i < 7; i++) {
+    const x0 = 240 + i * 26 + Math.sin(t * .5 + i) * 3, a = (.06 + .03 * Math.sin(t * .8 + i * 1.7)) * warm;
+    ctx.fillStyle = `rgba(255,220,150,${a})`; ctx.beginPath(); ctx.moveTo(x0, 60); ctx.lineTo(x0 + 14, 60); ctx.lineTo(x0 + 260, 540); ctx.lineTo(x0 + 200, 540); ctx.closePath(); ctx.fill();
+  }
+  for (let i = 0; i < 30; i++) { const px = (i * 97 + t * 12 * (1 + i % 3)) % W, py = (i * 53 + Math.sin(t + i) * 20 + t * 8) % H; ctx.fillStyle = `rgba(255,240,200,${.25 * warm})`; ctx.fillRect(px, py, 2, 2); }
+  ctx.globalCompositeOperation = 'source-over';
+}
+function drawPaper(e) {
+  const p = Math.min(1, e.t / .7), ease = 1 - Math.pow(1 - p, 3), x = 210, w = 540, h = 470, y = 560 - ease * 525;
+  ctx.save(); ctx.translate(480, y + h / 2); ctx.rotate(-.025 * (1 - ease) + .01); ctx.translate(-480, -(y + h / 2));
+  ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(x + 10, y + 12, w, h);
+  ctx.fillStyle = '#efe6cf'; ctx.fillRect(x, y, w, h);
+  ctx.strokeStyle = '#7a6a4a'; ctx.lineWidth = 3; ctx.strokeRect(x + 10, y + 10, w - 20, h - 20); ctx.lineWidth = 1; ctx.strokeRect(x + 16, y + 16, w - 32, h - 32);
+  const T = (s, yy, size, c = '#2a2418', al = 'center', xx = 480) => txt(ctx, s, xx, y + yy, size, c, al, false);
+  T('TRƯỜNG VNUK · VIỆN NC & ĐT VIỆT - ANH', 28, 16, '#5a4a2a');
+  T('BIÊN BẢN HOÀN THÀNH TRỰC ĐÊM', 52, 26, '#1e2a5a');
+  ctx.fillStyle = '#a51d24'; ctx.fillRect(x + 60, y + 88, w - 120, 2);
+  const rows = [['Họ và tên:', 'NGUYỄN TUẤN HƯNG'], ['Hình thức:', 'Trực đêm kiểm tra an ninh'], ['', '& tắt thiết bị điện toàn trường'], ['Thời gian:', '5/5 đêm · 12:00 AM – 6:00 AM'], ['Kết quả:', 'ĐÃ HOÀN THÀNH'], ['Xử lý:', 'XOÁ ÁN PHẠT'], ['Hoàn trả:', 'Tài liệu thuyết trình'], ['', '+ USB source code đồ án']];
+  rows.forEach(([k, v], i) => { T(k, 108 + i * 30, 18, '#5a4a2a', 'left', x + 36); T(v, 108 + i * 30, 18, i === 4 || i === 5 ? '#a51d24' : '#2a2418', 'left', x + 160); });
+  T('Bảo vệ trường', 372, 16, '#5a4a2a', 'left', x + 40); T('Ban Giám hiệu', 372, 16, '#5a4a2a', 'left', x + 230);
+  ctx.strokeStyle = '#1e2a5a'; ctx.lineWidth = 2; ctx.beginPath(); // chữ ký nguệch ngoạc
+  for (let i = 0; i <= 40; i++) { const sx = x + 40 + i * 2.6, sy = y + 410 + Math.sin(i * .9) * 8 * Math.sin(i * .21); i ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy); } ctx.stroke();
+  if (e.t > 1.6) { // dấu đỏ "ĐÃ DUYỆT"
+    const s = Math.max(1, 2.2 - (e.t - 1.6) * 8);
+    ctx.save(); ctx.translate(x + 430, y + 395); ctx.rotate(-.22); ctx.scale(s, s); ctx.globalAlpha = .85;
+    ctx.strokeStyle = '#c0121c'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0, 0, 52, 0, 7); ctx.stroke(); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 44, 0, 7); ctx.stroke();
+    txt(ctx, 'ĐÃ DUYỆT', 0, -14, 22, '#c0121c', 'center', false); txt(ctx, 'VNUK', 0, 10, 14, '#c0121c', 'center', false);
+    ctx.restore(); ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+function renderEnding() {
+  const e = G.end;
+  ctx.save(); if (G.shake > 0) ctx.translate(rand(-8, 8) * G.shake, rand(-8, 8) * G.shake);
+  if (e.sc === 0) {
+    drawDawnRoom(Math.min(1, e.t / 2), e.t);
+    ctx.fillStyle = `rgba(0,0,0,${Math.max(0, 1 - e.t / 1.5)})`; ctx.fillRect(0, 0, W, H);
+    if (e.t > 1.5) { ctx.globalAlpha = Math.min(1, (e.t - 1.5) / .8); const bk = ctx.createRadialGradient(480, 220, 40, 480, 220, 420); bk.addColorStop(0, 'rgba(0,0,0,.6)'); bk.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = bk; ctx.fillRect(0, 0, W, H);
+      txt(ctx, '6:00 AM', 480, 150, 72, '#fff6e0', 'center'); txt(ctx, 'Ánh bình minh đầu tiên chiếu vào phòng học VNUK...', 480, 238, 26, '#ffe8c0', 'center'); txt(ctx, 'Đêm trực thứ 5 đã kết thúc.', 480, 272, 24, '#ffd9a0', 'center'); ctx.globalAlpha = 1; }
+  } else if (e.sc === 1) {
+    drawDawnRoom(1, e.t + 6); ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, 0, W, H); drawPaper(e);
+  } else if (e.sc === 2) {
+    ctx.drawImage(IMG.map_office, 0, 0, W, H); ctx.fillStyle = 'rgba(255,240,210,.12)'; ctx.fillRect(0, 0, W, H);
+    const L = END_TALK[e.li], cast = [['freddy', 120], ['bonny', 300], ['hung', 480], ['chica', 660], ['foxy', 845]];
+    for (const [n, x] of cast) {
+      const pose = n === 'hung' ? (L.panic ? 'panic' : 'idle') : 'idle', img = IMG[n + '_' + pose], speak = L.who === n;
+      const bob = speak ? Math.abs(Math.sin(e.t * 8)) * 6 : Math.sin(e.t * 2 + x) * 1.5;
+      ctx.globalAlpha = L.who && !speak ? .55 : 1; drawSprite(img, x + (n === 'hung' && L.panic ? rand(-2, 2) : 0), 418 - bob, 230); ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = 'rgba(0,0,0,.84)'; ctx.fillRect(40, 404, 880, 120); ctx.strokeStyle = '#c8b27a'; ctx.lineWidth = 2; ctx.strokeRect(40, 404, 880, 120);
+    if (L.name) { ctx.fillStyle = '#2a2014'; ctx.fillRect(56, 388, 170, 28); ctx.strokeRect(56, 388, 170, 28); txt(ctx, L.name, 141, 391, 22, '#ffd84a', 'center', false); }
+    wrapText(L.text.slice(0, Math.floor(e.chars)), 840, 26).forEach((l, i) => txt(ctx, l, 62, 426 + i * 30, 26, L.who ? '#fff' : '#ffe8c0'));
+    if (e.chars >= L.text.length && Math.floor(G.t * 2) % 2) txt(ctx, '▼', 896, 496, 22, '#fff', 'center');
+    txt(ctx, 'SÁNG HÔM SAU · LỚP HỌC VNUK', 30, 24, 22, '#ffe8c0');
+  } else {
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+    const a = Math.min(1, e.t / .8), r = 1 + .2 * Math.exp(-e.t * 3) * Math.cos(e.t * 14);
+    ctx.globalAlpha = a; ctx.save(); ctx.translate(480, 190); ctx.scale(r, r); ctx.shadowColor = '#ffd84a'; ctx.shadowBlur = 30 + 10 * Math.sin(e.t * 4);
+    txt(ctx, '★', 0, -80, 150, '#ffd84a', 'center', false); ctx.restore();
+    txt(ctx, 'HẾT', 480, 290, 56, '#fff', 'center'); txt(ctx, 'Nguyễn Tuấn Hưng đã phá đảo 5 đêm trực tại VNUK', 480, 352, 24, '#ddd', 'center');
+    txt(ctx, 'ĐÃ MỞ KHOÁ: CUSTOM NIGHT (AI 0–20)', 480, 392, 28, Math.floor(e.t * 3) % 2 ? '#ffd84a' : '#fff', 'center');
+    if (e.t > 1.5) txt(ctx, 'Bấm để về menu', 480, 452, 20, '#888', 'center');
+    ctx.globalAlpha = 1;
+  }
+  if (e.sc < 3) txt(ctx, 'Bấm để tiếp · ESC: bỏ qua', 930, 24, 18, '#ccb', 'right');
+  ctx.restore();
+}
+function render() {
+  ctx.save();
+  if (G.shake > 0 && G.state !== 'JUMPSCARE') ctx.translate(rand(-8, 8) * G.shake, rand(-8, 8) * G.shake);
+  switch (G.state) {
+    case 'LOADING': ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); txt(ctx, 'Đang tải...', 480, 250, 30, '#888', 'center'); break;
+    case 'MENU': renderMenuBG(); break;
+    case 'STORY': renderStory(); break;
+    case 'ENDING': renderEnding(); break;
+    case 'INTRO': renderIntro(); break;
+    case 'PLAYING': case 'BLACKOUT':
+      if (G.cam) renderCam(); else renderOffice();
+      renderHUD(); drawCallBox(); if (G.paused) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, W, H); } break;
+    case 'JUMPSCARE': renderJumpscare(); break;
+    case 'WIN': renderWin(); break;
+    case 'GAMEOVER': renderGameOver(); break;
+  }
+  ctx.restore();
+}
+
+/* ============================ INPUT ============================ */
+function cpos(e) { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; }
+const inR = (x, y, [rx, ry, rw, rh]) => x >= rx && x <= rx + rw && y >= ry && y <= ry + rh;
+cv.addEventListener('pointermove', e => { [G.mx, G.my] = cpos(e); });
+cv.addEventListener('pointerleave', () => { G.mx = -1; G.hold = 0; });
+cv.addEventListener('pointerup', e => { G.hold = 0; if (e.pointerType !== 'mouse') G.mx = -1; });
+cv.addEventListener('pointerdown', e => {
+  A.init(); if (G.paused) return;
+  const [x, y] = cpos(e); G.mx = x; G.my = y;
+  if (G.state === 'STORY') return storyAdvance();
+  if (G.state === 'ENDING') return endingAdvance();
+  if (G.state !== 'PLAYING') return;
+  if (G.call && inR(x, y, CALL_SKIP)) return endCall();
+  if (inR(x, y, [300, 494, 360, 46])) return toggleCam();
+  if (G.cam) { for (const id of CAM_KEYS) if (inR(x, y, [MAP[id][0] - 3, MAP[id][1] - 3, MW + 6, MH + 6])) return selectCam(id); return; }
+  const r = btnRects();
+  if (inR(x, y, r.dL)) return toggleDoor('L');
+  if (inR(x, y, r.lL)) return toggleLight('L');
+  if (inR(x, y, r.dR)) return toggleDoor('R');
+  if (inR(x, y, r.lR)) return toggleLight('R');
+});
+window.addEventListener('keydown', e => {
+  G.keys[e.key] = true;
+  if (G.state === 'ENDING') { if (e.key === 'Escape') toMenu(); else if ([' ', 'Enter'].includes(e.key)) { e.preventDefault(); endingAdvance(); } return; }
+  if (G.state === 'STORY') { if (e.key === 'Escape') storySkip(); else if ([' ', 'Enter'].includes(e.key)) { e.preventDefault(); storyAdvance(); } return; }
+  if (e.key === 'Escape') { if (G.paused) return resumeGame(); if (['PLAYING', 'BLACKOUT'].includes(G.state)) return openSettings(true); if (G.state === 'INTRO') return toMenu(); }
+  if (G.paused) return;
+  if (G.state !== 'PLAYING') return;
+  const k = e.key.toLowerCase();
+  if (k === ' ' || k === 's') { e.preventDefault(); toggleCam(); }
+  else if (k === 'm' && G.call) endCall();
+  else if (k === 'q') toggleDoor('L'); else if (k === 'e') toggleDoor('R');
+  else if (k === 'a') toggleLight('L'); else if (k === 'd') toggleLight('R');
+  else if (G.cam && /^[1-7]$/.test(k)) selectCam(CAM_KEYS[+k - 1]);
+});
+window.addEventListener('keyup', e => { G.keys[e.key] = false; });
+
+/* ============================ DOM UI ============================ */
+$('bNew').onclick = () => { A.init(); A.click(); startNight(1); };
+$('bCont').onclick = e => { A.init(); A.click(); startNight(+e.target.dataset.n || 1); };
+$('bStory').onclick = () => { A.init(); A.click(); startStoryScreen(); G.story.started = true; };
+$('bHelp').onclick = () => { A.init(); A.click(); ui('help'); };
+$('hBack').onclick = () => { A.click(); ui('menu'); };
+$('bCustom').onclick = () => { A.init(); A.click(); ui('custom'); };
+$('cBack').onclick = () => { A.click(); ui('menu'); };
+const CV = { freddy: 5, bonny: 5, foxy: 5, chica: 5 };
+(function buildCustom() {
+  const grid = $('cGrid');
+  ['freddy', 'bonny', 'foxy', 'chica'].forEach(n => {
+    const d = document.createElement('div'); d.className = 'card';
+    d.innerHTML = `<img src="${SPR[n + '_idle']}" alt=""><div class="nm">${CH[n].name}</div><div class="al">${CH[n].alias}</div>
+      <div class="val" id="v_${n}">${CV[n]}</div><input type="range" min="0" max="20" value="${CV[n]}" id="r_${n}">
+      <div class="row"><button class="sbtn pm" data-n="${n}" data-d="-1">−</button><button class="sbtn pm" data-n="${n}" data-d="1">+</button></div>`;
+    grid.appendChild(d);
+  });
+  const set = (n, v) => { CV[n] = Math.max(0, Math.min(20, v)); $('v_' + n).textContent = CV[n]; $('r_' + n).value = CV[n]; };
+  grid.addEventListener('input', e => { if (e.target.id.startsWith('r_')) set(e.target.id.slice(2), +e.target.value); });
+  grid.addEventListener('click', e => { const b = e.target.closest('.pm'); if (b) { A.click(); set(b.dataset.n, CV[b.dataset.n] + +b.dataset.d); } });
+  document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { A.click(); const v = b.dataset.p.split(',').map(Number); ['freddy', 'bonny', 'foxy', 'chica'].forEach((n, i) => set(n, v[i])); });
+  $('cMult').oninput = e => { $('cMultV').textContent = 'x' + (+e.target.value).toFixed(2); };
+  $('cStart').onclick = () => { A.click(); startNight(7, { night_number: 7, freddy_ai: CV.freddy, bonny_ai: CV.bonny, foxy_ai: CV.foxy, chica_ai: CV.chica, power_drain_multiplier: +$('cMult').value }); };
+})();
+// Settings
+(function buildSettings() {
+  const box = $('volRows');
+  VOL_KEYS.forEach(([k, label]) => {
+    const r = document.createElement('div'); r.className = 'vrow';
+    r.innerHTML = `<span>${label}</span><input type="range" min="0" max="100" value="${Math.round(VOL[k] * 100)}"><span class="pc">${Math.round(VOL[k] * 100)}%</span><button class="sbtn">▶ Thử</button>`;
+    const [, inp, pc, btn] = r.children;
+    inp.oninput = () => { A.init(); A.setVol(k, inp.value / 100); pc.textContent = inp.value + '%'; };
+    btn.onclick = () => { A.init(); A.preview(k); };
+    box.appendChild(r);
+  });
+  $('ttsChk').checked = !!VOL.tts;
+  $('ttsChk').onchange = e => { VOL.tts = e.target.checked; try { localStorage.setItem('fnavnuk_settings', JSON.stringify(VOL)); } catch (er) {} };
+  $('bSet').onclick = () => { A.click(); openSettings(false); };
+  $('sBack').onclick = () => { A.click(); ui('menu'); };
+  $('sResume').onclick = () => { A.click(); resumeGame(); };
+  $('sMenu').onclick = () => { A.click(); toMenu(); };
+  $('gearBtn').onclick = () => { if (['PLAYING', 'BLACKOUT'].includes(G.state) && !G.paused) openSettings(true); };
+})();
+// Debug panel
+$('dbgBtn').onclick = () => { A.init(); $('dbg').classList.toggle('on'); };
+document.querySelectorAll('[data-js]').forEach(b => b.onclick = () => { A.init(); if (G.state === 'JUMPSCARE' || G.state === 'LOADING' || G.paused) return; jumpscare(b.dataset.js, true); });
+document.querySelectorAll('[data-night]').forEach(b => b.onclick = () => { if (G.state === 'JUMPSCARE') return; A.init(); A.click(); startNight(+b.dataset.night); });
+$('dEnd').onclick = async () => { A.init(); await ApiService.saveProgress({ night_completed: 5, power_remaining: 50 }); G.paused = false; startEnding(); };
+$('dUnlock').onclick = async () => { await ApiService.saveProgress({ night_completed: 4, power_remaining: 100 }); if (G.state === 'MENU') refreshMenu(); };
+$('dWin').onclick = () => { if (G.paused) resumeGame(); if (G.state === 'INTRO') { G.state = 'PLAYING'; } if (['PLAYING', 'BLACKOUT'].includes(G.state)) G.time = NIGHT; };
+$('dHour').onclick = () => { if (playing() || G.state === 'BLACKOUT') G.time = Math.min(NIGHT - .5, (Math.floor(G.time / HOUR) + 1) * HOUR); };
+$('dPow').onclick = () => { if (playing()) G.power = Math.max(0.01, G.power - 25); };
+$('dSpd').onclick = e => { G.speed = G.speed === 1 ? 5 : G.speed === 5 ? 20 : 1; e.target.textContent = 'Tốc độ: x' + G.speed; };
+$('dInfo').onclick = e => { G.info = !G.info; e.target.textContent = 'Hiện trạng thái AI: ' + (G.info ? 'BẬT' : 'TẮT'); };
+$('dReset').onclick = () => { ApiService.reset(); if (G.state === 'MENU') refreshMenu(); };
+
+/* ============================ RESIZE + LOOP ============================ */
+function fit() { const st = $('stage'); st.style.fontSize = (st.clientWidth / 960 * 16) + 'px'; }
+window.addEventListener('resize', fit); fit();
+let last = performance.now();
+let gearShown = null;
+function loop(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; const gs = ['PLAYING', 'BLACKOUT'].includes(G.state) && !G.paused; if (gs !== gearShown) { gearShown = gs; $('gearBtn').style.display = gs ? 'block' : 'none'; } try { update(dt); render(); } catch (err) { console.error(err); } requestAnimationFrame(loop); }
+try { if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } } catch (e) {}
+ready.then(() => { buildOffice(); buildRooms(); ['1A', '1B', '2A', '3', '4A', '4B', '5'].forEach(k => { if (IMG['map_' + k]) ROOM[k] = IMG['map_' + k]; }); startStoryScreen(); });
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
