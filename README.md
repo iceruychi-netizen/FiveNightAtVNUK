@@ -13,7 +13,8 @@ Bạn vào vai **Nguyễn Tuấn Hưng**, bị phạt trực đêm 5 đêm liên
 
 ## Chơi ngay
 
-- Mở `index.html` bằng Chrome, Edge hoặc Firefox. File này chứa sẵn toàn bộ ảnh, không cần server.
+- Link online: https://fivenightatvnuk.vercel.app/
+- Chơi offline: chạy `python3 tools/build.py --inline` để tạo `index.offline.html` (nhúng sẵn ảnh), rồi mở file đó bằng trình duyệt. File `index.html` thường cần chạy qua web server vì ảnh nằm riêng trong `assets/` (ví dụ `python3 -m http.server`).
 - Hoặc bật GitHub Pages (xem bên dưới) để có link chơi online.
 
 ## Điều khiển
@@ -35,12 +36,13 @@ Phá đảo Đêm 5 để xem ending và mở khoá **Custom Night** (AI 0–20)
 
 ```
 .
-├── index.html               # bản build, chơi được ngay (tự sinh, đừng sửa tay)
+├── index.html               # bản build (tự sinh, đừng sửa tay), ảnh nạp từ assets/
+├── vercel.json              # cache dài hạn cho assets + header bảo mật
 ├── src/
 │   └── game.template.html   # mã nguồn game (HTML + CSS + JS), có chỗ /*SPRITES*/
 ├── assets/
-│   ├── sprites/             # khung hình nhân vật đã cắt + tách nền
-│   └── maps/                # ảnh phòng học, 7 camera, cửa sắt
+│   ├── sprites/             # khung hình nhân vật (WebP) đã cắt + tách nền
+│   └── maps/                # ảnh phòng học, 7 camera, cửa sắt (WebP)
 ├── tools/
 │   ├── build.py             # nhúng assets vào template → index.html
 │   └── slice_sprites.py     # cắt sprite sheet mới thành khung hình
@@ -54,7 +56,7 @@ Phá đảo Đêm 5 để xem ending và mở khoá **Custom Night** (AI 0–20)
 
 1. Sửa code trong `src/game.template.html`, hoặc thay ảnh trong `assets/`.
 2. Chạy `python3 tools/build.py` (chỉ cần Python 3, không cần thư viện ngoài).
-3. Mở lại `index.html` để chơi thử.
+3. Chạy `python3 -m http.server` rồi mở http://localhost:8000 để chơi thử.
 
 Muốn thay sprite sheet nhân vật: `pip install pillow numpy scipy`, rồi chạy `python3 tools/slice_sprites.py <thư mục chứa freddy.png, bonny.png, foxy.png, chica.png>`, sau đó build lại.
 

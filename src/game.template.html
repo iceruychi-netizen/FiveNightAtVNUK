@@ -3,9 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Five Nights at VNUK</title>
+<title>Five Nights at VNUK — Game kinh dị pixel tại Trường VNUK</title>
+<meta name="description" content="Five Nights at VNUK: web game kinh dị sinh tồn pixel art lấy cảm hứng từ Five Nights at Freddy's. Trực đêm 5 đêm trong phòng học VNUK, giữ điện, xem camera và đóng cửa để sống sót tới 6 giờ sáng.">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Five Nights at VNUK">
+<meta property="og:description" content="Web game kinh dị pixel art: sống sót 5 đêm trực trong phòng học VNUK. Chơi ngay trên trình duyệt.">
+<meta property="og:locale" content="vi_VN">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23000'/%3E%3Crect x='3' y='6' width='3' height='2' fill='%23f22'/%3E%3Crect x='10' y='6' width='3' height='2' fill='%23f22'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=VT323&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap"></noscript>
 <style>
 :root{--f:'VT323','Courier New',monospace}
 html,body{margin:0;height:100%;background:#000;color:#ddd;font-family:var(--f);overflow:hidden;user-select:none;-webkit-user-select:none}
@@ -50,6 +60,25 @@ button{font-family:var(--f);cursor:pointer}
 .help li{margin:.25em 0;font-size:1.2em}
 .help b{color:#fc6;font-weight:normal}
 kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
+/* INFO ? */
+#dbgBtn.on{display:block}
+#secret{cursor:default}
+#infoBtn{position:absolute;top:1em;right:1.2em;width:2.6em;height:2.6em;font-size:1.25em;line-height:1;background:#050805;color:#b8ffc4;border:2px solid #b8ffc4;box-shadow:0 0 0 2px #000,inset 0 0 0 2px #1a3a1f;cursor:pointer;image-rendering:pixelated}
+#infoBtn:hover,#infoBtn:focus{outline:none;color:#fff;border-color:#7dff9a;box-shadow:0 0 0 2px #000,0 0 .7em #3dff6a,inset 0 0 0 2px #2a6a35;text-shadow:0 0 .4em #7dff9a}
+#info{background:rgba(0,0,0,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:30}
+#info .panel{position:relative;width:min(46em,88%);max-height:84%;overflow-y:auto;border-color:#7dff9a;box-shadow:0 0 0 4px #000,0 0 30px rgba(61,255,106,.25)}
+#info .panel h2{color:#b8ffc4;padding-right:1.6em}
+#info h3{margin:1em 0 .3em;font-weight:normal;font-size:1.45em;color:#ffd84a;border-bottom:1px solid #333}
+#info p,#info li{font-size:1.2em;line-height:1.3;margin:.25em 0}
+#info ul{padding-left:1.1em;margin:.2em 0}
+#info b{font-weight:normal;color:#fff}
+#info .gang{color:#ff8a8a}
+#infoClose{position:absolute;top:.5em;right:.6em;background:#1a0607;border:2px solid #d22;color:#fff;font-size:1.2em;padding:0 .45em;line-height:1.2}
+#infoClose:hover{background:#4a0d10;box-shadow:0 0 .5em #f33}
+.spoiler{position:relative;display:inline-block;padding:0 .25em;border-radius:3px;cursor:pointer;color:transparent;background:repeating-linear-gradient(45deg,#222 0 3px,#3a3a3a 3px 5px,#151515 5px 7px);filter:blur(.6px)}
+.spoiler::after{content:'';position:absolute;inset:0;background:rgba(20,20,20,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);border-radius:3px}
+.spoiler.shown{color:#ff6a6a;background:#2a1010;filter:none;cursor:text}
+.spoiler.shown::after{display:none}
 /* SETTINGS */
 .vrow{display:grid;grid-template-columns:14em 14em 3em auto;gap:.7em;align-items:center;font-size:1.2em;margin:.2em 0;white-space:nowrap}
 .vrow .sbtn{font-size:.9em;padding:0 .6em;white-space:nowrap}
@@ -63,7 +92,7 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
 #end{flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:2.2%;pointer-events:none}
 #end .row{pointer-events:auto}
 /* DEBUG */
-#dbgBtn{position:absolute;left:.5em;bottom:.5em;z-index:20;background:rgba(0,0,0,.6);border:1px solid #3a3;color:#5f5;font-size:.95em;padding:.1em .5em;opacity:.65}
+#dbgBtn{display:none;position:absolute;left:.5em;bottom:.5em;z-index:20;background:rgba(0,0,0,.6);border:1px solid #3a3;color:#5f5;font-size:.95em;padding:.1em .5em;opacity:.65}
 #dbgBtn:hover{opacity:1}
 #dbg{position:absolute;left:.5em;bottom:2.2em;z-index:20;display:none;background:rgba(0,10,0,.92);border:1px solid #3a3;padding:.5em;width:15em;color:#7f7;font-size:.95em}
 #dbg.on{display:block}
@@ -86,6 +115,7 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
   <button class="mbtn" id="bSet">Cài đặt âm thanh</button>
   <button class="mbtn" id="bHelp">Hướng dẫn</button>
   <button class="mbtn" id="bStory">Xem lại cốt truyện</button>
+  <button id="infoBtn" title="Hồ sơ tác giả & nhân vật" aria-label="Thông tin">?</button>
   <div class="meta"><span class="stars" id="mStars"></span><br><span id="mPlayer">...</span></div>
 </div>
 
@@ -142,6 +172,26 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
   </div>
 </div>
 <button id="gearBtn">⚙ CÀI ĐẶT [ESC]</button>
+
+<div id="info" class="ov" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+  <div class="panel">
+    <button id="infoClose" aria-label="Đóng">X</button>
+    <h2 id="infoTitle">HỒ SƠ TÁC GIẢ &amp; <b style="color:#d22">BĂNG ĐẢNG VNUK</b></h2>
+    <h3>Người thực hiện</h3>
+    <ul>
+      <li><b>Ý tưởng, Thiết kế &amp; Lập trình:</b> Nguyễn Hữu <span id="secret">Triết</span> (Sinh viên VNUK - Viện Nghiên cứu và Đào tạo Việt - Anh, Đại học Đà Nẵng).</li>
+      <li><b>Thể loại:</b> Web Game Kinh dị Sinh tồn Pixel Art (lấy cảm hứng từ <i>Five Nights at Freddy's</i>).</li>
+    </ul>
+    <h3>Hồ sơ các nhân vật (ngoài đời thực)</h3>
+    <ul>
+      <li><b>Nguyễn Tuấn Hưng (Nhân vật chính):</b> Thằng IT "mập địch bel" điển hình của VNUK. Game gì cũng đụng nhưng chơi trò nào cũng NGU, mù tịt khoản viết prompt AI, lúc nào cũng thích "aura farming" tỏ ra ngầu lòi như nhân vật chính anime. Hậu quả của việc lỡ để quên tài liệu đồ án trên trường lúc nửa đêm khiến cậu bị phạt phải ngồi trực camera phòng học 5 đêm liên tiếp (12:00 AM – 6:00 AM) để chuộc lỗi.</li>
+      <li><b>Nguyễn Thành Long (Bonny):</b> "Bel", cực kỳ dễ nói chuyện, chơi game hay nhưng rất ồn và đặc biệt là da mặt dày. Thành viên cốt cán của bộ ba <b class="gang">"Tam thái tử cafe chú Toàn"</b>.</li>
+      <li><b>Nguyễn Bá Phát (Freddy):</b> Hệ điều hành giống hệt Long và cũng rất ồn, mỗi tội ít chơi game hơn và da mặt mỏng, dễ ngại (maybe?). Một mảnh ghép không thể thiếu của <b class="gang">"Tam thái tử cafe chú Toàn"</b>.</li>
+      <li><b>Minh Phúc (Chica):</b> Cực kỳ thích tụ tập nói chuyện cùng Phát và Long, tính tình cũng y chang hai ông bạn trên (còn có chơi game hay không thì... chịu). Chốt sổ bộ ba <b class="gang">"Tam thái tử cafe chú Toàn"</b>.</li>
+      <li><b>Huỳnh Tấn Sỹ (Foxy):</b> Fan cứng MU, đam mê bộ môn "cá độ" (cảnh báo: <i>"Kẻo tao đập cái đập Phú Ninh mày giờ thằng Tam Kỳ!"</i>), tính hay ồn và có sở thích đặc biệt là... <span class="spoiler" id="spoil" role="button" tabindex="0" title="Bấm để xem spoiler">ăn thịt chó</span>.</li>
+    </ul>
+  </div>
+</div>
 
 <div id="end" class="ov"><div class="row" id="endRow"></div></div>
 
@@ -640,26 +690,29 @@ function feather(img, h) { // ảnh cảnh camera, viền mờ để hoà vào n
   gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = gr; g.fillRect(0, 0, w, h); return c;
 }
+// Tải ảnh song song (giải mã trước để lần vẽ đầu không giật), rồi xử lý ảnh theo từng phần nhỏ,
+// nhường luồng chính giữa các phần để không tạo tác vụ dài.
+const yieldFrame = () => new Promise(r => setTimeout(r, 0));
 const ready = Promise.all(Object.keys(SPR).map(k => new Promise(res => {
-  const i = new Image(); i.onload = () => { IMG[k] = i; res(); }; i.onerror = res; i.src = SPR[k];
-}))).then(() => {
-  ['freddy_idle', 'freddy_stare', 'freddy_aggr'].forEach(k => DARK[k] = darken(IMG[k], .13, true));
-  DARK.freddy_door = darken(IMG.freddy_door, .3, false);
-  ['chica_cam', 'bonny_cam', 'freddy_cam', 'foxy_cam', 'foxy_peek'].forEach(k => SCENE[k] = feather(IMG[k], 470));
-  DARK.hung_panic = darken(IMG.hung_panic, .2, false);
-  SCENE.hung_door = feather(IMG.hung_door, 215); SCENE.hung_caught = softMask(IMG.hung_caught, 2);
-  ['freddy', 'bonny', 'chica'].forEach(n => DARK['sil_' + n] = darken(IMG[n + '_' + ({ freddy: 'stare', bonny: 'stare', chica: 'idle' })[n]], .04, false));
+  const i = new Image(); i.decoding = 'async';
+  i.onload = () => { IMG[k] = i; (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(res); };
+  i.onerror = res; i.src = SPR[k];
+}))).then(async () => {
+  const steps = [
+    () => { ['freddy_idle', 'freddy_stare', 'freddy_aggr'].forEach(k => DARK[k] = darken(IMG[k], .13, true)); DARK.freddy_door = darken(IMG.freddy_door, .3, false); },
+    () => { ['chica_cam', 'bonny_cam', 'freddy_cam', 'foxy_cam', 'foxy_peek'].forEach(k => SCENE[k] = feather(IMG[k], 470)); },
+    () => { DARK.hung_panic = darken(IMG.hung_panic, .2, false); SCENE.hung_door = feather(IMG.hung_door, 215); SCENE.hung_caught = softMask(IMG.hung_caught, 2); },
+    () => { ['freddy', 'bonny', 'chica'].forEach(n => DARK['sil_' + n] = darken(IMG[n + '_' + ({ freddy: 'stare', bonny: 'stare', chica: 'idle' })[n]], .04, false)); },
+  ];
   // khuôn mặt cận cảnh cho menu: cắt phần đầu từ sprite, làm tối, viền tan vào bóng đêm
   const FACE_BOX = FACE_BOX_G = { freddy: [.25, 0, .5, .38], bonny: [.27, 0, .46, .36], chica: [.26, .02, .52, .42], foxy: [.3, 0, .5, .39] };
-  for (const n in FACE_BOX) {
+  for (const n in FACE_BOX) steps.push(() => {
     const src = IMG[n + '_idle'], [fx, fy, fw, fh] = FACE_BOX[n], sw = Math.round(src.width * fw), sh = Math.round(src.height * fh);
     const [c, g] = mk(sw, sh); g.drawImage(src, Math.round(src.width * fx), Math.round(src.height * fy), sw, sh, 0, 0, sw, sh);
     SCENE['face_' + n] = softMask(c, 5); SCENE['faceD_' + n] = softMask(darken(c, .2, false), 5);
     SCENE['jumpD_' + n] = softMask(darken(IMG[n + '_jump'], .5, false), 2);
-  }
-  ['chica', 'freddy'].forEach(n => SCENE['peek_' + n] = softMask(IMG[n + '_door'], 2));
-  SCENE.peek_bonny = softMask(darken(IMG.bonny_door, 1.7, false), 3); // ảnh gốc của Long tối & nhỏ hơn → làm sáng, x3
-  SCENE.peek_freddy_dark = softMask(DARK.freddy_door, 2);
+  });
+  for (const step of steps) { step(); await yieldFrame(); }
 });
 
 /* ============================ PRE-RENDER: PHÒNG HỌC VNUK ============================ */
@@ -1914,6 +1967,22 @@ const CV = { freddy: 5, bonny: 5, foxy: 5, chica: 5 };
   document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { A.click(); const v = b.dataset.p.split(',').map(Number); ['freddy', 'bonny', 'foxy', 'chica'].forEach((n, i) => set(n, v[i])); });
   $('cMult').oninput = e => { $('cMultV').textContent = 'x' + (+e.target.value).toFixed(2); };
   $('cStart').onclick = () => { A.click(); startNight(7, { night_number: 7, freddy_ai: CV.freddy, bonny_ai: CV.bonny, foxy_ai: CV.foxy, chica_ai: CV.chica, power_drain_multiplier: +$('cMult').value }); };
+})();
+// Nút ? và bảng hồ sơ
+(function buildInfo() {
+  const beep = (f = 1320) => { A.init(); A.tone(f, .05, { type: 'square', vol: .06 }); };
+  const close = () => { $('info').classList.remove('on'); beep(880); $('infoBtn').focus(); };
+  $('infoBtn').onmouseenter = () => { if (A.ctx) A.tone(1760, .03, { type: 'square', vol: .035 }); };
+  $('infoBtn').onclick = () => { beep(); $('info').classList.add('on'); $('info').querySelector('.panel').scrollTop = 0; $('infoClose').focus(); };
+  $('infoClose').onclick = close;
+  $('info').onclick = e => { if (e.target.id === 'info') close(); };
+  window.addEventListener('keydown', e => { if (e.key === 'Escape' && $('info').classList.contains('on')) { e.stopImmediatePropagation(); close(); } }, true);
+  const reveal = () => { const sp = $('spoil'); if (sp.classList.contains('shown')) return; sp.classList.add('shown'); sp.removeAttribute('title'); beep(2093); };
+  $('secret').onclick = () => { // chỉ tác giả biết: bấm vào chữ "Triết" để bật/tắt nút DEBUG
+    const on = $('dbgBtn').classList.toggle('on'); beep(on ? 2349 : 660);
+    if (!on) $('dbg').classList.remove('on');
+  };
+  $('spoil').onclick = reveal; $('spoil').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(); } };
 })();
 // Settings
 (function buildSettings() {

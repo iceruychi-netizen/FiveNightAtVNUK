@@ -60,9 +60,9 @@ def main(src: Path) -> None:
                 pose = NAMES[who][i]
                 frame = sheet.crop((x0, y0, x1, y1))
                 if pose in CUTOUT and not (who == "foxy" and pose == "peek"):
-                    remove_bg(frame, who == "chica" or (who == "bonny" and pose == "aggr")).save(OUT / f"{who}_{pose}.png")
+                    remove_bg(frame, who == "chica" or (who == "bonny" and pose == "aggr")).save(OUT / f"{who}_{pose}.webp", lossless=True, method=6)
                 else:
-                    frame.save(OUT / f"{who}_{pose}.jpg", quality=88)
+                    frame.save(OUT / f"{who}_{pose}.webp", quality=82, method=6)
                 i += 1
     print("Xong:", OUT)
 
