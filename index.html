@@ -60,6 +60,45 @@ button{font-family:var(--f);cursor:pointer}
 .help li{margin:.25em 0;font-size:1.2em}
 .help b{color:#fc6;font-weight:normal}
 kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
+/* MOBILE */
+html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;touch-action:manipulation}
+#stage{touch-action:none}
+#bFull{display:none}
+.touch #bFull{display:block}
+#tctl{display:none}
+#tctl.on{display:block}
+.tside{position:absolute;bottom:23%;display:flex;flex-direction:column;gap:.6em;z-index:12}
+.tside.L{left:1.2%}.tside.R{right:1.2%}
+.tb{width:5.4em;height:3.4em;font-size:1.05em;line-height:1.05;color:#fff;background:rgba(70,8,10,.55);border:2px solid rgba(255,80,80,.75);border-radius:.4em;touch-action:manipulation}
+.tb.lt{background:rgba(60,55,20,.5);border-color:rgba(255,236,150,.75)}
+.tb.on{background:rgba(220,30,30,.85);box-shadow:0 0 .6em #f33}
+.tb.lt.on{background:rgba(255,236,150,.85);color:#000;box-shadow:0 0 .6em #ffe58a}
+#skipBtn{display:none;position:absolute;right:1em;bottom:1em;z-index:12;background:rgba(0,0,0,.6);border:1px solid #889;color:#ddd;font-size:1.15em;padding:.2em .8em}
+#skipBtn.on{display:block}
+#rotate{display:none;position:fixed;inset:0;z-index:100;background:#000;color:#ddd;font-family:var(--f);align-items:center;justify-content:center;text-align:center}
+#rotate .ph{font-size:64px;animation:rot 2s ease-in-out infinite}
+#rotate p{font-size:26px;margin:.4em 1em}#rotate .small{font-size:18px;color:#888}
+@keyframes rot{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+@media (orientation:portrait) and (pointer:coarse){#rotate{display:flex}}
+.touch #gearBtn .k{display:none}
+.touch #gearBtn{font-size:1.35em;padding:.15em .7em}
+#skipBtn{top:2.6em;bottom:auto}
+@media (max-height:520px){
+  #menu{padding-left:5%}
+  #menu h1{font-size:3.1em}
+  #menu .sub{font-size:1em;margin:.3em 0 .8em}
+  .mbtn{font-size:1.55em;padding:.02em 0}
+  #menu .meta{margin-top:.6em;font-size:.95em}
+  .panel{padding:.8em 1.1em}
+}
+/* START */
+#start{flex-direction:column;align-items:center;justify-content:center;gap:.4em;text-align:center;z-index:5}
+#start .st-title{margin:0 0 .6em;font-weight:normal;font-size:3em;letter-spacing:.06em;color:#9a9a9a;text-shadow:-2px 0 rgba(255,0,40,.6),2px 0 rgba(0,200,255,.45)}
+#start .st-go{background:none;border:none;color:#fff;font-size:2.1em;letter-spacing:.04em;cursor:pointer;animation:blink 1.25s steps(1) infinite}
+#start .st-go[disabled]{color:#888;cursor:default;animation:none}
+#start .st-go:focus-visible{outline:2px solid #7dff9a;outline-offset:4px}
+#start .st-sub{margin:0;font-size:1.25em;color:#8a8a8a}
+@keyframes blink{50%{opacity:0}}
 /* INFO ? */
 #dbgBtn.on{display:block}
 #secret{cursor:default}
@@ -104,7 +143,13 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
 </head>
 <body>
 <div id="wrap"><div id="stage">
-<canvas id="c" width="960" height="540"></canvas>
+<canvas id="c" width="960" height="540" aria-label="Màn hình game Five Nights at VNUK"></canvas>
+
+<main id="start" class="ov on">
+  <h1 class="st-title">FIVE NIGHTS AT VNUK</h1>
+  <button id="stBtn" class="st-go" disabled>Đang tải...</button>
+  <p class="st-sub">(nên bật âm thanh)</p>
+</main>
 
 <div id="menu" class="ov">
   <h1>FIVE NIGHTS<br>AT <span>VNUK</span></h1>
@@ -114,6 +159,7 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
   <button class="mbtn" id="bCustom">Custom Night</button>
   <button class="mbtn" id="bSet">Cài đặt âm thanh</button>
   <button class="mbtn" id="bHelp">Hướng dẫn</button>
+  <button class="mbtn" id="bFull">Toàn màn hình ⛶</button>
   <button class="mbtn" id="bStory">Xem lại cốt truyện</button>
   <button id="infoBtn" title="Hồ sơ tác giả & nhân vật" aria-label="Thông tin">?</button>
   <div class="meta"><span class="stars" id="mStars"></span><br><span id="mPlayer">...</span></div>
@@ -171,7 +217,7 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
     </div>
   </div>
 </div>
-<button id="gearBtn">⚙ CÀI ĐẶT [ESC]</button>
+<button id="gearBtn"><span>⚙ CÀI ĐẶT</span><span class="k"> [ESC]</span></button>
 
 <div id="info" class="ov" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
   <div class="panel">
@@ -192,6 +238,13 @@ kbd{border:1px solid #666;padding:0 .3em;color:#fff;background:#222}
     </ul>
   </div>
 </div>
+
+<div id="tctl" aria-hidden="false">
+  <div class="tside L"><button class="tb" data-a="dL">CỬA<br>TRÁI</button><button class="tb lt" data-a="lL">ĐÈN<br>TRÁI</button></div>
+  <div class="tside R"><button class="tb" data-a="dR">CỬA<br>PHẢI</button><button class="tb lt" data-a="lR">ĐÈN<br>PHẢI</button></div>
+</div>
+<button id="skipBtn">BỎ QUA ⏭</button>
+<div id="rotate"><div><div class="ph">📱</div><p>Xoay ngang điện thoại để chơi</p><p class="small">Bật toàn màn hình để không bị thanh trình duyệt che</p></div></div>
 
 <div id="end" class="ov"><div class="row" id="endRow"></div></div>
 
@@ -933,7 +986,7 @@ async function refreshMenu() {
   const bc = $('bCustom'); bc.disabled = p.stars_unlocked < 1; bc.textContent = p.stars_unlocked < 1 ? 'Custom Night 🔒 (phá đảo 5 đêm để mở)' : 'Custom Night ★';
   $('mPlayer').textContent = `Người trực: ${p.player.username} · Kỷ lục sống sót: ${Math.floor(p.best_survival_seconds / 60)}p${String(p.best_survival_seconds % 60).padStart(2, '0')}s`;
 }
-function toMenu() { G.paused = false; G.call = null; A.stopAll(); G.state = 'MENU'; G.js = null; ui('menu'); refreshMenu(); A.menuAmb(true); }
+function toMenu() { $('start').classList.remove('on'); G.paused = false; G.call = null; A.stopAll(); G.state = 'MENU'; G.js = null; ui('menu'); refreshMenu(); A.menuAmb(true); }
 async function startNight(n, cfg) {
   A.init();
   let c = cfg;
@@ -1394,8 +1447,8 @@ function renderHUD() {
   const hov = G.mx > 300 && G.mx < 660 && G.my > 494;
   ctx.fillStyle = hov ? 'rgba(80,160,90,.75)' : 'rgba(60,120,70,.45)'; ctx.fillRect(300, 498, 360, 34);
   ctx.strokeStyle = '#aea'; ctx.lineWidth = 2; ctx.strokeRect(300, 498, 360, 34);
-  txt(ctx, G.cam ? '▼  ĐÓNG CAMERA  [SPACE]' : '▲  MỞ CAMERA  [SPACE]', 480, 503, 24, '#fff', 'center', false);
-  if (G.playT < 14 && !G.cam && !G.call) txt(ctx, 'Rê chuột để nhìn qua lại · Q/E: cửa · A/D: đèn · SPACE: camera', 480, 70, 20, `rgba(230,230,230,${Math.min(1, (14 - G.playT) / 3)})`, 'center');
+  txt(ctx, G.cam ? (TOUCH ? '▼  ĐÓNG CAMERA' : '▼  ĐÓNG CAMERA  [SPACE]') : (TOUCH ? '▲  MỞ CAMERA' : '▲  MỞ CAMERA  [SPACE]'), 480, 503, 24, '#fff', 'center', false);
+  if (G.playT < 14 && !G.cam && !G.call) txt(ctx, TOUCH ? 'Vuốt ngang để nhìn · nút CỬA / ĐÈN ở hai bên · chạm thanh CAMERA' : 'Rê chuột để nhìn qua lại · Q/E: cửa · A/D: đèn · SPACE: camera', 480, 70, 20, `rgba(230,230,230,${Math.min(1, (14 - G.playT) / 3)})`, 'center');
   if (G.info) {
     const f = G.foxy, s = n => { const l = loc(n); return (l === 'L' || l === 'R') ? `CỬA ${l === 'L' ? 'TRÁI' : 'PHẢI'} (${G.c[n].doorT.toFixed(1)}s)` : 'CAM ' + l; };
     const lines = [`Phát[${G.ai.freddy}]: ${s('freddy')}`, `Long[${G.ai.bonny}]: ${s('bonny')}`, `Sỹ[${G.ai.foxy}]: ${['IDLE', 'PEEKING', 'READY', 'RUSHING ' + f.runT.toFixed(1) + 's'][f.stage]}`, `Phúc[${G.ai.chica}]: ${s('chica')}`, `Pin: ${G.power.toFixed(2)}%  t=${G.time.toFixed(0)}s  x${G.speed}`];
@@ -1583,10 +1636,11 @@ const STORY = [
   { scene: 'home', pose: 'panic', time: '11:52 PM · Phòng trọ của Hưng', text: 'Mồ hôi lạnh túa ra trên trán: cuốn tài liệu thuyết trình và chiếc USB chứa toàn bộ source code dự phòng vẫn nằm nguyên trên bàn học ở trường VNUK...' },
   { scene: 'school', time: '11:58 PM · Trường VNUK', text: '...nên cậu phải quay lại trường.' },
 ];
-function startStoryScreen() { G.state = 'STORY'; G.story = { started: false, page: 0, chars: 0, pt: 0, hb: 0, lastTyped: 0, end: -1 }; ui(null); }
+function startStoryScreen() { G.state = 'STORY'; G.story = { started: false, page: 0, chars: 0, pt: 0, hb: 0, lastTyped: 0, end: -1 }; ui(null);
+  const b = $('stBtn'); b.disabled = false; b.textContent = '▶ NHẤN ĐỂ BẮT ĐẦU'; $('start').classList.add('on'); }
 function storyAdvance() {
   const st = G.story; A.init();
-  if (!st.started) { st.started = true; st.pt = 0; return; }
+  if (!st.started) { st.started = true; st.pt = 0; $('start').classList.remove('on'); return; }
   if (st.end >= 0) return;
   const p = STORY[st.page];
   if (st.chars < p.text.length) { st.chars = p.text.length; return; }
@@ -1689,10 +1743,7 @@ function renderStory() {
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
   if (!st.started) {
     updNoise(); ctx.globalAlpha = .08; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
-    glitchText('FIVE NIGHTS AT VNUK', 480, 180, 48, '#9a9a9a', Math.random() < .06 ? .8 : .1);
-    if (Math.floor(G.t * 1.6) % 2) txt(ctx, '▶ NHẤN ĐỂ BẮT ĐẦU', 480, 270, 34, '#fff', 'center');
-    txt(ctx, '(nên bật âm thanh)', 480, 318, 20, '#777', 'center');
-    return;
+    return; // chữ của màn bắt đầu là HTML (#start) để hiện ngay khi tải trang
   }
   if (st.end >= 0) { drawTitleReveal(st.end, st.face); return; }
   const p = STORY[st.page];
@@ -1706,7 +1757,7 @@ function renderStory() {
   const lines = wrapText(p.text.slice(0, Math.floor(st.chars)), 840, 26);
   lines.forEach((l, i) => txt(ctx, l, 60, 418 + i * 30, 26, p.pose === 'panic' ? '#ffd0d0' : '#e8eef8'));
   if (st.chars >= p.text.length && Math.floor(G.t * 2) % 2) txt(ctx, '▼', 896, 496, 22, '#fff', 'center');
-  txt(ctx, `${st.page + 1}/${STORY.length}  ·  Bấm để tiếp  ·  ESC: bỏ qua`, 920, 24, 18, '#667', 'right');
+  txt(ctx, `${st.page + 1}/${STORY.length}  ·  ${TOUCH ? 'Chạm để tiếp' : 'Bấm để tiếp  ·  ESC: bỏ qua'}`, 920, 24, 18, '#667', 'right');
 }
 /* ============================ CUỘC GỌI BỘ ĐÀM ĐÊM 1 (ông bảo vệ) ============================ */
 const CALLS = {};
@@ -1777,7 +1828,7 @@ function drawCallBox() {
   if (talking) txt(ctx, '● ĐANG NÓI', x + w - 14, y + 10, 16, Math.floor(G.t * 3) % 2 ? '#ff5a5a' : '#a33', 'right');
   const lines = wrapText(c.lines[c.i].slice(0, Math.floor(c.chars)), w - 100, 22);
   lines.slice(0, 3).forEach((l, i) => txt(ctx, l, x + 76, y + 34 + i * 24, 22, '#e8eef0'));
-  txt(ctx, `${c.i + 1}/${c.lines.length} · [M] bỏ qua cuộc gọi`, x + w - 14, y + h - 22, 15, '#778', 'right');
+  txt(ctx, `${c.i + 1}/${c.lines.length} · ${TOUCH ? 'chạm vào đây để bỏ qua' : '[M] bỏ qua cuộc gọi'}`, x + w - 14, y + h - 22, 15, '#778', 'right');
   updNoise(); ctx.globalAlpha = .05; ctx.drawImage(NOISE, 0, 0, 240, 135, x, y, w, h); ctx.globalAlpha = 1;
 }
 const CALL_SKIP = [560, 180, 250, 26];
@@ -1891,7 +1942,7 @@ function render() {
   ctx.save();
   if (G.shake > 0 && G.state !== 'JUMPSCARE') ctx.translate(rand(-8, 8) * G.shake, rand(-8, 8) * G.shake);
   switch (G.state) {
-    case 'LOADING': ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); txt(ctx, 'Đang tải...', 480, 250, 30, '#888', 'center'); break;
+    case 'LOADING': ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); updNoise(); ctx.globalAlpha = .08; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1; break;
     case 'MENU': renderMenuBG(); break;
     case 'STORY': renderStory(); break;
     case 'ENDING': renderEnding(); break;
@@ -1909,24 +1960,44 @@ function render() {
 /* ============================ INPUT ============================ */
 function cpos(e) { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; }
 const inR = (x, y, [rx, ry, rw, rh]) => x >= rx && x <= rx + rw && y >= ry && y <= ry + rh;
-cv.addEventListener('pointermove', e => { [G.mx, G.my] = cpos(e); });
-cv.addEventListener('pointerleave', () => { G.mx = -1; G.hold = 0; });
-cv.addEventListener('pointerup', e => { G.hold = 0; if (e.pointerType !== 'mouse') G.mx = -1; });
-cv.addEventListener('pointerdown', e => {
-  A.init(); if (G.paused) return;
-  const [x, y] = cpos(e); G.mx = x; G.my = y;
+const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+document.documentElement.classList.toggle('touch', TOUCH);
+function handleTap(x, y) {
   if (G.state === 'STORY') return storyAdvance();
   if (G.state === 'ENDING') return endingAdvance();
   if (G.state !== 'PLAYING') return;
   if (G.call && inR(x, y, CALL_SKIP)) return endCall();
   if (inR(x, y, [300, 494, 360, 46])) return toggleCam();
-  if (G.cam) { for (const id of CAM_KEYS) if (inR(x, y, [MAP[id][0] - 3, MAP[id][1] - 3, MW + 6, MH + 6])) return selectCam(id); return; }
+  if (G.cam) { for (const id of CAM_KEYS) if (inR(x, y, [MAP[id][0] - 6, MAP[id][1] - 6, MW + 12, MH + 12])) return selectCam(id); return; }
   const r = btnRects();
   if (inR(x, y, r.dL)) return toggleDoor('L');
   if (inR(x, y, r.lL)) return toggleLight('L');
   if (inR(x, y, r.dR)) return toggleDoor('R');
   if (inR(x, y, r.lR)) return toggleLight('R');
+}
+let drag = null; // cảm ứng: vuốt ngang để nhìn qua lại, chạm nhẹ (không vuốt) mới tính là bấm
+cv.addEventListener('pointermove', e => {
+  if (e.pointerType === 'mouse') { [G.mx, G.my] = cpos(e); return; }
+  if (!drag || drag.id !== e.pointerId) return;
+  const [x] = cpos(e), dx = x - drag.x;
+  if (Math.abs(dx) > 12) drag.moved = true;
+  if (drag.moved && G.state === 'PLAYING' && !G.cam) G.tgtX = Math.max(0, Math.min(PMAX_X, drag.tx - dx * 1.3));
 });
+cv.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') G.mx = -1; G.hold = 0; });
+cv.addEventListener('pointercancel', () => { drag = null; });
+cv.addEventListener('pointerup', e => {
+  G.hold = 0;
+  if (e.pointerType === 'mouse' || !drag || drag.id !== e.pointerId) return;
+  const d = drag; drag = null;
+  if (!d.moved && !G.paused) handleTap(...cpos(e));
+});
+cv.addEventListener('pointerdown', e => {
+  A.init(); if (G.paused) return;
+  const [x, y] = cpos(e);
+  if (e.pointerType !== 'mouse') { drag = { id: e.pointerId, x, tx: G.tgtX, moved: false }; try { cv.setPointerCapture(e.pointerId); } catch (er) {} return; }
+  G.mx = x; G.my = y; handleTap(x, y);
+});
+cv.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener('keydown', e => {
   G.keys[e.key] = true;
   if (G.state === 'ENDING') { if (e.key === 'Escape') toMenu(); else if ([' ', 'Enter'].includes(e.key)) { e.preventDefault(); endingAdvance(); } return; }
@@ -1946,7 +2017,7 @@ window.addEventListener('keyup', e => { G.keys[e.key] = false; });
 /* ============================ DOM UI ============================ */
 $('bNew').onclick = () => { A.init(); A.click(); startNight(1); };
 $('bCont').onclick = e => { A.init(); A.click(); startNight(+e.target.dataset.n || 1); };
-$('bStory').onclick = () => { A.init(); A.click(); startStoryScreen(); G.story.started = true; };
+$('bStory').onclick = () => { A.init(); A.click(); startStoryScreen(); G.story.started = true; $('start').classList.remove('on'); };
 $('bHelp').onclick = () => { A.init(); A.click(); ui('help'); };
 $('hBack').onclick = () => { A.click(); ui('menu'); };
 $('bCustom').onclick = () => { A.init(); A.click(); ui('custom'); };
@@ -1968,6 +2039,25 @@ const CV = { freddy: 5, bonny: 5, foxy: 5, chica: 5 };
   $('cMult').oninput = e => { $('cMultV').textContent = 'x' + (+e.target.value).toFixed(2); };
   $('cStart').onclick = () => { A.click(); startNight(7, { night_number: 7, freddy_ai: CV.freddy, bonny_ai: CV.bonny, foxy_ai: CV.foxy, chica_ai: CV.chica, power_drain_multiplier: +$('cMult').value }); };
 })();
+$('stBtn').onclick = () => { A.init(); if (G.state === 'STORY' && !G.story.started) storyAdvance(); };
+$('start').onclick = e => { if (e.target.id === 'start' && G.state === 'STORY' && !G.story.started) { A.init(); storyAdvance(); } };
+// Điều khiển cảm ứng
+document.querySelectorAll('.tb').forEach(b => b.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation(); A.init(); if (G.paused || G.state !== 'PLAYING' || G.cam) return;
+  const a = b.dataset.a; (a[0] === 'd' ? toggleDoor : toggleLight)(a[1]); if (navigator.vibrate) navigator.vibrate(12);
+}));
+$('skipBtn').onclick = () => { A.init(); if (G.state === 'STORY') storySkip(); else if (G.state === 'ENDING') toMenu(); };
+const fsOK = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+if (!fsOK) $('bFull').style.display = 'none';
+$('bFull').onclick = async () => {
+  A.click(); const el = document.documentElement;
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    await (el.requestFullscreen || el.webkitRequestFullscreen).call(el, { navigationUI: 'hide' });
+    if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape').catch(() => {});
+  } catch (er) {}
+};
+document.addEventListener('fullscreenchange', () => { $('bFull').textContent = document.fullscreenElement ? 'Thoát toàn màn hình' : 'Toàn màn hình ⛶'; fit(); });
 // Nút ? và bảng hồ sơ
 (function buildInfo() {
   const beep = (f = 1320) => { A.init(); A.tone(f, .05, { type: 'square', vol: .06 }); };
@@ -2020,8 +2110,15 @@ $('dReset').onclick = () => { ApiService.reset(); if (G.state === 'MENU') refres
 function fit() { const st = $('stage'); st.style.fontSize = (st.clientWidth / 960 * 16) + 'px'; }
 window.addEventListener('resize', fit); fit();
 let last = performance.now();
-let gearShown = null;
-function loop(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; const gs = ['PLAYING', 'BLACKOUT'].includes(G.state) && !G.paused; if (gs !== gearShown) { gearShown = gs; $('gearBtn').style.display = gs ? 'block' : 'none'; } try { update(dt); render(); } catch (err) { console.error(err); } requestAnimationFrame(loop); }
+let gearShown = null, tctlShown = null, skipShown = null;
+function syncTouchUI() {
+  const t = TOUCH && G.state === 'PLAYING' && !G.cam && !G.paused;
+  if (t !== tctlShown) { tctlShown = t; $('tctl').classList.toggle('on', t); }
+  if (t) document.querySelectorAll('.tb').forEach(b => { const a = b.dataset.a, on = a === 'dL' ? G.doorL : a === 'dR' ? G.doorR : a === 'lL' ? G.lightL : G.lightR; if (b.classList.contains('on') !== on) b.classList.toggle('on', on); });
+  const sk = TOUCH && ((G.state === 'STORY' && G.story && G.story.started && G.story.end < 0) || G.state === 'ENDING');
+  if (sk !== skipShown) { skipShown = sk; $('skipBtn').classList.toggle('on', sk); }
+}
+function loop(now) { const dt = Math.min(.05, (now - last) / 1000); last = now; const gs = ['PLAYING', 'BLACKOUT'].includes(G.state) && !G.paused; if (gs !== gearShown) { gearShown = gs; $('gearBtn').style.display = gs ? 'block' : 'none'; } try { update(dt); render(); syncTouchUI(); } catch (err) { console.error(err); } requestAnimationFrame(loop); }
 try { if ('speechSynthesis' in window) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } } catch (e) {}
 ready.then(() => { buildOffice(); buildRooms(); ['1A', '1B', '2A', '3', '4A', '4B', '5'].forEach(k => { if (IMG['map_' + k]) ROOM[k] = IMG['map_' + k]; }); startStoryScreen(); });
 requestAnimationFrame(loop);
