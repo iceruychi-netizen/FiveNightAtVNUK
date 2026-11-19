@@ -45,7 +45,7 @@ button{font-family:var(--f);cursor:pointer}
 .panel{margin:auto;background:rgba(6,8,10,.94);border:2px solid #3a4246;box-shadow:0 0 0 4px #000,0 0 40px #000;padding:1.2em 1.6em;max-width:88%;max-height:88%;overflow:auto;color:#ccc}
 .panel h2{margin:0 0 .5em;font-weight:normal;font-size:2.2em;color:#eee;letter-spacing:.05em}
 .panel h2 b{color:#d22;font-weight:normal}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:.8em}
+.grid4{display:grid;grid-template-columns:repeat(5,1fr);gap:.7em}
 .card{border:1px solid #333;background:#0c0f12;padding:.5em;text-align:center}
 .card img{width:100%;height:6.5em;object-fit:contain;image-rendering:pixelated;background:#15191c}
 .card .nm{font-size:1.25em;color:#eee;margin-top:.2em}
@@ -176,11 +176,13 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
       <span id="cMultV" style="color:#fc6;font-size:1.3em">x1.00</span>
     </div>
     <div class="row" style="margin-top:.6em">
-      <button class="sbtn" data-p="0,0,0,0">Tắt hết</button>
-      <button class="sbtn" data-p="5,5,5,5">Dễ 5/5/5/5</button>
-      <button class="sbtn" data-p="10,10,10,10">Vừa 10/10/10/10</button>
-      <button class="sbtn" data-p="20,20,20,20">4/20 MODE</button>
-      <button class="sbtn" data-p="0,0,20,0">Chỉ Sỹ</button>
+      <button class="sbtn" data-p="0,0,0,0,0">Tắt hết</button>
+      <button class="sbtn" data-p="5,5,5,5,1">Dễ 5/5/5/5</button>
+      <button class="sbtn" data-p="10,10,10,10,5">Vừa 10/10/10/10</button>
+      <button class="sbtn" data-p="20,20,20,20,0">4/20 MODE</button>
+      <button class="sbtn" data-p="20,20,20,20,20">5/20 MODE</button>
+      <button class="sbtn" data-p="0,0,20,0,0">Chỉ Sỹ</button>
+      <button class="sbtn" data-p="0,0,0,0,20">Chỉ Duy Anh</button>
     </div>
     <div class="row" style="margin-top:.9em">
       <button class="sbtn" id="cBack">← Menu</button>
@@ -236,6 +238,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
       <li><b>Nguyễn Bá Phát (Freddy):</b> Hệ điều hành giống hệt Long và cũng rất ồn, mỗi tội ít chơi game hơn và da mặt mỏng, dễ ngại (maybe?). Một mảnh ghép không thể thiếu của <b class="gang">"Tam thái tử cafe chú Toàn"</b>.</li>
       <li><b>Minh Phúc (Chica):</b> Cực kỳ thích tụ tập nói chuyện cùng Phát và Long, tính tình cũng y chang hai ông bạn trên (còn có chơi game hay không thì... chịu). Chốt sổ bộ ba <b class="gang">"Tam thái tử cafe chú Toàn"</b>.</li>
       <li><b>Huỳnh Tấn Sỹ (Foxy):</b> Fan cứng MU, đam mê bộ môn "cá độ" (cảnh báo: <i>"Kẻo tao đập cái đập Phú Ninh mày giờ thằng Tam Kỳ!"</i>), tính hay ồn và có sở thích đặc biệt là... <span class="spoiler" id="spoil" role="button" tabindex="0" title="Bấm để xem spoiler">ăn thịt chó</span>.</li>
+      <li><b>Duy Anh (Golden Freddy):</b> Thực thể lỗi hệ thống bí ẩn của VNUK. Không cần mở cửa cũng tự xuất hiện ngay trước mặt bạn. Nếu thấy hắn ngồi trong phòng, hãy bật Camera lên ngay lập tức trước khi quá muộn.</li>
     </ul>
   </div>
 </div>
@@ -256,6 +259,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
   <button data-js="bonny">▶ Bonny · Thành Long</button>
   <button data-js="foxy">▶ Foxy · Tấn Sỹ</button>
   <button data-js="chica">▶ Chica · Minh Phúc</button>
+  <button data-js="duyanh">▶ Golden · Duy Anh</button>
   <div class="t">CHƠI THẲNG ĐÊM</div>
   <div style="display:flex;gap:.2em"><button data-night="1">1</button><button data-night="2">2</button><button data-night="3">3</button><button data-night="4">4</button><button data-night="5">5</button></div>
   <button id="dUnlock">Mở khoá cả 5 đêm</button>
@@ -264,6 +268,7 @@ html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webk
   <button id="dWin">★ Thắng đêm này (6 AM)</button>
   <button id="dHour">+1 giờ</button>
   <button id="dPow">Pin −25%</button>
+  <button id="dGold">Gọi Duy Anh (poster CAM 2A)</button>
   <button id="dSpd">Tốc độ: x1</button>
   <button id="dInfo">Hiện trạng thái AI: TẮT</button>
   <button id="dReset">Xoá tiến độ (localStorage)</button>
@@ -617,6 +622,7 @@ const A = {
       freddy: { f: [740, 990, 1320, 1760, 2350], up: 1.35, down: .92, lfo: 34, dep: .09, nf: 4200, nq: 1.2, nv: .5, drive: 7, sub: 0, vol: .9, len: 1.6 },        // Phát: to, nốt cao
       chica:  { f: [82, 110, 165, 220, 330], up: 1.08, down: .78, lfo: 7, dep: .12, nf: 520, nq: 1.4, nv: .6, drive: 18, sub: 46, vol: .95, len: 1.7, trem: 11 }, // Phúc: to, trầm, gầm rung
       foxy:   { f: [560, 760, 1020, 1380, 1860, 2500], up: 1.6, down: .85, lfo: 46, dep: .12, nf: 2600, nq: .6, nv: .9, drive: 10, sub: 0, vol: 1, len: 1.8 },   // Sỹ: hét toáng lên
+      duyanh: { f: [880, 1180, 1580, 2120, 2840, 3700], up: 1.5, down: .62, lfo: 63, dep: .2, nf: 5200, nq: .5, nv: 1, drive: 30, sub: 42, vol: 1, len: 1.6 }, // Duy Anh: thét the thé, méo tiếng
     }[who] || {};
     const ws = c.createWaveShaper(), k = new Float32Array(2048);
     for (let i = 0; i < 2048; i++) { const x = i / 1024 - 1; k[i] = Math.tanh(x * P.drive); } ws.curve = k;
@@ -671,7 +677,24 @@ const A = {
     else if (k === 'scare') { this.scream(['bonny', 'freddy', 'chica', 'foxy'][Math.floor(Math.random() * 4)]); }
     else if (k === 'music') { [659, 587, 523, 494, 523, 587, 659].forEach((f, i) => { this.tone(f, .5, { type: 'triangle', vol: .11, t: i * .29, bus: 'music' }); }); }
   },
-  stopAll() { this.stopAmb(); this.stopMusic(); this.menuAmb(false); this.radioOff(true); },
+  gfLaugh() { // tiếng cười trẻ con méo + rè sóng khi poster Duy Anh hiện ở CAM 2A
+    const bus = 'scare';
+    [0, .17, .33, .5, .7, .86].forEach((t, i) => { const f = 640 - i * 28 + Math.random() * 30; this.tone(f, .13, { type: 'triangle', vol: .09, t, to: f * .82, bus }); this.tone(f * 2.02, .1, { type: 'sine', vol: .03, t, to: f * 1.6, bus }); this.noise(.1, { type: 'bandpass', freq: 1800 + i * 90, q: 5, vol: .05, t, bus }); });
+    this.noise(1.3, { type: 'bandpass', freq: 2600, q: .6, vol: .16, attack: .02, bus }); this.tone(3900, .6, { type: 'square', vol: .012, t: .2, to: 4300, bus });
+  },
+  gfStatic(on) { // rè tĩnh điện to dần khi Duy Anh ngồi trong phòng
+    const c = this.ctx; if (!c) return;
+    if (this.gfS) { const { s, g } = this.gfS; g.gain.cancelScheduledValues(c.currentTime); g.gain.setTargetAtTime(.0001, c.currentTime, .03); s.stop(c.currentTime + .2); this.gfS = null; }
+    if (!on) return;
+    const s = c.createBufferSource(); s.buffer = this.nb; s.loop = true; const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = .5;
+    const g = c.createGain(), t0 = c.currentTime; g.gain.setValueAtTime(.02, t0); g.gain.exponentialRampToValueAtTime(.75, t0 + 2.8);
+    f.frequency.setValueAtTime(1400, t0); f.frequency.exponentialRampToValueAtTime(5200, t0 + 2.8);
+    s.connect(f); f.connect(g); g.connect(this.bus.scare); s.start(t0); this.gfS = { s, g };
+  },
+  crash() { // máy "treo": tiếng bíp kéo dài + vo ve điện
+    const bus = 'scare'; this.tone(1000, 1.9, { type: 'square', vol: .06, attack: .001, bus }); this.tone(50, 1.9, { type: 'sawtooth', vol: .1, attack: .001, bus }); this.noise(.08, { type: 'highpass', freq: 3000, vol: .5, attack: .001, bus });
+  },
+  stopAll() { this.stopAmb(); this.stopMusic(); this.menuAmb(false); this.radioOff(true); this.gfStatic(false); },
 };
 
 /* ============================ CORE SETUP ============================ */
@@ -697,6 +720,7 @@ const CH = {
   bonny:  { name: 'Nguyễn Thành Long', alias: 'Bonny' },
   foxy:   { name: 'Huỳnh Tấn Sỹ', alias: 'Foxy' },
   chica:  { name: 'Minh Phúc', alias: 'Chica' },
+  duyanh: { name: 'Duy Anh', alias: 'Golden Freddy' },
 };
 const CAMS = {
   '1A': 'SẢNH CHÍNH / HỘI TRƯỜNG VNUK',
@@ -716,8 +740,9 @@ const ROUTES = {
 
 /* ============================ IMAGES ============================ */
 const IMG = {}, DARK = {}, SCENE = {};
+const eh = (img, h) => img.baseH ? h * img.height / img.baseH : h; // ảnh có thêm bàn chân dưới khung chuẩn
 function darken(img, f, keepRed) {
-  const [c, g] = mk(img.width, img.height); g.drawImage(img, 0, 0);
+  const [c, g] = mk(img.width, img.height); g.drawImage(img, 0, 0); c.baseH = img.baseH;
   const d = g.getImageData(0, 0, c.width, c.height), a = d.data;
   for (let i = 0; i < a.length; i += 4) {
     const r = a[i], gg = a[i + 1], b = a[i + 2];
@@ -753,13 +778,26 @@ const ready = Promise.all(Object.keys(SPR).map(k => new Promise(res => {
   i.onerror = res; i.src = SPR[k];
 }))).then(async () => {
   const steps = [
-    () => { ['freddy_idle', 'freddy_stare', 'freddy_aggr'].forEach(k => DARK[k] = darken(IMG[k], .13, true)); DARK.freddy_door = darken(IMG.freddy_door, .3, false); },
+    () => { IMG.freddy_stare.baseH = IMG.freddy_idle.baseH = IMG.freddy_aggr.baseH = 186; IMG.bonny_idle.baseH = IMG.bonny_stare.baseH = IMG.bonny_aggr.baseH = 156; IMG.chica_idle.baseH = IMG.chica_aggr.baseH = 185; ['freddy_idle', 'freddy_stare', 'freddy_aggr'].forEach(k => DARK[k] = darken(IMG[k], .13, true)); DARK.freddy_door = darken(IMG.freddy_door, .3, false); },
     () => { ['chica_cam', 'bonny_cam', 'freddy_cam', 'foxy_cam', 'foxy_peek'].forEach(k => SCENE[k] = feather(IMG[k], 470)); },
     () => { DARK.hung_panic = darken(IMG.hung_panic, .2, false); SCENE.hung_door = feather(IMG.hung_door, 215); SCENE.hung_caught = softMask(IMG.hung_caught, 2); },
+    () => { // poster chân dung Duy Anh lỗi màu vàng (CAM 2A)
+      const im = IMG.duyanh_idle, [c, g] = mk(90, 128);
+      g.fillStyle = '#1a1405'; g.fillRect(0, 0, 90, 128); g.imageSmoothingEnabled = false;
+      const sw = im.width * .5, sh = sw * 118 / 82; g.drawImage(im, im.width * .17, 2, sw, sh, 4, 4, 82, 118); // chân dung: đầu + ngực
+      const d = g.getImageData(0, 0, 90, 128), a = d.data;
+      for (let i = 0; i < a.length; i += 4) { const l = (a[i] * .3 + a[i + 1] * .59 + a[i + 2] * .11) / 255; a[i] = 40 + 215 * l; a[i + 1] = 28 + 175 * l * l; a[i + 2] = 10 + 40 * l * l; }
+      g.putImageData(d, 0, 0);
+      g.fillStyle = 'rgba(0,0,0,.35)'; for (let y = 0; y < 128; y += 2) g.fillRect(0, y, 90, 1);
+      for (let i = 0; i < 7; i++) { const y = Math.random() * 128, hh = 2 + Math.random() * 5; g.drawImage(c, 0, y, 90, hh, (Math.random() - .5) * 10, y, 90, hh); }
+      g.strokeStyle = '#5a4512'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 87, 125);
+      g.fillStyle = '#ff3a2a'; g.font = '13px monospace'; g.fillText("IT'S ME", 18, 122);
+      SCENE.gf_poster = c;
+    },
     () => { ['freddy', 'bonny', 'chica'].forEach(n => DARK['sil_' + n] = darken(IMG[n + '_' + ({ freddy: 'stare', bonny: 'stare', chica: 'idle' })[n]], .04, false)); },
   ];
   // khuôn mặt cận cảnh cho menu: cắt phần đầu từ sprite, làm tối, viền tan vào bóng đêm
-  const FACE_BOX = FACE_BOX_G = { freddy: [.25, 0, .5, .38], bonny: [.27, 0, .46, .36], chica: [.26, .02, .52, .42], foxy: [.3, 0, .5, .39] };
+  const FACE_BOX = FACE_BOX_G = { freddy: [.25, 0, .5, .345], bonny: [.27, 0, .46, .332], chica: [.26, .017, .52, .358], foxy: [.3, 0, .5, .39] };
   for (const n in FACE_BOX) steps.push(() => {
     const src = IMG[n + '_idle'], [fx, fy, fw, fh] = FACE_BOX[n], sw = Math.round(src.width * fw), sh = Math.round(src.height * fh);
     const [c, g] = mk(sw, sh); g.drawImage(src, Math.round(src.width * fx), Math.round(src.height * fy), sw, sh, 0, 0, sw, sh);
@@ -906,7 +944,7 @@ const VIG = (() => { const [c, g] = mk(960, 540); const gr = g.createRadialGradi
 
 /* ============================ GAME STATE ============================ */
 const G = {
-  state: 'LOADING', night: 1, custom: false, ai: { freddy: 0, bonny: 0, foxy: 0, chica: 0 }, mult: 1, speed: 1, info: false,
+  state: 'LOADING', night: 1, custom: false, ai: { freddy: 0, bonny: 0, foxy: 0, chica: 0, golden: 0 }, mult: 1, speed: 1, info: false,
   t: 0, mx: -1, my: -1, keys: {},
 };
 function resetRun() {
@@ -915,6 +953,7 @@ function resetRun() {
     dAL: 0, dAR: 0, poseT: 0, moveAcc: 0, staticT: 0, shake: 0, bo: null, js: null, winT: 0, playT: 0, flick: 0,
     c: { freddy: { pos: 0, doorT: 0, seen: false, leaveT: null }, bonny: { pos: 0, doorT: 0, seen: false, leaveT: null }, chica: { pos: 0, doorT: 0, seen: false, leaveT: null } },
     foxy: { stage: 0, runT: 0, lastSeen: 0, hits: 0 },
+    gf: { phase: 0, t: 0, fT: 0, fr: null }, // Duy Anh: 0 = không có, 1 = poster ở CAM 2A, 2 = đang ngồi trong phòng
   });
 }
 resetRun();
@@ -993,11 +1032,12 @@ async function startNight(n, cfg) {
   let c = cfg;
   if (!c) { const r = await ApiService.getNightConfig(n); c = r.data; }
   G.night = n; G.custom = !!cfg;
-  G.ai = { freddy: c.freddy_ai, bonny: c.bonny_ai, foxy: c.foxy_ai, chica: c.chica_ai };
+  G.ai = { freddy: c.freddy_ai, bonny: c.bonny_ai, foxy: c.foxy_ai, chica: c.chica_ai, golden: c.golden_ai ?? 0 };
   G.mult = c.power_drain_multiplier; G.cfg = c;
   resetRun(); G.power = c.start_power ?? 100; G.wantCall = !cfg && !!CALLS[n]; G.state = 'INTRO'; G.introT = 3.2; ui(null);
 }
 function blackout() {
+  G.gf.phase = 0; A.gfStatic(false);
   G.state = 'BLACKOUT'; G.cam = false; G.lightL = G.lightR = false; G.doorL = G.doorR = false;
   A.stopAmb(); A.powerDown(); A.slam();
   G.bo = { t: 0, appear: rand(2, 3.5), jump: rand(5, 10), music: false };
@@ -1006,7 +1046,7 @@ function jumpscare(n, preview = false) {
   if (!preview) { G.call = null; A.radioOff(true); }
   G.js = { n, t: 0, preview, ret: G.state };
   G.state = 'JUMPSCARE'; G.shake = 1;
-  A.stopMusic(); if (!preview) A.stopAmb(); A.lightOff(); A.camHum(false); A.scream(n);
+  A.stopMusic(); if (!preview) A.stopAmb(); A.lightOff(); A.camHum(false); A.gfStatic(false); A.scream(n);
   ui(null);
 }
 function endJumpscare() {
@@ -1050,7 +1090,7 @@ function showEnd(btns) {
 /* ============================ PAUSE / SETTINGS ============================ */
 function openSettings(inGame) {
   A.init();
-  if (inGame) { G.paused = true; A.stopAmb(); A.stopMusic(); A.radioOff(true); }
+  if (inGame) { G.paused = true; A.stopAmb(); A.stopMusic(); A.radioOff(true); A.gfStatic(false); }
   $('sBack').style.display = inGame ? 'none' : '';
   $('sMenu').style.display = $('sResume').style.display = inGame ? '' : 'none';
   ui('settings');
@@ -1058,7 +1098,7 @@ function openSettings(inGame) {
 function resumeGame() {
   G.paused = false; ui(null);
   if (G.call) { A.radioOn(); setTimeout(() => sayLine(), 300); }
-  if (G.state === 'PLAYING') { A.startAmb(); if (G.lightL || G.lightR) A.setLight(true); if (G.cam) A.camHum(true); }
+  if (G.state === 'PLAYING') { A.startAmb(); if (G.lightL || G.lightR) A.setLight(true); if (G.cam) A.camHum(true); if (G.gf.phase === 2 && !G.cam) A.gfStatic(true); }
   else if (G.state === 'BLACKOUT' && G.bo && G.bo.music) A.musicBox();
 }
 
@@ -1079,13 +1119,25 @@ function toggleLight(s) {
     if (!who && G.flashes.length >= 4) { G.flashes = []; G.fake = { side: s, until: G.t + rand(.7, 1.2), n: ['freddy', 'bonny', 'chica'][Math.floor(Math.random() * 3)] }; A.whisper(); }
   }
 }
+// ---- Duy Anh (Golden Freddy): ảo giác, bỏ qua cửa ----
+const gfChance = () => G.custom ? G.ai.golden * .005 : G.night >= 5 ? .05 : .02; // custom: AI 20 → 10% mỗi lần xem CAM 2A
+function gfRoll() { // mỗi lần nhìn vào CAM 2A có tỉ lệ nhỏ hiện poster lỗi
+  if (!playing() || G.gf.phase || Math.random() >= gfChance()) return;
+  G.gf.phase = 1; A.gfLaugh(); G.staticT = Math.max(G.staticT, .25);
+}
 function toggleCam() {
   if (!playing()) return;
   G.cam = !G.cam;
-  if (G.cam) { const had = G.lightL || G.lightR; G.lightL = G.lightR = false; if (had) A.lightOff(); A.camOpen(); G.staticT = .45; }
-  else A.camClose();
+  if (G.cam) {
+    const had = G.lightL || G.lightR; G.lightL = G.lightR = false; if (had) A.lightOff(); A.camOpen(); G.staticT = .45;
+    if (G.gf.phase === 2) { G.gf.phase = 0; G.gf.fr = null; A.gfStatic(false); A.whisper(); } // bật cam kịp → Duy Anh biến mất
+    else if (G.curCam === '2A') gfRoll();
+  } else {
+    A.camClose();
+    if (G.gf.phase === 1) { G.gf.phase = 2; G.gf.t = 0; G.gf.fT = 0; A.gfStatic(true); } // hạ cam → hắn đã ngồi trong phòng
+  }
 }
-function selectCam(id) { if (!G.cam || G.curCam === id) return; G.curCam = id; G.staticT = .45; A.camSwitch(); }
+function selectCam(id) { if (!G.cam || G.curCam === id) return; G.curCam = id; G.staticT = .45; A.camSwitch(); if (id === '2A') gfRoll(); }
 
 /* ============================ UPDATE ============================ */
 function update(dt) {
@@ -1106,6 +1158,11 @@ function update(dt) {
       const k = Math.min(1, dt * 5); G.panX += (G.tgtX - G.panX) * k; G.panY += (G.tgtY - G.panY) * k;
     }
     if (G.time >= NIGHT) return win();
+    if (G.state === 'PLAYING' && G.gf.phase === 2 && !G.cam) { // Duy Anh trong phòng: 2.75 giây để bật cam lên
+      const g = G.gf; g.t += dt; g.fT -= dt;
+      if (g.fT <= 0) { g.fT = .1; g.fr = Math.random() < .3 + .4 * g.t / 2.75 ? { img: Math.random() < .5 ? 'duyanh_glitch1' : 'duyanh_glitch2', dx: rand(-60, 60), s: rand(.9, 1.35), txt: ["IT'S ME", 'MÃ LỖI 404', "IT'S ME", 'LỖI HỆ THỐNG', 'DUY ANH'][Math.floor(Math.random() * 5)], ty: rand(80, 460), red: Math.random() < .5 } : null; }
+      if (g.t >= 2.75) return jumpscare('duyanh');
+    }
     if (G.state === 'PLAYING' && G.call) updateCall(dt); // đang nghe bộ đàm: giờ, pin, quái đều đứng yên
     else if (G.state === 'PLAYING') {
       G.power -= (0.15 + 0.25 * (usage() - 1)) * G.mult * sdt; // 1 vạch: 0.15%/s, mỗi thứ bật thêm: +0.25%/s
@@ -1124,7 +1181,14 @@ function update(dt) {
       if (b.t >= b.jump) jumpscare('freddy');
     }
   }
-  if (G.state === 'JUMPSCARE') { G.js.t += dt; if (G.js.t > 1.9) endJumpscare(); }
+  if (G.state === 'JUMPSCARE') {
+    G.js.t += dt;
+    if (G.js.n === 'duyanh' && !G.js.preview && G.js.t > 1.5) { // hét xong → "sập trình duyệt" rồi văng về Menu
+      ApiService.saveProgress({ night_completed: null, power_remaining: G.power, survival_seconds: G.time });
+      G.state = 'CRASH'; G.crashT = 0; G.js = null; A.crash();
+    } else if (G.js.t > 1.9) endJumpscare();
+  }
+  if (G.state === 'CRASH') { G.crashT += dt; if (G.crashT > 2) toMenu(); return; }
   if (G.state === 'WIN') { G.winT += dt; updateWinFx(dt); }
   if (G.state === 'GAMEOVER') G.goT += dt;
 }
@@ -1168,7 +1232,8 @@ const ROOM_TINT = {
   '1A': 'rgba(8,24,22,.62)', '1B': 'rgba(6,20,30,.62)', '2A': 'rgba(12,20,24,.58)', '3': 'rgba(8,24,16,.62)',
   '4A': 'rgba(16,22,18,.58)', '4B': 'rgba(16,18,14,.6)', '5': 'rgba(8,24,20,.62)', door: 'rgba(24,14,4,.4)',
 };
-function drawShaded(img, cx, bottom, h, tint) {
+function drawShaded(img, cx, bottom, h, tint, fade = 0) { // fade: phần dưới chìm dần vào bóng tối (ảnh không có chân)
+  const H = eh(img, h); bottom += H - h; h = H;
   const w = Math.ceil(img.width * h / img.height), hh = Math.ceil(h);
   if (!SH || SH.width < w || SH.height < hh) { [SH, shg] = mk(Math.max(w, SH ? SH.width : 0), Math.max(hh, SH ? SH.height : 0)); }
   shg.globalCompositeOperation = 'source-over'; shg.clearRect(0, 0, SH.width, SH.height);
@@ -1177,13 +1242,14 @@ function drawShaded(img, cx, bottom, h, tint) {
   shg.fillStyle = tint; shg.fillRect(0, 0, w, hh);
   const g = shg.createLinearGradient(0, 0, 0, hh); g.addColorStop(0, 'rgba(0,0,0,.05)'); g.addColorStop(.5, 'rgba(0,0,0,.2)'); g.addColorStop(1, 'rgba(0,0,0,.7)');
   shg.fillStyle = g; shg.fillRect(0, 0, w, hh);
+  if (fade) { shg.globalCompositeOperation = 'destination-out'; const f = shg.createLinearGradient(0, hh * (1 - fade), 0, hh); f.addColorStop(0, 'rgba(0,0,0,0)'); f.addColorStop(1, 'rgba(0,0,0,1)'); shg.fillStyle = f; shg.fillRect(0, hh * (1 - fade), w, hh * fade); }
   shg.globalCompositeOperation = 'source-over';
   ctx.drawImage(SH, 0, 0, w, hh, Math.round(cx - w / 2), Math.round(bottom - hh), w, hh);
 }
 // Vị trí mắt thật trên từng sprite (tỉ lệ theo ảnh gốc): [mắt trái x, mắt phải x, y]
 const EYES = { // chỉ dùng cho dạng: jumpscare, đứng sau cửa, chuẩn bị tấn công
-  freddy_stare: [.53, .62, .27], bonny_stare: [.55, .61, .24], chica_idle: [.46, .57, .27], // đứng sau cửa
-  freddy_aggr: [.49, .575, .27], bonny_aggr: [.455, .53, .23], chica_aggr: [.5, .61, .285], foxy_rush: [.64, .68, .29], // chuẩn bị tấn công
+  freddy_stare: [.537, .642, .2295], bonny_stare: [.55, .61, .220], chica_idle: [.46, .57, .23], // đứng sau cửa
+  freddy_aggr: [.49, .575, .241], bonny_aggr: [.455, .53, .215], chica_aggr: [.5, .61, .235], foxy_rush: [.64, .68, .29], // chuẩn bị tấn công
   freddy_jump: [.41, .66, .31], bonny_jump: [.39, .62, .49], chica_jump: [.41, .61, .46], foxy_jump: [.42, .58, .4], // jumpscare
 };
 function eyesAt(key, x, y, w, h, a = 1, seed = 0) { // luồng sáng đỏ phát ra từ đúng mắt của quái, nhấp nháy
@@ -1191,7 +1257,7 @@ function eyesAt(key, x, y, w, h, a = 1, seed = 0) { // luồng sáng đỏ phát
   const fl = (.72 + .28 * Math.sin(G.t * 7.3 + seed * 3.1)) * (.85 + .15 * Math.sin(G.t * 23 + seed)) * (Math.random() < .04 ? .15 : 1);
   glowEyes(x + w * E[0], y + h * E[2], x + w * E[1], y + h * E[2], Math.min(7, Math.max(1.6, w * .02)), a * fl);
 }
-function drawSprite(img, cx, bottom, h) { const w = img.width * h / img.height; ctx.drawImage(img, Math.round(cx - w / 2), Math.round(bottom - h), Math.round(w), Math.round(h)); return { x: cx - w / 2, y: bottom - h, s: h / img.height }; }
+function drawSprite(img, cx, bottom, h) { const H = eh(img, h), w = img.width * H / img.height; ctx.drawImage(img, Math.round(cx - w / 2), Math.round(bottom - h), Math.round(w), Math.round(H)); return { x: cx - w / 2, y: bottom - h, s: h / img.height }; }
 function glowEyes(x1, y1, x2, y2, r = 7, a = 1) {
   for (const [x, y] of [[x1, y1], [x2, y2]]) {
     const gr = ctx.createRadialGradient(x, y, 0, x, y, r * 2.4); gr.addColorStop(0, `rgba(255,240,220,${a})`); gr.addColorStop(.3, `rgba(255,60,40,${.8 * a})`); gr.addColorStop(1, 'rgba(255,0,0,0)');
@@ -1225,13 +1291,13 @@ function drawDoorway(side) { // vẽ trong toạ độ ảnh phòng (đã nhân 
   if (lit && who && open && !G.c[who].seen) { G.c[who].seen = true; A.stinger(); }
   if (lit && who && Math.random() < .1) { lit = false; if (G.t - (G.lastFlick || 0) > .25) { G.lastFlick = G.t; A.lightFlick(); } } // đèn chập chờn khi có người
   const floorY = Math.max(...poly.map(q => q[1]));
-  const doorRect = (img, n) => { const hh = 300, ww = img.width * hh / img.height, cf = FACE_CX[n] || .5; return [x + w / 2 - ww * cf, floorY - 30 - hh, ww, hh]; };
+  const doorRect = (img, n) => { const hh = eh(img, 300), ww = img.width * hh / img.height, cf = FACE_CX[n] || .5; return [x + w / 2 - ww * cf, floorY - 330, ww, hh]; };
   const behind = (img, key) => { // quái đứng ngoài hành lang, sau khung cửa
-    const hh = 300, ww = img.width * hh / img.height, cf = FACE_CX[who] || FACE_CX.freddy, cx = x + w / 2;
+    const hh = eh(img, 300), ww = img.width * hh / img.height, cf = FACE_CX[who] || FACE_CX.freddy, cx = x + w / 2;
     ctx.save(); polyPath(poly); ctx.clip();
-    if (img === DARK.freddy_stare) ctx.drawImage(img, Math.round(cx - ww * cf), Math.round(floorY - 30 - hh), Math.round(ww), hh);
-    else drawShaded(img, cx - ww * cf + ww / 2 + Math.sin(G.t * 1.5) * 1.5, floorY - 30, hh, ROOM_TINT.door);
-    const fx = cx, fy = floorY - 30 - hh + hh * .28;
+    if (img === DARK.freddy_stare) ctx.drawImage(img, Math.round(cx - ww * cf), Math.round(floorY - 330), Math.round(ww), hh);
+    else drawShaded(img, cx - ww * cf + ww / 2 + Math.sin(G.t * 1.5) * 1.5, floorY - 30, 300, ROOM_TINT.door);
+    const fx = cx, fy = floorY - 330 + 300 * .28;
     const gr = ctx.createRadialGradient(fx, fy, 18, fx, fy + 20, 125);
     gr.addColorStop(0, 'rgba(0,0,0,.18)'); gr.addColorStop(.45, 'rgba(0,0,0,.5)'); gr.addColorStop(1, 'rgba(0,0,0,.94)');
     ctx.fillStyle = gr; ctx.fillRect(x - 10, y - 10, w + 20, h + 20);
@@ -1254,7 +1320,7 @@ function drawDoorway(side) { // vẽ trong toạ độ ảnh phòng (đã nhân 
       far.addColorStop(0, 'rgba(0,0,0,.75)'); far.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = far; ctx.fillRect(x, y, w, h);
       if (G.fake && G.fake.side === side && G.t < G.fake.until) { // thoáng thấy ai đó đứng cuối hành lang
         const sil = DARK['sil_' + G.fake.n]; ctx.globalAlpha = .85 * Math.min(1, (G.fake.until - G.t) * 3);
-        const hh = 300, ww = sil.width * hh / sil.height, cf = FACE_CX[G.fake.n] || .5, top = floorY - 30 - hh; // cùng cỡ & vị trí như quái thật đứng sau cửa
+        const hh = eh(sil, 300), ww = sil.width * hh / sil.height, cf = FACE_CX[G.fake.n] || .5, top = floorY - 330; // cùng cỡ & vị trí như quái thật đứng sau cửa
         ctx.drawImage(sil, Math.round(x + w / 2 - ww * cf), Math.round(top), Math.round(ww), hh);
         eyesAt(G.fake.n + '_' + DOOR_POSE[G.fake.n], Math.round(x + w / 2 - ww * cf), top, ww, hh, .9, 7); ctx.globalAlpha = 1;
       }
@@ -1348,15 +1414,16 @@ function renderOffice() {
   ctx.fillStyle = `rgba(0,0,0,${Math.min(.92, dark)})`; ctx.fillRect(0, 0, W, H);
   world(); drawDoorway('L'); drawDoorway('R'); ctx.restore();
   ctx.drawImage(VIG, 0, 0); ctx.drawImage(VIG, 0, 0);
+  if (G.gf.phase === 2 && !bo) { world(); drawGoldenRoom(); ctx.restore(); } // vẽ sau vignette: hắn hiện rõ giữa bóng tối
   world(); drawPanels(); ctx.restore(); // nút vẽ sau lớp tối/vignette để luôn sáng rõ
   updNoise(); ctx.globalAlpha = .07; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1; // hạt nhiễu phim
   const iw = 98 * Z, ih = 72 * Z, ix = 449 * Z - px, iy = Math.min(374 * Z - py, 488 - ih);
   updNoise(); drawHungInset(ix, iy, hungPose(), iw, ih, true); // webcam trên laptop
 }
 const SPOTS = {
-  '1A': { freddy: [565, 322, 142, 'stare', 'stage'], bonny: [652, 322, 142, 'idle', 'stage'], chica: [745, 322, 142, 'idle', 'stage'] }, // đứng trên bục sân khấu
+  '1A': { freddy: [565, 300, 142, 'stare'], bonny: [652, 302, 142, 'idle'], chica: [745, 290, 142, 'idle'] }, // đứng trên bục sân khấu, thấy cả bàn chân
   '1B': { bonny: [250, 425, 215, 'stare', 'front'], freddy: [400, 340, 150, 'stare', 'mid'] },                                            // sau bàn đọc sách
-  '2A': { bonny: [302, 432, 250, 'aggr', 'pile'] },                                                                                       // sau đống ghế đổ
+  '2A': { bonny: [450, 386, 168, 'aggr'] },                                                                                       // đứng giữa hành lang, cạnh đống ghế đổ
   '4A': { freddy: [330, 362, 210, 'stare'], chica: [700, 600, 340, 'idle'] },                             // Phúc sát camera (chân ngoài khung)
   '4B': { freddy: [470, 545, 390, 'aggr'], chica: [680, 545, 370, 'aggr'] },
   '5':  { chica: [505, 398, 220, 'idle', 'table'] }, // sau bàn ăn
@@ -1403,10 +1470,11 @@ function renderCam() {
       const sp = SPOTS[id][n];
       const key = n + '_' + sp[3];
       if (n === 'freddy') drawSprite(DARK[key], sp[0], sp[1], sp[2]); else drawShaded(IMG[key], sp[0], sp[1], sp[2], ROOM_TINT[id]);
-      if (sp[3] === 'aggr') { const im = IMG[key], ww = im.width * sp[2] / im.height; eyesAt(key, sp[0] - ww / 2, sp[1] - sp[2], ww, sp[2], .85, sp[0]); } // chỉ khi sắp tấn công
+      if (sp[3] === 'aggr') { const im = IMG[key], H = eh(im, sp[2]), ww = im.width * H / im.height; eyesAt(key, sp[0] - ww / 2, sp[1] - sp[2], ww, H, .85, sp[0]); } // chỉ khi sắp tấn công
       if (sp[4]) drawOccluder(id, sp[4]);
     }
-    if (id === '2A' && G.foxy.stage === 3) { const t = 1 - G.foxy.runT / 3; const rh = 110 + t * 380, rw = IMG.foxy_rush.width * rh / IMG.foxy_rush.height, rx = 330 + t * 110; drawShaded(IMG.foxy_rush, rx, 360 + t * 300, rh, 'rgba(12,20,24,.45)'); eyesAt('foxy_rush', rx - rw / 2, 360 + t * 300 - rh, rw, rh, .9, 4); }
+    if (id === '2A' && G.gf.phase === 1) drawGoldenPoster();
+    if (id === '2A' && G.foxy.stage === 3) { const t = 1 - G.foxy.runT / 3; const rh = 110 + t * 380, rw = IMG.foxy_rush.width * rh / IMG.foxy_rush.height, rx = 330 + t * 110; drawShaded(IMG.foxy_rush, rx, 360 + t * 300, rh, 'rgba(12,20,24,.45)', .3); eyesAt('foxy_rush', rx - rw / 2, 360 + t * 300 - rh, rw, rh, .9, 4); }
   }
   // CRT
   ctx.fillStyle = 'rgba(8,24,16,.16)'; ctx.fillRect(0, 0, W, H);
@@ -1460,14 +1528,61 @@ function renderHUD() {
   if (G.playT < 14 && !G.cam && !G.call) txt(ctx, TOUCH ? 'Vuốt trái / phải để quay về phía cửa' : 'Rê chuột để nhìn qua lại · Q/E: cửa · A/D: đèn · SPACE: camera', 480, 70, 20, `rgba(230,230,230,${Math.min(1, (14 - G.playT) / 3)})`, 'center');
   if (G.info) {
     const f = G.foxy, s = n => { const l = loc(n); return (l === 'L' || l === 'R') ? `CỬA ${l === 'L' ? 'TRÁI' : 'PHẢI'} (${G.c[n].doorT.toFixed(1)}s)` : 'CAM ' + l; };
-    const lines = [`Phát[${G.ai.freddy}]: ${s('freddy')}`, `Long[${G.ai.bonny}]: ${s('bonny')}`, `Sỹ[${G.ai.foxy}]: ${['IDLE', 'PEEKING', 'READY', 'RUSHING ' + f.runT.toFixed(1) + 's'][f.stage]}`, `Phúc[${G.ai.chica}]: ${s('chica')}`, `Pin: ${G.power.toFixed(2)}%  t=${G.time.toFixed(0)}s  x${G.speed}`];
+    const lines = [`Phát[${G.ai.freddy}]: ${s('freddy')}`, `Long[${G.ai.bonny}]: ${s('bonny')}`, `Sỹ[${G.ai.foxy}]: ${['IDLE', 'PEEKING', 'READY', 'RUSHING ' + f.runT.toFixed(1) + 's'][f.stage]}`, `Phúc[${G.ai.chica}]: ${s('chica')}`, `Duy Anh[${G.ai.golden}]: ${['—', 'POSTER CAM 2A', 'TRONG PHÒNG ' + G.gf.t.toFixed(1) + 's'][G.gf.phase]}`, `Pin: ${G.power.toFixed(2)}%  t=${G.time.toFixed(0)}s  x${G.speed}`];
     ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(14, 120, 290, lines.length * 22 + 10);
     lines.forEach((l, i) => txt(ctx, l, 22, 126 + i * 22, 19, '#7f7', 'left', false));
   }
 }
+function drawGoldenRoom() { // ngồi gục trước góc bàn làm việc (toạ độ ảnh phòng học)
+  const im = IMG.duyanh_idle, h = 182, w = im.width * h / im.height, x = 772 + (Math.random() < .08 ? rand(-4, 4) : 0), b = 482;
+  ctx.globalAlpha = .82 + Math.random() * .18; ctx.drawImage(im, Math.round(x - w / 2), Math.round(b - h), Math.round(w), h);
+  ctx.globalAlpha = 1;
+}
+function drawGoldenPoster() { // poster lỗi màu vàng thay cho bảng tin trên tường CAM 2A (vẽ theo phối cảnh)
+  const P = SCENE.gf_poster; if (!P) return;
+  const xl = 562, xr = 652, ylT = 212, ylB = 300, yrT = 192, yrB = 318, n = 30, jit = Math.random() < .15 ? rand(-3, 3) : 0;
+  for (let i = 0; i < n; i++) {
+    const k = i / n, x = xl + (xr - xl) * k, yt = ylT + (yrT - ylT) * k, yb = ylB + (yrB - ylB) * k;
+    ctx.drawImage(P, Math.floor(P.width * k), 0, Math.ceil(P.width / n), P.height, Math.round(x + jit), yt, Math.ceil((xr - xl) / n) + 1, yb - yt);
+  }
+  if (Math.random() < .2) { ctx.fillStyle = 'rgba(255,200,40,.12)'; ctx.fillRect(xl - 8, yrT - 6, xr - xl + 16, yrB - yrT + 12); }
+}
+function drawGoldenHallu() { // ảo giác chớp 100ms/lần + chữ lỗi chạy ngang
+  const g = G.gf, k = g.t / 2.75;
+  if (g.fr) {
+    const im = IMG[g.fr.img], h = H * g.fr.s, w = im.width * h / im.height;
+    ctx.fillStyle = `rgba(40,28,0,${.45 + .3 * k})`; ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(im, 480 - w / 2 + g.fr.dx, H - h + 30, w, h);
+    for (let i = 0; i < 6; i++) { const y = rand(0, H), hh = rand(4, 22); ctx.drawImage(cv, 0, y, W, hh, rand(-40, 40), y, W, hh); } // xé ngang
+    txt(ctx, g.fr.txt, 480 + rand(-200, 200), g.fr.ty, 54 + 30 * k, g.fr.red ? '#ff2a2a' : '#ffd02a', 'center');
+  }
+  const off = (G.t * 900) % (W + 600);
+  txt(ctx, "IT'S ME  ·  MÃ LỖI 404  ·  IT'S ME", W + 300 - off, 28 + (Math.floor(G.t * 10) % 3) * 4, 30, `rgba(255,${Math.random() < .5 ? 40 : 200},40,${.5 + .5 * k})`, 'center');
+  updNoise(); ctx.globalAlpha = .12 + .35 * k; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+}
+function renderCrash() { // giả lập trình duyệt/hệ thống bị sập
+  const t = G.crashT;
+  if (t < .25) { updNoise(); ctx.drawImage(NOISE, 0, 0, W, H); return; }
+  ctx.fillStyle = '#0a3fa8'; ctx.fillRect(0, 0, W, H);
+  txt(ctx, ':(', 90, 70, 120, '#fff');
+  txt(ctx, 'Máy tính của trường VNUK đã gặp sự cố', 90, 210, 30, '#fff'); txt(ctx, 'và cần khởi động lại.', 90, 244, 30, '#fff');
+  txt(ctx, 'Chúng tôi đang thu thập thông tin lỗi... ' + Math.min(100, Math.floor((t - .25) / 1.6 * 100)) + '% hoàn tất', 90, 292, 26, '#fff');
+  txt(ctx, 'Mã dừng: DUY_ANH_IT_S_ME (0x00000404)', 90, 360, 24, '#dfe8ff');
+  txt(ctx, 'Thành phần lỗi: golden_freddy.sys', 90, 392, 24, '#dfe8ff');
+  if (Math.random() < .06) { ctx.globalAlpha = .5; const im = IMG.duyanh_glitch2, h = 360, w = im.width * h / im.height; ctx.drawImage(im, 700 - w / 2, 160, w, h); ctx.globalAlpha = 1; }
+}
 function renderJumpscare() {
   const js = G.js, img = IMG[js.n + '_jump'], t = js.t;
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  if (js.n === 'duyanh') { // cận mặt toàn màn hình + sọc nhiễu vàng/đỏ chớp giật
+    const s = 1.55 + Math.min(1, t / .12) * .45 + Math.sin(t * 50) * .03, h = H * s, w = img.width * h / img.height, sh = 30 * G.shake;
+    ctx.drawImage(img, 480 - w / 2 + rand(-sh, sh), -h * .02 + rand(-sh, sh), w, h);
+    for (let i = 0; i < 9; i++) { ctx.fillStyle = Math.random() < .5 ? `rgba(255,200,30,${rand(.15, .5)})` : `rgba(255,20,20,${rand(.15, .5)})`; ctx.fillRect(0, rand(0, H), W, rand(3, 26)); }
+    for (let i = 0; i < 5; i++) { const y = rand(0, H), hh = rand(6, 40); ctx.drawImage(cv, 0, y, W, hh, rand(-70, 70), y, W, hh); }
+    if (Math.random() < .25) { ctx.fillStyle = 'rgba(255,230,120,.35)'; ctx.fillRect(0, 0, W, H); }
+    updNoise(); ctx.globalAlpha = .18; ctx.drawImage(NOISE, 0, 0, W, H); ctx.globalAlpha = 1;
+    return;
+  }
   if (t < 1.45) {
     const p = Math.min(1, t / .16), s = .55 + .65 * (1 - Math.pow(1 - p, 3)) + Math.sin(t * 40) * .015;
     const zk = { bonny: .72, freddy: .78 }[js.n] || 1; // Long & Phát: zoom vừa phải, không sát quá
@@ -1958,8 +2073,10 @@ function render() {
     case 'INTRO': renderIntro(); break;
     case 'PLAYING': case 'BLACKOUT':
       if (G.cam) renderCam(); else renderOffice();
+      if (G.gf.phase === 2 && !G.cam && G.state === 'PLAYING') drawGoldenHallu();
       renderHUD(); drawCallBox(); if (G.paused) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, W, H); } break;
     case 'JUMPSCARE': renderJumpscare(); break;
+    case 'CRASH': renderCrash(); break;
     case 'WIN': renderWin(); break;
     case 'GAMEOVER': renderGameOver(); break;
   }
@@ -2031,10 +2148,10 @@ $('bHelp').onclick = () => { A.init(); A.click(); ui('help'); };
 $('hBack').onclick = () => { A.click(); ui('menu'); };
 $('bCustom').onclick = () => { A.init(); A.click(); ui('custom'); };
 $('cBack').onclick = () => { A.click(); ui('menu'); };
-const CV = { freddy: 5, bonny: 5, foxy: 5, chica: 5 };
+const CV = { freddy: 5, bonny: 5, foxy: 5, chica: 5, duyanh: 0 };
 (function buildCustom() {
   const grid = $('cGrid');
-  ['freddy', 'bonny', 'foxy', 'chica'].forEach(n => {
+  ['freddy', 'bonny', 'foxy', 'chica', 'duyanh'].forEach(n => {
     const d = document.createElement('div'); d.className = 'card';
     d.innerHTML = `<img src="${SPR[n + '_idle']}" alt=""><div class="nm">${CH[n].name}</div><div class="al">${CH[n].alias}</div>
       <div class="val" id="v_${n}">${CV[n]}</div><input type="range" min="0" max="20" value="${CV[n]}" id="r_${n}">
@@ -2044,9 +2161,9 @@ const CV = { freddy: 5, bonny: 5, foxy: 5, chica: 5 };
   const set = (n, v) => { CV[n] = Math.max(0, Math.min(20, v)); $('v_' + n).textContent = CV[n]; $('r_' + n).value = CV[n]; };
   grid.addEventListener('input', e => { if (e.target.id.startsWith('r_')) set(e.target.id.slice(2), +e.target.value); });
   grid.addEventListener('click', e => { const b = e.target.closest('.pm'); if (b) { A.click(); set(b.dataset.n, CV[b.dataset.n] + +b.dataset.d); } });
-  document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { A.click(); const v = b.dataset.p.split(',').map(Number); ['freddy', 'bonny', 'foxy', 'chica'].forEach((n, i) => set(n, v[i])); });
+  document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { A.click(); const v = b.dataset.p.split(',').map(Number); ['freddy', 'bonny', 'foxy', 'chica', 'duyanh'].forEach((n, i) => set(n, v[i] ?? 0)); });
   $('cMult').oninput = e => { $('cMultV').textContent = 'x' + (+e.target.value).toFixed(2); };
-  $('cStart').onclick = () => { A.click(); startNight(7, { night_number: 7, freddy_ai: CV.freddy, bonny_ai: CV.bonny, foxy_ai: CV.foxy, chica_ai: CV.chica, power_drain_multiplier: +$('cMult').value }); };
+  $('cStart').onclick = () => { A.click(); startNight(7, { night_number: 7, freddy_ai: CV.freddy, bonny_ai: CV.bonny, foxy_ai: CV.foxy, chica_ai: CV.chica, golden_ai: CV.duyanh, power_drain_multiplier: +$('cMult').value }); };
 })();
 $('stBtn').onclick = () => { A.init(); if (G.state === 'STORY' && !G.story.started) storyAdvance(); };
 $('start').onclick = e => { if (e.target.id === 'start' && G.state === 'STORY' && !G.story.started) { A.init(); storyAdvance(); } };
@@ -2110,6 +2227,7 @@ $('dEnd').onclick = async () => { A.init(); await ApiService.saveProgress({ nigh
 $('dUnlock').onclick = async () => { await ApiService.saveProgress({ night_completed: 4, power_remaining: 100 }); if (G.state === 'MENU') refreshMenu(); };
 $('dWin').onclick = () => { if (G.paused) resumeGame(); if (G.state === 'INTRO') { G.state = 'PLAYING'; } if (['PLAYING', 'BLACKOUT'].includes(G.state)) G.time = NIGHT; };
 $('dHour').onclick = () => { if (playing() || G.state === 'BLACKOUT') G.time = Math.min(NIGHT - .5, (Math.floor(G.time / HOUR) + 1) * HOUR); };
+$('dGold').onclick = () => { if (playing() && !G.gf.phase) { G.gf.phase = 1; if (G.cam && G.curCam === '2A') A.gfLaugh(); } };
 $('dPow').onclick = () => { if (playing()) G.power = Math.max(0.01, G.power - 25); };
 $('dSpd').onclick = e => { G.speed = G.speed === 1 ? 5 : G.speed === 5 ? 20 : 1; e.target.textContent = 'Tốc độ: x' + G.speed; };
 $('dInfo').onclick = e => { G.info = !G.info; e.target.textContent = 'Hiện trạng thái AI: ' + (G.info ? 'BẬT' : 'TẮT'); };
